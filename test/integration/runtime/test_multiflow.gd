@@ -48,7 +48,7 @@ func test_multi_flow_save_load_threads():
 	assert_eq("Hello I'm red\n", story.current_text)
 	assert_eq("Thread 1 red choice", story.current_choices[0].text)
 
-	var saved = story.state.to_json()
+	var saved = story.state.JSON.new().stringify()
 
 	story.choose_choice_index(0)
 	assert_eq("Thread 1 red choice\nAfter thread 1 choice (red)\n", story.continue_maximally())

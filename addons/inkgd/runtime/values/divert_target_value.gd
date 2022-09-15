@@ -15,7 +15,11 @@ class_name InkDivertTargetValue
 
 # ############################################################################ #
 
-var target_path setget set_target_path, get_target_path # InkPath
+var target_path :
+	get:
+		return target_path # TODOConverter40 Copy here content of get_target_path
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_target_path # InkPath
 func get_target_path():
 	return value
 func set_target_path(value):
@@ -49,7 +53,7 @@ func _to_string() -> String:
 # ######################################################################## #
 
 func is_class(type):
-	return type == "DivertTargetValue" || .is_class(type)
+	return type == "DivertTargetValue" || super.is_class(type)
 
 func get_class():
 	return "DivertTargetValue"

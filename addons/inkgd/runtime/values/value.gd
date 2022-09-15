@@ -57,11 +57,19 @@ static func ListValue():
 var value # Variant
 
 # ValueType
-var value_type: int setget , get_value_type
+var value_type: int :
+	get:
+		return value_type # TODOConverter40 Copy here content of get_value_type 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_value_type() -> int:
 	return -1
 
-var is_truthy: bool setget , get_is_truthy
+var is_truthy: bool :
+	get:
+		return is_truthy # TODOConverter40 Copy here content of get_is_truthy 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_is_truthy() -> bool:
 	return false
 
@@ -120,7 +128,7 @@ func _to_string() -> String:
 # ############################################################################ #
 
 func is_class(type) -> bool:
-	return type == "Value" || .is_class(type)
+	return type == "Value" || super.is_class(type)
 
 func get_class() -> String:
 	return "Value"

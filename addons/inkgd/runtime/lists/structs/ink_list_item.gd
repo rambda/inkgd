@@ -30,12 +30,20 @@ static func InkListItem():
 # make the object "immutable". That way it can be passed around without being
 # duplicated.
 
-var origin_name setget , get_origin_name
+var origin_name :
+	get:
+		return origin_name # TODOConverter40 Copy here content of get_origin_name 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_origin_name():
 	return _origin_name
 var _origin_name = null # String
 
-var item_name setget , get_item_name
+var item_name :
+	get:
+		return item_name # TODOConverter40 Copy here content of get_item_name 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_item_name():
 	return _item_name
 var _item_name = null # String
@@ -58,12 +66,20 @@ static func null() -> InkListItem:
 
 # ############################################################################ #
 
-var is_null: bool setget , get_is_null
+var is_null: bool :
+	get:
+		return is_null # TODOConverter40 Copy here content of get_is_null 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_is_null() -> bool:
 	return self.origin_name == null && self.item_name == null
 
 # String
-var full_name setget , get_full_name
+var full_name :
+	get:
+		return full_name # TODOConverter40 Copy here content of get_full_name 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_full_name():
 	# In C#, concatenating null produce nothing, in GDScript, it appends "Null".
 	return (
@@ -107,7 +123,7 @@ static func new_with_full_name(full_name) -> InkListItem:
 # ############################################################################ #
 
 func is_class(type: String) -> bool:
-	return type == "InkListItem" || .is_class(type)
+	return type == "InkListItem" || super.is_class(type)
 
 func get_class() -> String:
 	return "InkListItem"
@@ -131,7 +147,9 @@ func serialized() -> String:
 #
 # (String) -> InkListItem
 static func from_serialized_key(key: String) -> InkListItem:
-	var obj = JSON.parse(key).result
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(key).result
+	var obj = test_json_conv.get_data()
 	if !InkListItem()._is_like_ink_list_item(obj):
 		return InkListItem().null()
 

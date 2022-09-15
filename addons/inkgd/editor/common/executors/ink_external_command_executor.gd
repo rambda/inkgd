@@ -4,7 +4,7 @@
 # See LICENSE in the project root for license information.
 # ############################################################################ #
 
-extends Reference
+extends RefCounted
 
 class_name InkExternalCommandExecutor
 
@@ -13,7 +13,11 @@ class_name InkExternalCommandExecutor
 # ############################################################################ #
 
 ## The identifier of this compiler.
-var identifier: int setget , get_identifier
+var identifier: int :
+	get:
+		return identifier # TODOConverter40 Copy here content of get_identifier 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_identifier() -> int:
 	return get_instance_id()
 

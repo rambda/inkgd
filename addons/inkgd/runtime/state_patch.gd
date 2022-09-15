@@ -23,22 +23,38 @@ var InkStringSet := preload("res://addons/inkgd/runtime/extra/string_set.gd") as
 # ############################################################################ #
 
 # Dictionary<String, InkObject>
-var globals: Dictionary setget , get_globals
+var globals: Dictionary :
+	get:
+		return globals # TODOConverter40 Copy here content of get_globals 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_globals() -> Dictionary:
 	return _globals
 
 # StringSet
-var changed_variables: InkStringSet setget , get_changed_variables
+var changed_variables: InkStringSet :
+	get:
+		return changed_variables # TODOConverter40 Copy here content of get_changed_variables 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_changed_variables() -> InkStringSet:
 	return _changed_variables
 
 # Dictionary<InkContainer, int>
-var visit_counts: Dictionary setget , get_visit_counts
+var visit_counts: Dictionary :
+	get:
+		return visit_counts # TODOConverter40 Copy here content of get_visit_counts 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_visit_counts() -> Dictionary:
 	return _visit_counts
 
 # Dictionary<InkContainer, int>
-var turn_indices setget , get_turn_indices
+var turn_indices :
+	get:
+		return turn_indices # TODOConverter40 Copy here content of get_turn_indices 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_turn_indices() -> Dictionary:
 	return _turn_indices
 
@@ -99,7 +115,7 @@ var _turn_indices: Dictionary
 # ############################################################################ #
 
 func is_class(type: String) -> bool:
-	return type == "StatePatch" || .is_class(type)
+	return type == "StatePatch" || super.is_class(type)
 
 func get_class() -> String:
 	return "StatePatch"

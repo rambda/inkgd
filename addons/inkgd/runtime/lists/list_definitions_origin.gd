@@ -25,7 +25,11 @@ var InkListValue = load("res://addons/inkgd/runtime/values/list_value.gd")
 # ############################################################################ #
 
 # Array<InkListDefinition>
-var lists: Array setget , get_lists
+var lists: Array :
+	get:
+		return lists # TODOConverter40 Copy here content of get_lists 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_lists() -> Array:
 	var list_of_lists = []
 	for named_list_key in _lists:
@@ -81,7 +85,7 @@ var _all_unambiguous_list_value_cache: Dictionary # Dictionary<String, InkListVa
 # ############################################################################ #
 
 func is_class(type: String) -> bool:
-	return type == "InkListDefinitionsOrigin" || .is_class(type)
+	return type == "InkListDefinitionsOrigin" || super.is_class(type)
 
 func get_class() -> String:
 	return "InkListDefinitionsOrigin"

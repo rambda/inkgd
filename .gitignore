@@ -29,3 +29,6 @@ __pycache__
 # mono
 .mono
 *.dll
+
+.godot
+addons/gut/

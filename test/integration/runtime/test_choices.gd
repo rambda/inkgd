@@ -38,7 +38,7 @@ func test_choice_thread_forking():
 	var story = Story.new(load_file("choice_thread_forking"))
 
 	story.continue()
-	var saved_state = story.state.to_json()
+	var saved_state = story.state.JSON.new().stringify()
 
 	story = Story.new(load_file("choice_thread_forking"))
 	story.state.load_json(saved_state)

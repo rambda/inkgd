@@ -24,7 +24,11 @@ var InkSearchResult := load("res://addons/inkgd/runtime/search_result.gd") as GD
 var name = null
 
 # Array<InkObject>
-var content: Array setget set_content, get_content
+var content: Array :
+	get:
+		return content # TODOConverter40 Copy here content of get_content
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_content
 func get_content() -> Array:
 	return self._content
 func set_content(value: Array):
@@ -37,7 +41,11 @@ var _content: Array
 var named_content: Dictionary
 
 # Dictionary<string, InkObject>?
-var named_only_content setget set_named_only_content, get_named_only_content
+var named_only_content :
+	get:
+		return named_only_content # TODOConverter40 Copy here content of get_named_only_content
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_named_only_content
 func get_named_only_content():
 	var named_only_content_dict = {} # Dictionary<string, InkObject>
 	for key in self.named_content:
@@ -78,7 +86,11 @@ enum CountFlags {
 }
 
 # CountFlags
-var count_flags: int setget set_count_flags, get_count_flags
+var count_flags: int :
+	get:
+		return count_flags # TODOConverter40 Copy here content of get_count_flags
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_count_flags
 func get_count_flags() -> int:
 	var flags = 0
 
@@ -96,11 +108,19 @@ func set_count_flags(value: int):
 	if (flag & CountFlags.TURNS) > 0:            turn_index_should_be_counted = true
 	if (flag & CountFlags.COUNT_START_ONLY) > 0: counting_at_start_only = true
 
-var has_valid_name: bool setget , get_has_valid_name
+var has_valid_name: bool :
+	get:
+		return has_valid_name # TODOConverter40 Copy here content of get_has_valid_name 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_has_valid_name() -> bool:
 	return self.name != null && self.name.length() > 0
 
-var path_to_first_leaf_content: InkPath setget , get_path_to_first_leaf_content
+var path_to_first_leaf_content: InkPath :
+	get:
+		return path_to_first_leaf_content # TODOConverter40 Copy here content of get_path_to_first_leaf_content 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_path_to_first_leaf_content() -> InkPath:
 	if self._path_to_first_leaf_content == null:
 		self._path_to_first_leaf_content = self.path.path_by_appending_path(self.internal_path_to_first_leaf_content)
@@ -111,9 +131,13 @@ func get_path_to_first_leaf_content() -> InkPath:
 var _path_to_first_leaf_content = null
 
 # TODO: Make inspectable
-var internal_path_to_first_leaf_content: InkPath setget , get_internal_path_to_first_leaf_content
+var internal_path_to_first_leaf_content: InkPath :
+	get:
+		return internal_path_to_first_leaf_content # TODOConverter40 Copy here content of get_internal_path_to_first_leaf_content 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_internal_path_to_first_leaf_content() -> InkPath:
-	var components: Array = [] # Array<Path.Component>
+	var components: Array = [] # Array<Path3D.Component>
 	var container: InkContainer = self
 	while container != null:
 		if container.content.size() > 0:
@@ -315,7 +339,7 @@ func _append_indentation(string: String, indentation: int) -> String:
 # ############################################################################ #
 
 func is_class(type: String) -> bool:
-	return type == "InkContainer" || .is_class(type)
+	return type == "InkContainer" || super.is_class(type)
 
 func get_class() -> String:
 	return "InkContainer"

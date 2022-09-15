@@ -24,7 +24,11 @@ static func InkPath() -> GDScript:
 
 # () -> InkObject
 # Encapsulating parent into a weak ref.
-var parent: InkObject setget set_parent, get_parent
+var parent: InkObject :
+	get:
+		return parent # TODOConverter40 Copy here content of get_parent
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_parent
 func set_parent(value: InkObject):
 	self._parent = weakref(value)
 func get_parent() -> InkObject:
@@ -35,7 +39,11 @@ var _parent: WeakRef = WeakRef.new() # InkObject
 # ############################################################################ #
 
 # () -> InkDebugMetadata
-var debug_metadata setget set_debug_metadata, get_debug_metadata
+var debug_metadata :
+	get:
+		return debug_metadata # TODOConverter40 Copy here content of get_debug_metadata
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_debug_metadata
 func get_debug_metadata():
 	if _debug_metadata == null:
 		if self.parent:
@@ -51,7 +59,11 @@ var _debug_metadata = null # InkDebugMetadata
 # ############################################################################ #
 
 # () -> InkDebugMetadata
-var own_debug_metadata setget , get_own_debug_metadata
+var own_debug_metadata :
+	get:
+		return own_debug_metadata # TODOConverter40 Copy here content of get_own_debug_metadata 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_own_debug_metadata():
 	return _debug_metadata
 
@@ -74,13 +86,17 @@ func debug_line_number_of_path(path: InkPath):
 
 # TODO: Make inspectable
 # InkPath
-var path: InkPath setget , get_path
+var path: InkPath :
+	get:
+		return path # TODOConverter40 Copy here content of get_path 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_path() -> InkPath:
 	if _path == null:
 		if self.parent == null:
 			_path = InkPath().new()
 		else:
-			var comps: Array = [] # Stack<Path.Component>
+			var comps: Array = [] # Stack<Path3D.Component>
 
 			var child = self
 			var container = Utils.as_or_null(child.parent, "InkContainer")
@@ -145,7 +161,7 @@ func convert_path_to_relative(global_path: InkPath) -> InkPath:
 
 	var num_upwards_moves = (own_path.length - 1) - last_shared_path_comp_index
 
-	var new_path_comps: Array = [] # Array<Path.Component>
+	var new_path_comps: Array = [] # Array<Path3D.Component>
 
 	var up = 0
 	while up < num_upwards_moves:
@@ -160,7 +176,7 @@ func convert_path_to_relative(global_path: InkPath) -> InkPath:
 	var relative_path = InkPath().new_with_components(new_path_comps, true)
 	return relative_path
 
-# (Path) -> String
+# (Path3D) -> String
 func compact_path_string(other_path: InkPath) -> String:
 	var global_path_str = null # String
 	var relative_path_str = null # String
@@ -179,7 +195,11 @@ func compact_path_string(other_path: InkPath) -> String:
 		return global_path_str
 
 # () -> InkContainer
-var root_content_container setget , get_root_content_container
+var root_content_container :
+	get:
+		return root_content_container # TODOConverter40 Copy here content of get_root_content_container 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_root_content_container():
 	var ancestor = self
 	while (ancestor.parent):
@@ -207,7 +227,7 @@ func set_child(obj: InkObject, value: InkObject):
 # ############################################################################ #
 
 func is_class(type: String) -> bool:
-	return type == "InkObject" || .is_class(type)
+	return type == "InkObject" || super.is_class(type)
 
 func get_class() -> String:
 	return "InkObject"

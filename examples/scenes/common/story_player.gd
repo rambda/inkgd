@@ -36,9 +36,9 @@ const USE_SIGNALS = true
 # you can ignore those exports. They just make overriding
 # the story and creating multiple scenes easier.
 # For context, see main.tscn.
-export var ink_file: Resource
-export var title: String
-export var bind_externals: bool = false
+@export var ink_file: Resource
+@export var title: String
+@export var bind_externals: bool = false
 
 
 # ############################################################################ #
@@ -49,7 +49,7 @@ var _current_choice_container: ChoiceContainer
 var _profiler: InkGDProfiler = InkGDProfiler.new()
 
 # InkPlayer is created through the factory so that it returns the appropriate
-# node depending on whether the project is using Mono or not.
+# node depending checked whether the project is using Mono or not.
 #
 # In your project you can also add it in the scene tree and use the inspector
 # to set the variables.
@@ -60,10 +60,10 @@ var _ink_player = InkPlayerFactory.create()
 # Node
 # ############################################################################ #
 
-onready var _story_margin_container = $StoryMarginContainer
-onready var _story_vbox_container = $StoryMarginContainer/StoryScrollContainer/StoryVBoxContainer
-onready var _loading_animation_player = $LoadingAnimationPlayer
-onready var _title_label = $LoadingAnimationPlayer/CenterContainer/VBoxContainer/TitleLabel
+@onready var _story_margin_container = $StoryMarginContainer
+@onready var _story_vbox_container = $StoryMarginContainer/StoryScrollContainer/StoryVBoxContainer
+@onready var _loading_animation_player = $LoadingAnimationPlayer
+@onready var _title_label = $LoadingAnimationPlayer/CenterContainer/VBoxContainer/TitleLabel
 
 
 # ############################################################################ #
@@ -128,19 +128,19 @@ func _continued(text, tags):
 
 
 func _add_label(text):
-	var label = LineLabel.instance()
+	var label = LineLabel.instantiate()
 	label.text = text
 
 	_story_vbox_container.add_child(label)
 
 
 func _prompt_choices(choices):
-	if !choices.empty():
-		_current_choice_container = ChoiceContainer.instance()
+	if !choices.is_empty():
+		_current_choice_container = ChoiceContainer.instantiate()
 		_story_vbox_container.add_child(_current_choice_container)
 
 		_current_choice_container.create_choices(choices)
-		_current_choice_container.connect("choice_selected", self, "_choice_selected")
+		_current_choice_container.connect("choice_selected",Callable(self,"_choice_selected"))
 
 
 func _ended():
@@ -189,7 +189,7 @@ func _override_story():
 	if ink_file != null:
 		_ink_player.ink_file = ink_file
 
-	if !title.empty():
+	if !title.is_empty():
 		_title_label.text = title
 
 
@@ -239,13 +239,13 @@ func _remove_loading_overlay():
 
 
 func _connect_signals():
-	_ink_player.connect("loaded", self, "_loaded")
+	_ink_player.connect("loaded",Callable(self,"_loaded"))
 
 
 func _connect_optional_signals():
-	_ink_player.connect("continued", self, "_continued")
-	_ink_player.connect("prompt_choices", self, "_prompt_choices")
-	_ink_player.connect("ended", self, "_ended")
+	_ink_player.connect("continued",Callable(self,"_continued"))
+	_ink_player.connect("prompt_choices",Callable(self,"_prompt_choices"))
+	_ink_player.connect("ended",Callable(self,"_ended"))
 
-	_ink_player.connect("exception_raised", self, "_exception_raised")
-	_ink_player.connect("error_encountered", self, "_error_encountered")
+	_ink_player.connect("exception_raised",Callable(self,"_exception_raised"))
+	_ink_player.connect("error_encountered",Callable(self,"_error_encountered"))

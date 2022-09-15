@@ -34,22 +34,30 @@ static func InkPointer() -> GDScript:
 
 # InkContainer
 # Encapsulating container into a weak ref.
-var container: InkContainer setget set_container, get_container
+var container: InkContainer :
+	get:
+		return container # TODOConverter40 Copy here content of get_container
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_container
 func set_container(value: InkContainer) -> void:
-	assert(false, "Pointer is immutable, cannot set container.")
+	assert(false) #,"Pointer is immutable, cannot set container.")
 func get_container() -> InkContainer:
 	return self._container.get_ref()
 var _container: WeakRef = WeakRef.new()
 
-var index: int setget set_index, get_index
+var index: int :
+	get:
+		return index # TODOConverter40 Copy here content of get_index
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_index
 func set_index(value: int):
-	assert(false, "Pointer is immutable, cannot set index.")
+	assert(false) #,"Pointer is immutable, cannot set index.")
 func get_index() -> int:
 	return _index
 var _index: int = 0 # int
 
 # (InkContainer, int) -> InkPointer
-func _init(container: InkContainer = null, index: int = 0):
+func _init(container: InkContainer = null,index: int = 0):
 	if container == null:
 		self._container = WeakRef.new()
 	else:
@@ -69,7 +77,11 @@ func resolve():
 # ############################################################################ #
 
 # () -> bool
-var is_null: bool setget , get_is_null
+var is_null: bool :
+	get:
+		return is_null # TODOConverter40 Copy here content of get_is_null 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_is_null() -> bool:
 	return self.container == null
 
@@ -77,7 +89,11 @@ func get_is_null() -> bool:
 
 # TODO: Make inspectable
 # () -> InkPath
-var path: InkPath setget , get_path
+var path: InkPath :
+	get:
+		return path # TODOConverter40 Copy here content of get_path 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_path() -> InkPath:
 	if self.is_null:
 		return null
@@ -112,7 +128,7 @@ static func null():
 # ############################################################################ #
 
 func is_class(type: String) -> bool:
-	return type == "Pointer" || .is_class(type)
+	return type == "Pointer" || super.is_class(type)
 
 func get_class() -> String:
 	return "Pointer"

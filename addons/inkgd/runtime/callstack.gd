@@ -42,7 +42,7 @@ class Element extends InkBase:
 	var function_start_in_ouput_stream = 0 # int
 
 	# (PushPopType, Pointer, bool) -> InkElement
-	func _init(type, pointer, in_expression_evaluation = false):
+	func _init(type,pointer,in_expression_evaluation = false):
 		self.current_pointer = pointer
 		self.in_expression_evaluation = in_expression_evaluation
 		self.temporary_variables = {}
@@ -61,7 +61,7 @@ class Element extends InkBase:
 	# ######################################################################## #
 
 	func is_class(type):
-		return type == "CallStack.Element" || .is_class(type)
+		return type == "CallStack.Element" || super.is_class(type)
 
 	func get_class():
 		return "CallStack.Element"
@@ -184,7 +184,7 @@ class InkThread extends InkBase:
 	# ######################################################################## #
 
 	func is_class(type):
-		return type == "CallStack.InkThread" || .is_class(type)
+		return type == "CallStack.InkThread" || super.is_class(type)
 
 	func get_class():
 		return "CallStack.InkThread"
@@ -197,7 +197,11 @@ class InkThread extends InkBase:
 		return thread
 
 	# ######################################################################## #
-	var Json setget , get_Json
+	var Json :
+	get:
+		return Json # TODOConverter40 Copy here content of get_Json 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 	func get_Json():
 		return _Json.get_ref()
 
@@ -212,30 +216,50 @@ class InkThread extends InkBase:
 		_Json = weakref(InkRuntime.json)
 
 # () -> Array<InkElement>
-var elements setget , get_elements
+var elements :
+	get:
+		return elements # TODOConverter40 Copy here content of get_elements 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_elements():
 	return self.callstack
 
 # () -> int
-var depth setget , get_depth
+var depth :
+	get:
+		return depth # TODOConverter40 Copy here content of get_depth 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_depth():
 	return self.elements.size()
 
 # () -> InkElement
-var current_element setget , get_current_element
+var current_element :
+	get:
+		return current_element # TODOConverter40 Copy here content of get_current_element 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_current_element():
 	var thread = self._threads.back()
 	var cs = thread.callstack
 	return cs.back()
 
 # () -> int
-var current_element_index setget , get_current_element_index
+var current_element_index :
+	get:
+		return current_element_index # TODOConverter40 Copy here content of get_current_element_index 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_current_element_index():
 	return self.callstack.size() - 1
 
 # () -> InkThread
 # (InkThread) -> void
-var current_thread setget set_current_thread, get_current_thread
+var current_thread :
+	get:
+		return current_thread # TODOConverter40 Copy here content of get_current_thread
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_current_thread
 func get_current_thread():
 	return self._threads.back()
 
@@ -246,7 +270,11 @@ func set_current_thread(value):
 	self._threads.append(value)
 
 # () -> bool
-var can_pop setget , get_can_pop
+var can_pop :
+	get:
+		return can_pop # TODOConverter40 Copy here content of get_can_pop 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_can_pop():
 	return self.callstack.size() > 1
 
@@ -310,12 +338,20 @@ func pop_thread():
 		Utils.throw_exception("Can't pop thread")
 
 # () -> bool
-var can_pop_thread setget , get_can_pop_thread
+var can_pop_thread :
+	get:
+		return can_pop_thread # TODOConverter40 Copy here content of get_can_pop_thread 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_can_pop_thread():
 	return _threads.size() > 1 && !self.element_is_evaluate_from_game
 
 # () -> bool
-var element_is_evaluate_from_game setget , get_element_is_evaluate_from_game
+var element_is_evaluate_from_game :
+	get:
+		return element_is_evaluate_from_game # TODOConverter40 Copy here content of get_element_is_evaluate_from_game 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_element_is_evaluate_from_game():
 	return self.current_element.type == PushPopType.FUNCTION_EVALUATION_FROM_GAME
 
@@ -394,11 +430,19 @@ func thread_with_index(index):
 
 	return null
 
-var callstack setget , get_callstack
+var callstack :
+	get:
+		return callstack # TODOConverter40 Copy here content of get_callstack 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_callstack():
 	return self.current_thread.callstack
 
-var callstack_trace setget , get_callstack_trace
+var callstack_trace :
+	get:
+		return callstack_trace # TODOConverter40 Copy here content of get_callstack_trace 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_callstack_trace():
 	var sb = ""
 	var t = 0
@@ -435,7 +479,7 @@ var _start_of_root = InkPointer.null() # Pointer
 # ############################################################################ #
 
 func is_class(type):
-	return type == "CallStack" || .is_class(type)
+	return type == "CallStack" || super.is_class(type)
 
 func get_class():
 	return "CallStack"

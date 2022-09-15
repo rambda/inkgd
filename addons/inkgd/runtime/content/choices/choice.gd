@@ -22,7 +22,11 @@ var CallStack := load("res://addons/inkgd/runtime/callstack.gd") as GDScript
 
 var text: String
 
-var path_string_on_choice: String setget set_path_string_on_choice, get_path_string_on_choice
+var path_string_on_choice: String :
+	get:
+		return path_string_on_choice # TODOConverter40 Copy here content of get_path_string_on_choice
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_path_string_on_choice
 func get_path_string_on_choice() -> String:
 	return target_path._to_string()
 
@@ -49,7 +53,7 @@ var is_invisible_default: bool = false
 # ############################################################################ #
 
 func is_class(type):
-	return type == "Choice" || .is_class(type)
+	return type == "Choice" || super.is_class(type)
 
 func get_class():
 	return "Choice"

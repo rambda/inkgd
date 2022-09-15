@@ -47,7 +47,7 @@ func test_list_save_load():
 
 	assert_eq(story.continue_maximally(), "a, x, c\n")
 
-	var saved_state = story.state.to_json()
+	var saved_state = story.state.JSON.new().stringify()
 
 	story = Story.new(load_file("list_save_load"))
 

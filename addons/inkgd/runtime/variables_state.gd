@@ -54,7 +54,11 @@ func set_batch_observing_variable_changes(value: bool) -> void:
 
 var _batch_observing_variable_changes: bool = false
 
-var callstack: InkCallStack setget set_callstack, get_callstack
+var callstack: InkCallStack :
+	get:
+		return callstack # TODOConverter40 Copy here content of get_callstack
+	set(mod_value):
+		mod_value  # TODOConverter40 Copy here content of set_callstack
 func get_callstack() -> InkCallStack:
 		return _callstack
 
@@ -97,7 +101,7 @@ func set(variable_name: String, value) -> void:
 func enumerate() -> Array:
 	return _global_variables.keys()
 
-func _init(callstack: InkCallStack, list_defs_origin: InkListDefinitionsOrigin):
+func _init(callstack: InkCallStack,list_defs_origin: InkListDefinitionsOrigin):
 	find_static_objects()
 
 	_global_variables = {}
@@ -344,7 +348,7 @@ var _list_defs_origin: InkListDefinitionsOrigin
 # ############################################################################ #
 
 func is_class(type: String) -> bool:
-	return type == "VariableState" || .is_class(type)
+	return type == "VariableState" || super.is_class(type)
 
 func get_class() -> String:
 	return "VariableState"
@@ -353,11 +357,19 @@ func get_class() -> String:
 # Static Properties
 # ############################################################################ #
 
-var _json: InkStaticJSON setget , get_json
+var _json: InkStaticJSON :
+	get:
+		return _json # TODOConverter40 Copy here content of get_json 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_json():
 	return self._ink_runtime.json
 
-var _ink_runtime setget , get_ink_runtime
+var _ink_runtime :
+	get:
+		return _ink_runtime # TODOConverter40 Copy here content of get_ink_runtime 
+	set(mod_value):
+		mod_value  # TODOConverter40  Non existent set function
 func get_ink_runtime():
 	return _weak_ink_runtime.get_ref()
 var _weak_ink_runtime: WeakRef
