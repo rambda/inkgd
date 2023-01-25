@@ -24,68 +24,54 @@ var InkPointer := load("res://addons/inkgd/runtime/structs/pointer.gd") as GDScr
 
 var target_path: InkPath :
 	get:
-		return target_path # TODOConverter40 Copy here content of get_target_path
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_target_path
-func get_target_path() -> InkPath:
-	if self._target_path != null && self._target_path.is_relative:
-		var target_obj: InkObject = self.target_pointer.resolve()
-		if target_obj:
-			self._target_path = target_obj.path
+		if self._target_path != null && self._target_path.is_relative:
+			var target_obj: InkObject = self.target_pointer.resolve()
+			if target_obj:
+				self._target_path = target_obj.path
 
-	return self._target_path
-
-func set_target_path(value: InkPath):
-	self._target_path = value
-	self._target_pointer = InkPointer.null()
+		return self._target_path
+	set(value):
+		self._target_path = value
+		self._target_pointer = InkPointer.new_null()
 
 # InkPath
-var _target_path = null
+var _target_path: InkPath = null
 
-var target_pointer: InkPointer setget , get_target_pointer # InkPointer
-func get_target_pointer() -> InkPointer:
-	if self._target_pointer.is_null:
-		var target_obj = resolve_path(self._target_path).obj
+var target_pointer: InkPointer:
+	get:
+		if self._target_pointer.is_null:
+			var target_obj = resolve_path(self._target_path).obj
 
-		if self._target_path.last_component.is_index:
-			self._target_pointer = InkPointer.new(
-				Utils.as_or_null(target_obj.parent, "InkContainer"),
-				self._target_path.last_component.index
-			)
-		else:
-			self._target_pointer = InkPointer.start_of(Utils.as_or_null(target_obj, "InkContainer"))
+			if self._target_path.last_component.is_index:
+				self._target_pointer = InkPointer.new(
+					Utils.as_or_null(target_obj.parent, "InkContainer"),
+					self._target_path.last_component.index
+				)
+			else:
+				self._target_pointer = InkPointer.start_of(Utils.as_or_null(target_obj, "InkContainer"))
 
-	return self._target_pointer
+		return self._target_pointer
 
-var _target_pointer: InkPointer = InkPointer.null()
+var _target_pointer: InkPointer = InkPointer.new_null()
 
 # String?
 var target_path_string :
 	get:
-		return target_path_string # TODOConverter40 Copy here content of get_target_path_string
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_target_path_string
-func get_target_path_string():
-	if self.target_path == null:
-		return null
+		if self.target_path == null:
+			return null
 
-	return self.compact_path_string(self.target_path)
-
-func set_target_path_string(value):
-	if value == null:
-		self.target_path = null
-	else:
-		self.target_path = InkPath().new_with_components_string(value)
+		return self.compact_path_string(self.target_path)
+	set(value):
+		if value == null:
+			self.target_path = null
+		else:
+			self.target_path = InkPath.new_with_components_string(value)
 
 # String
 var variable_divert_name = null
 var has_variable_target: bool :
 	get:
-		return has_variable_target # TODOConverter40 Copy here content of get_has_variable_target 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_has_variable_target() -> bool:
-	return self.variable_divert_name != null
+		return self.variable_divert_name != null
 
 var pushes_to_stack: bool = false
 

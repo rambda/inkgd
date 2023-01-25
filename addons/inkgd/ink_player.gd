@@ -13,12 +13,12 @@ class_name InkPlayer
 # Imports
 # ############################################################################ #
 
-var ErrorType = preload("res://addons/inkgd/runtime/enums/error.gd").ErrorType
+const ErrorType = preload("res://addons/inkgd/runtime/enums/error.gd").ErrorType
 
-var InkRuntime = load("res://addons/inkgd/runtime.gd")
-var InkResource = load("res://addons/inkgd/editor/import_plugins/ink_resource.gd")
-var InkStory = load("res://addons/inkgd/runtime/story.gd")
-var InkFunctionResult = load("res://addons/inkgd/runtime/extra/function_result.gd")
+const InkRuntime = preload("res://addons/inkgd/runtime.gd")
+const InkResource = preload("res://addons/inkgd/editor/import_plugins/ink_resource.gd")
+const InkStory = preload("res://addons/inkgd/runtime/story.gd")
+const InkFunctionResult = preload("res://addons/inkgd/runtime/extra/function_result.gd")
 
 
 # ############################################################################ #
@@ -186,7 +186,7 @@ func get_seoer() -> bool:
 ## choosen and hasn't reached the end).
 var can_continue: bool :
 	get:
-		return can_continue # TODOConverter40 Copy here content of get_can_continue 
+		return can_continue # TODOConverter40 Copy here content of get_can_continue
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_can_continue() -> bool:
@@ -202,7 +202,7 @@ func get_can_continue() -> bool:
 ## you need to call it again in order for the continue to fully complete.
 var async_continue_complete: bool :
 	get:
-		return async_continue_complete # TODOConverter40 Copy here content of get_async_continue_complete 
+		return async_continue_complete # TODOConverter40 Copy here content of get_async_continue_complete
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_async_continue_complete() -> bool:
@@ -216,7 +216,7 @@ func get_async_continue_complete() -> bool:
 ## The content of the current line.
 var current_text: String :
 	get:
-		return current_text # TODOConverter40 Copy here content of get_current_text 
+		return current_text # TODOConverter40 Copy here content of get_current_text
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_text() -> String:
@@ -231,7 +231,7 @@ func get_current_text() -> String:
 ## The current choices. Empty is there are no choices for the current line.
 var current_choices: Array :
 	get:
-		return current_choices # TODOConverter40 Copy here content of get_current_choices 
+		return current_choices # TODOConverter40 Copy here content of get_current_choices
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_choices() -> Array:
@@ -249,7 +249,7 @@ func get_current_choices() -> Array:
 ## The current tags. Empty is there are no tags for the current line.
 var current_tags: Array :
 	get:
-		return current_tags # TODOConverter40 Copy here content of get_current_tags 
+		return current_tags # TODOConverter40 Copy here content of get_current_tags
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_tags() -> Array:
@@ -266,7 +266,7 @@ func get_current_tags() -> Array:
 ## The global tags for the _story. Empty if none have been declared.
 var global_tags: Array :
 	get:
-		return global_tags # TODOConverter40 Copy here content of get_global_tags 
+		return global_tags # TODOConverter40 Copy here content of get_global_tags
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_global_tags() -> Array:
@@ -283,7 +283,7 @@ func get_global_tags() -> Array:
 ## `true` if the _story currently has choices, `false` otherwise.
 var has_choices: bool :
 	get:
-		return has_choices # TODOConverter40 Copy here content of get_has_choices 
+		return has_choices # TODOConverter40 Copy here content of get_has_choices
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_has_choices() -> bool:
@@ -293,7 +293,7 @@ func get_has_choices() -> bool:
 ## The name of the current flow.
 var current_flow_name: String :
 	get:
-		return current_flow_name # TODOConverter40 Copy here content of get_current_flow_name 
+		return current_flow_name # TODOConverter40 Copy here content of get_current_flow_name
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_flow_name() -> String:
@@ -307,7 +307,7 @@ func get_current_flow_name() -> String:
 ## The current story path.
 var current_path: String :
 	get:
-		return current_path # TODOConverter40 Copy here content of get_current_path 
+		return current_path # TODOConverter40 Copy here content of get_current_path
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_path() -> String:
@@ -411,7 +411,7 @@ func continue_story() -> String:
 
 	var text: String = ""
 	if self.can_continue:
-		_story.continue()
+		_story.continue_story()
 
 		text = self.current_text
 
@@ -601,14 +601,13 @@ func save_state_to_path(path: String):
 	if !path.begins_with("res://") && !path.begins_with("user://"):
 		path = "user://%s" % path
 
-	var file = File.new()
-	file.open(path, File.WRITE)
+	var file := FileAccess.open(path, FileAccess.WRITE)
 	save_state_to_file(file)
 	file.close()
 
 
 ## Saves the current state to the file.
-func save_state_to_file(file: File):
+func save_state_to_file(file: FileAccess):
 	if _story == null:
 		_push_null_story_error()
 		return
@@ -627,14 +626,13 @@ func load_state_from_path(path: String):
 	if !path.begins_with("res://") && !path.begins_with("user://"):
 		path = "user://%s" % path
 
-	var file = File.new()
-	file.open(path, File.READ)
+	var file := FileAccess.open(path, FileAccess.READ)
 	load_state_from_file(file)
 	file.close()
 
 
 ## Loads the state from the given file.
-func load_state_from_file(file: File):
+func load_state_from_file(file: FileAccess):
 	if _story == null:
 		_push_null_story_error()
 		return
@@ -895,7 +893,7 @@ func _push_null_story_error() -> void:
 
 
 func _push_story_error(message: String, type: int) -> void:
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		match type:
 			ErrorType.ERROR:
 				printerr(message)
@@ -909,7 +907,7 @@ func _push_story_error(message: String, type: int) -> void:
 				push_warning(message)
 
 func _push_error(message: String):
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		printerr(message)
 
 		var i = 1

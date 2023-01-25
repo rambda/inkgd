@@ -34,39 +34,31 @@ signal variable_changed(variable_name, new_value)
 
 var patch: InkStatePatch # StatePatch
 
-var batch_observing_variable_changes: bool setget \
-		set_batch_observing_variable_changes, \
-		get_batch_observing_variable_changes
-func get_batch_observing_variable_changes() -> bool:
-	return _batch_observing_variable_changes
+var batch_observing_variable_changes: bool:
+	get:
+		return _batch_observing_variable_changes
+	set(value):
+		_batch_observing_variable_changes = value
+		if value:
+			_changed_variables_for_batch_obs = InkStringSet.new()
+		else:
+			if _changed_variables_for_batch_obs != null:
+				for variable_name in _changed_variables_for_batch_obs.enumerate():
+					var current_value = _global_variables[variable_name]
+					emit_signal("variable_changed", variable_name, current_value)
 
-func set_batch_observing_variable_changes(value: bool) -> void:
-	_batch_observing_variable_changes = value
-	if value:
-		_changed_variables_for_batch_obs = InkStringSet.new()
-	else:
-		if _changed_variables_for_batch_obs != null:
-			for variable_name in _changed_variables_for_batch_obs.enumerate():
-				var current_value = _global_variables[variable_name]
-				emit_signal("variable_changed", variable_name, current_value)
-
-		_changed_variables_for_batch_obs = null
+			_changed_variables_for_batch_obs = null
 
 var _batch_observing_variable_changes: bool = false
 
-var callstack: InkCallStack :
+var callstack: InkCallStack:
 	get:
-		return callstack # TODOConverter40 Copy here content of get_callstack
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_callstack
-func get_callstack() -> InkCallStack:
 		return _callstack
-
-func set_callstack(value: InkCallStack):
+	set(value):
 		_callstack = value
 
 # (String) -> Variant
-func get(variable_name: String):
+func get(variable_name: StringName):
 	if self.patch != null:
 		var global: InkTryGetResult = patch.try_get_global(variable_name)
 		if global.exists:
@@ -80,7 +72,7 @@ func get(variable_name: String):
 		return null
 
 # (String, Variant) -> void
-func set(variable_name: String, value) -> void:
+func set(variable_name: StringName, value) -> void:
 	if !_default_global_variables.has(variable_name):
 		Utils.throw_story_exception(
 				"Cannot assign to a variable (%s) that hasn't been declared in the story" \
@@ -298,7 +290,7 @@ func set_global(variable_name: String, value: InkObject) -> void:
 		self._global_variables[variable_name] = value
 
 	if !value.equals(old_value):
-		if _batch_observing_variable_changes:
+		if batch_observing_variable_changes:
 			if patch != null:
 				patch.add_changed_variable(variable_name)
 			elif self._changed_variables_for_batch_obs != null:
@@ -359,19 +351,11 @@ func get_class() -> String:
 
 var _json: InkStaticJSON :
 	get:
-		return _json # TODOConverter40 Copy here content of get_json 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_json():
-	return self._ink_runtime.json
+		return self._ink_runtime.json
 
 var _ink_runtime :
 	get:
-		return _ink_runtime # TODOConverter40 Copy here content of get_ink_runtime 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_ink_runtime():
-	return _weak_ink_runtime.get_ref()
+		_weak_ink_runtime.get_ref()
 var _weak_ink_runtime: WeakRef
 
 func find_static_objects():

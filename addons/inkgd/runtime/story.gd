@@ -21,53 +21,53 @@ const INK_VERSION_MINIMUM_COMPATIBLE := 18
 # Imports
 # ############################################################################ #
 
-var PushPopType = preload("res://addons/inkgd/runtime/enums/push_pop.gd").PushPopType
-var ErrorType = preload("res://addons/inkgd/runtime/enums/error.gd").ErrorType
+const PushPopType = preload("res://addons/inkgd/runtime/enums/push_pop.gd").PushPopType
+const ErrorType = preload("res://addons/inkgd/runtime/enums/error.gd").ErrorType
 
-var InkStopWatch := preload("res://addons/inkgd/runtime/extra/stopwatch.gd") as GDScript
-var InkProfiler := preload("res://addons/inkgd/runtime/profiler.gd") as GDScript
+const InkStopWatch := preload("res://addons/inkgd/runtime/extra/stopwatch.gd")
+const InkProfiler := preload("res://addons/inkgd/runtime/profiler.gd")
 
-var InkSimpleJSON := preload("res://addons/inkgd/runtime/simple_json.gd") as GDScript
-var InkStringSet := preload("res://addons/inkgd/runtime/extra/string_set.gd") as GDScript
-var InkListItem := preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd") as GDScript
-var InkListDefinitionsOrigin := preload("res://addons/inkgd/runtime/lists/list_definitions_origin.gd") as GDScript
+const InkSimpleJSON := preload("res://addons/inkgd/runtime/simple_json.gd")
+const InkStringSet := preload("res://addons/inkgd/runtime/extra/string_set.gd")
+const InkListItem := preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
+const InkListDefinitionsOrigin := preload("res://addons/inkgd/runtime/lists/list_definitions_origin.gd")
 
-var InkPointer := preload("res://addons/inkgd/runtime/structs/pointer.gd") as GDScript
-var InkControlCommand := preload("res://addons/inkgd/runtime/content/control_command.gd") as GDScript
+const InkPointer := preload("res://addons/inkgd/runtime/structs/pointer.gd")
+const InkControlCommand := preload("res://addons/inkgd/runtime/content/control_command.gd")
 
-var InkVoid := preload("res://addons/inkgd/runtime/content/void.gd") as GDScript
-var StoryErrorMetadata := preload("res://addons/inkgd/runtime/extra/story_error_metadata.gd") as GDScript
-
-# ############################################################################ #
-
-var InkValue := load("res://addons/inkgd/runtime/values/value.gd") as GDScript
-var InkIntValue := load("res://addons/inkgd/runtime/values/int_value.gd") as GDScript
-var InkStringValue := load("res://addons/inkgd/runtime/values/string_value.gd") as GDScript
-var InkVariablePointerValue := load("res://addons/inkgd/runtime/values/variable_pointer_value.gd") as GDScript
-var InkListValue := load("res://addons/inkgd/runtime/values/list_value.gd") as GDScript
-
-var InkList := load("res://addons/inkgd/runtime/lists/ink_list.gd") as GDScript
-var InkChoice := load("res://addons/inkgd/runtime/content/choices/choice.gd") as GDScript
-
-var InkStoryState := load("res://addons/inkgd/runtime/story_state.gd") as GDScript
+const InkVoid := preload("res://addons/inkgd/runtime/content/void.gd")
+const StoryErrorMetadata := preload("res://addons/inkgd/runtime/extra/story_error_metadata.gd")
 
 # ############################################################################ #
 
-var current_choices: Array setget , get_current_choices # Array<Choice>
-func get_current_choices() -> Array:
-	var choices: Array = [] # Array<Choice>
+const InkValue := preload("res://addons/inkgd/runtime/values/value.gd")
+const InkIntValue := preload("res://addons/inkgd/runtime/values/int_value.gd")
+const InkStringValue := preload("res://addons/inkgd/runtime/values/string_value.gd")
+const InkVariablePointerValue := preload("res://addons/inkgd/runtime/values/variable_pointer_value.gd")
+const InkListValue := preload("res://addons/inkgd/runtime/values/list_value.gd")
 
-	for c in self._state.current_choices:
-		if !c.is_invisible_default:
-			c.index = choices.size()
-			choices.append(c)
+const InkList := preload("res://addons/inkgd/runtime/lists/ink_list.gd")
+const InkChoice := preload("res://addons/inkgd/runtime/content/choices/choice.gd")
 
-	return choices
+const InkStoryState := preload("res://addons/inkgd/runtime/story_state.gd")
+
+# ############################################################################ #
+
+var current_choices: Array: # Array<Choice>
+	get:
+		var choices: Array = [] # Array<Choice>
+
+		for c in self._state.current_choices:
+			if !c.is_invisible_default:
+				c.index = choices.size()
+				choices.append(c)
+
+		return choices
 
 # String?
 var current_text :
 	get:
-		return current_text # TODOConverter40 Copy here content of get_current_text 
+		return current_text # TODOConverter40 Copy here content of get_current_text
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_text():
@@ -77,38 +77,37 @@ func get_current_text():
 	return self.state.current_text
 
 # Array?
-var current_tags setget , get_current_tags # Array<String>
-func get_current_tags():
-	if async_we_cant("call currentTags since it's a work in progress"):
-		return null
+var current_tags: # Array<String>
+	get:
+		if async_we_cant("call currentTags since it's a work in progress"):
+			return null
 
-	return self.state.current_tags
+		return self.state.current_tags
 
-var current_errors setget , get_current_errors # Array<String>
-func get_current_errors(): return self.state.current_errors
+var current_errors: # Array<String>
+	get: return self.state.current_errors
 
-var current_warnings setget , get_current_warnings # Array<String>
-func get_current_warnings(): return self.state.current_warnings
+var current_warnings: # Array<String>
+	get: return self.state.current_warnings
 
-var current_flow_name setget , get_current_flow_name # String
-func get_current_flow_name(): return self.state.current_flow_name
+var current_flow_name: # String
+	get: return self.state.current_flow_name
 
-var has_error setget , get_has_error # bool
-func get_has_error(): return self.state.has_error
+var has_error: # bool
+	get: return self.state.has_error
 
-var has_warning setget , get_has_warning # bool
-func get_has_warning(): return self.state.has_warning
+var has_warning: # bool
+	get: return self.state.has_warning
 
-var variables_state setget , get_variables_state # VariablesState
-func get_variables_state(): return self.state.variables_state
+var variables_state: # VariablesState
+	get: return self.state.variables_state
 
-var list_definitions setget , get_list_definitions # ListDefinitionsOrigin
-func get_list_definitions():
-	return self._list_definitions
+var list_definitions: # ListDefinitionsOrigin
+	get: self._list_definitions
 
-var state: InkStoryState setget , get_state # StoryState
-func get_state():
-	return self._state
+var state: InkStoryState: # StoryState
+	get:
+		return self._state
 
 signal on_error(message, type)
 
@@ -197,7 +196,7 @@ func _init(json_string: String):
 
 
 # () -> String
-func JSON.new().stringify() -> String:
+func to_json() -> String:
 	var writer: InkSimpleJSON.Writer = InkSimpleJSON.Writer.new()
 	to_json_with_writer(writer)
 	return writer._to_string()
@@ -212,7 +211,7 @@ func to_json_with_writer(writer: InkSimpleJSON.Writer) -> void:
 
 	writer.write_property("inkVersion", INK_VERSION_CURRENT)
 
-	writer.write_property("root", funcref(self, "write_root_property"))
+	writer.write_property("root", self.write_root_property)
 
 	if self._list_definitions != null:
 		writer.write_property_start("listDefs")
@@ -265,7 +264,7 @@ func reset_globals() -> void:
 	if (self._main_content_container.named_content.has("global decl")):
 		var original_pointer = self.state.current_pointer
 
-		self.choose_path(InkPath().new_with_components_string("global decl"), false)
+		self.choose_path(InkPath.new_with_components_string("global decl"), false)
 
 		self.continue_internal()
 
@@ -292,27 +291,19 @@ func switch_to_default_flow() -> void:
 	self.state.switch_to_default_flow_internal()
 
 
-func continue() -> String:
+func continue_story() -> String:
 	self.continue_async(0)
 	return self.current_text
 
 
 var can_continue: bool :
 	get:
-		return can_continue # TODOConverter40 Copy here content of get_continue 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_continue() -> bool:
-	return self.state.can_continue
+		return self.state.can_continue
 
 
 var async_continue_complete: bool :
 	get:
-		return async_continue_complete # TODOConverter40 Copy here content of get_async_continue_complete 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_async_continue_complete() -> bool:
-	return !self._async_continue_active
+		return !self._async_continue_active
 
 
 func continue_async(millisecs_limit_async: float):
@@ -526,7 +517,7 @@ func continue_maximally() -> String:
 	var _str = ""
 
 	while (self.can_continue):
-		_str += self.continue()
+		_str += self.continue_story()
 
 	return _str
 
@@ -544,7 +535,7 @@ func knot_container_with_name(name: String) -> InkContainer:
 
 func pointer_at_path(path: InkPath) -> InkPointer:
 	if (path.length == 0):
-		return InkPointer.null()
+		return InkPointer.new_null()
 
 	var p = InkPointer.new()
 
@@ -774,8 +765,8 @@ func is_truthy(obj: InkObject) -> bool:
 		if Utils.is_ink_class(obj, "DivertTargetValue"):
 			var div_target = val
 			error(str("Shouldn't use a divert target (to ", div_target.target_path._to_string(),
-					  ") as a conditional value. Did you intend a function call 'likeThis()'",
-					  " or a read count check 'likeThis'? (no arrows)"))
+					") as a conditional value. Did you intend a function call 'likeThis()'",
+					" or a read count check 'likeThis'? (no arrows)"))
 			return false
 
 		return val.is_truthy
@@ -802,7 +793,7 @@ func perform_logic_and_flow_control(content_obj: InkObject) -> bool:
 
 			if var_contents == null:
 				error(str("Tried to divert using a target from a variable that could not be found (",
-						  var_name, ")"))
+						var_name, ")"))
 				return false
 			elif !Utils.is_ink_class(var_contents, "DivertTargetValue"):
 				var int_content = Utils.as_or_null(var_contents, "IntValue")
@@ -967,7 +958,7 @@ func perform_logic_and_flow_control(content_obj: InkObject) -> bool:
 					if Utils.is_ink_class(target, "IntValue"):
 						extra_note = ". Did you accidentally pass a read count ('knot_name') instead of a target ('-> knot_name')?"
 					error(str("TURNS_SINCE expected a divert target (knot, stitch, label name), but saw ",
-							  target, extra_note))
+							target, extra_note))
 					return false
 
 				var divert_target = Utils.as_or_null(target, "DivertTargetValue")
@@ -1011,7 +1002,7 @@ func perform_logic_and_flow_control(content_obj: InkObject) -> bool:
 					random_range = max_int.value - min_int.value + 1
 				if random_range <= 0:
 					error(str("RANDOM was called with minimum as ", min_int.value,
-							  " and maximum as ", max_int.value, ". The maximum must be larger"))
+							" and maximum as ", max_int.value, ". The maximum must be larger"))
 					return false
 
 				var result_seed = self.state.story_seed + self.state.previous_random
@@ -1050,7 +1041,7 @@ func perform_logic_and_flow_control(content_obj: InkObject) -> bool:
 					self.state.callstack.pop_thread()
 				else:
 					self.state.did_safe_exit = true
-					self.state.current_pointer = InkPointer.null()
+					self.state.current_pointer = InkPointer.new_null()
 
 			InkControlCommand.CommandType.END:
 				self.state.force_end()
@@ -1195,8 +1186,8 @@ func choose_path_string(path, reset_callstack = true, arguments = null):
 				func_detail = "(" + container.path._to_string() + ") "
 
 			Utils.throw_exception(
-					"Story was running a function %s" % func_detail,
-					"when you called ChoosePathString(%s) " % path,
+					"Story was running a function %s" % func_detail +\
+					"when you called ChoosePathString(%s) " % path + \
 					"- this is almost certainly not not what you want! Full stack trace: \n" +
 					self.state.callstack.callstack_trace
 			)
@@ -1204,7 +1195,7 @@ func choose_path_string(path, reset_callstack = true, arguments = null):
 			return
 
 	self.state.pass_arguments_to_evaluation_stack(arguments)
-	self.choose_path(InkPath().new_with_components_string(path))
+	self.choose_path(InkPath.new_with_components_string(path))
 
 
 func async_we_cant(activity_str):
@@ -1280,7 +1271,7 @@ func evaluate_function(
 
 	var string_output = ""
 	while self.can_continue:
-		string_output += self.continue()
+		string_output += self.continue_story()
 
 	var text_output = string_output
 
@@ -1307,7 +1298,7 @@ func evaluate_expression(expr_container: InkContainer) -> InkObject:
 
 	var eval_stack_height = self.state.evaluation_stack.size()
 
-	self.continue()
+	self.continue_story()
 
 	_temporary_evaluation_container = null
 
@@ -1445,7 +1436,7 @@ func validate_external_bindings() -> void:
 	else:
 		var message: String = "ERROR: Missing function binding for external %s: '%s' %s" % [
 			"s" if missing_externals.size() > 1 else "",
-			"', '", missing_externals.to_array(.join(Utils)),
+			Utils.join("', '", missing_externals.to_array()),
 			", and no fallback ink function found." if allow_external_function_fallbacks else " (ink fallbacks disabled)"
 		]
 
@@ -1542,7 +1533,7 @@ func remove_variable_observer(object = null, method_name = null, specific_variab
 			else:
 				var connections = observer.get_signal_connection_list("variable_changed");
 				for connection in connections:
-					observer.disconnect(connection.signal,Callable(connection.target,connection.method))
+					connection["signal"].disconnect(connection.callable)
 
 				_variable_observers.erase(specific_variable_name)
 
@@ -1576,17 +1567,17 @@ func variable_state_did_change_event(variable_name: String, new_value_obj: InkOb
 		observer.emit_signal("variable_changed", variable_name, val.value_object)
 
 
-var global_tags setget , get_global_tags # Array<String>
-func get_global_tags():
-	return self.tags_at_start_of_flow_container_with_path_string("")
+var global_tags: Array[String]:
+	get:
+		return self.tags_at_start_of_flow_container_with_path_string("")
 
 # (String) -> Array<String>?
-func tags_for_content_at_path(path: String):
+func tags_for_content_at_path(path: String) -> Array[String]:
 	return self.tags_at_start_of_flow_container_with_path_string(path)
 
 # (String) -> Array<String>?
-func tags_at_start_of_flow_container_with_path_string(path_string: String):
-	var path = InkPath().new_with_components_string(path_string)
+func tags_at_start_of_flow_container_with_path_string(path_string: String) -> Array[String]:
+	var path = InkPath.new_with_components_string(path_string)
 
 	var flow_container = content_at_path(path).container
 	while (true):
@@ -1623,7 +1614,7 @@ func next_content() -> void:
 	if !self.state.diverted_pointer.is_null:
 
 		self.state.current_pointer = self.state.diverted_pointer
-		self.state.diverted_pointer = InkPointer.null()
+		self.state.diverted_pointer = InkPointer.new_null()
 
 		self.visit_changed_containers_due_to_divert()
 
@@ -1676,7 +1667,7 @@ func increment_content_pointer() -> bool:
 
 		successful_increment = true
 
-	if !successful_increment: pointer = InkPointer.null()
+	if !successful_increment: pointer = InkPointer.new_null()
 
 	var current_element = self.state.callstack.current_element
 	current_element.current_pointer = pointer
@@ -1808,43 +1799,39 @@ func __assert__(condition: bool, message = null, format_params = null) -> void:
 
 var current_debug_metadata: InkDebugMetadata :
 	get:
-		return current_debug_metadata # TODOConverter40 Copy here content of get_current_debug_metadata 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_debug_metadata() -> InkDebugMetadata:
-	var dm # DebugMetadata
+		var dm # DebugMetadata
 
-	var pointer = self.state.current_pointer
-	if !pointer.is_null:
-		dm = pointer.resolve().debug_metadata
-		if dm != null:
-			return dm
-
-	var i = self.state.callstack.elements.size() - 1
-	while (i >= 0):
-		pointer = self.state.callstack.elements[i].current_pointer
-		if !pointer.is_null && pointer.resolve() != null:
+		var pointer = self.state.current_pointer
+		if !pointer.is_null:
 			dm = pointer.resolve().debug_metadata
 			if dm != null:
 				return dm
 
-		i -= 1
+		var i = self.state.callstack.elements.size() - 1
+		while (i >= 0):
+			pointer = self.state.callstack.elements[i].current_pointer
+			if !pointer.is_null && pointer.resolve() != null:
+				dm = pointer.resolve().debug_metadata
+				if dm != null:
+					return dm
 
-	i = self.state.output_stream.size() - 1
-	while(i >= 0):
-		var output_obj = self.state.output_stream[i]
-		dm = output_obj.debug_metadata
-		if dm != null:
-			return dm
+			i -= 1
 
-		i -= 1
+		i = self.state.output_stream.size() - 1
+		while(i >= 0):
+			var output_obj = self.state.output_stream[i]
+			dm = output_obj.debug_metadata
+			if dm != null:
+				return dm
 
-	return null
+			i -= 1
+
+		return null
 
 
 var current_line_number: int :
 	get:
-		return current_line_number # TODOConverter40 Copy here content of get_current_line_number 
+		return current_line_number # TODOConverter40 Copy here content of get_current_line_number
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_line_number() -> int:
@@ -1858,7 +1845,7 @@ func get_current_line_number() -> int:
 # InkContainer?
 var main_content_container :
 	get:
-		return main_content_container # TODOConverter40 Copy here content of get_main_content_container 
+		return main_content_container # TODOConverter40 Copy here content of get_main_content_container
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_main_content_container():
@@ -1943,7 +1930,7 @@ func _add_error_with_metadata(
 	is_warning: bool = false,
 	use_end_line_number: bool = false,
 	dm = null,
-	current_pointer = InkPointer.null()
+	current_pointer = InkPointer.new_null()
 ) -> void:
 	var error_type_str = "WARNING" if is_warning else "ERROR"
 
@@ -1977,7 +1964,7 @@ func _make_story_error_metadata():
 
 var Json :
 	get:
-		return Json # TODOConverter40 Copy here content of get_Json 
+		return Json # TODOConverter40 Copy here content of get_Json
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_Json():

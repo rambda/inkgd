@@ -13,13 +13,6 @@ extends RefCounted
 class_name InkKeyValuePair
 
 # ############################################################################ #
-# Self-reference
-# ############################################################################ #
-
-static func InkKeyValuePair() -> GDScript:
-	return load("res://addons/inkgd/runtime/extra/key_value_pair.gd") as GDScript
-
-# ############################################################################ #
 
 var key = null
 var value = null
@@ -39,7 +32,7 @@ func _to_string():
 # ############################################################################ #
 
 static func new_with_key_value(key, value) -> InkKeyValuePair:
-	var key_value_pair = InkKeyValuePair().new()
+	var key_value_pair = InkKeyValuePair.new()
 	key_value_pair._init_with_key_value(key, value)
 
 	return key_value_pair

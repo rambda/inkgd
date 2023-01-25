@@ -24,14 +24,9 @@ var text: String
 
 var path_string_on_choice: String :
 	get:
-		return path_string_on_choice # TODOConverter40 Copy here content of get_path_string_on_choice
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_path_string_on_choice
-func get_path_string_on_choice() -> String:
-	return target_path._to_string()
-
-func set_path_string_on_choice(value: String):
-	target_path = InkPath().new_with_components_string(value)
+		return target_path._to_string()
+	set(value):
+		target_path = InkPath.new_with_components_string(value)
 
 # String?
 var source_path = null

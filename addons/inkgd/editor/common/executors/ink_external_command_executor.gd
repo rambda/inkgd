@@ -15,11 +15,7 @@ class_name InkExternalCommandExecutor
 ## The identifier of this compiler.
 var identifier: int :
 	get:
-		return identifier # TODOConverter40 Copy here content of get_identifier 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_identifier() -> int:
-	return get_instance_id()
+		return get_instance_id()
 
 # ############################################################################ #
 # Constants

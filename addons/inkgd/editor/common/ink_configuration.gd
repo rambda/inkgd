@@ -67,13 +67,9 @@ var mono_path: String = ""
 var inklecate_path: String = ""
 
 var compilation_mode: int = BuildMode.MANUAL :
-	get:
-		return compilation_mode # TODOConverter40 Non existent get function 
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_compilation_mode
-func set_compilation_mode(new_value: int):
-	compilation_mode = new_value
-	emit_signal("compilation_mode_changed", compilation_mode)
+	set(new_value):
+		compilation_mode = new_value
+		emit_signal("compilation_mode_changed", compilation_mode)
 
 var stories: Array = DEFAULT_STORIES
 

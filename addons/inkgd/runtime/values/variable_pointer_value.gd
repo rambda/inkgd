@@ -17,13 +17,10 @@ class_name InkVariablePointerValue
 
 var variable_name :
 	get:
-		return variable_name # TODOConverter40 Copy here content of get_variable_name
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_variable_name # InkPath
-func get_variable_name():
-	return value
-func set_variable_name(value):
-	self.value = value
+		return value
+	set(value):
+		self.value = value
+
 
 func get_value_type():
 	return ValueType.VARIABLE_POINTER
@@ -55,7 +52,7 @@ func _to_string() -> String:
 	return "VariablePointerValue(" + self.variable_name + ")"
 
 func copy():
-	return VariablePointerValue().new_with_context(self.variable_name, context_index)
+	return InkVariablePointerValue.new_with_context(self.variable_name, context_index)
 
 # ######################################################################## #
 # GDScript extra methods
@@ -68,6 +65,6 @@ func get_class():
 	return "VariablePointerValue"
 
 static func new_with_context(variable_name, context_index = -1):
-	var value = VariablePointerValue().new()
+	var value = InkVariablePointerValue.new()
 	value._init_with_context(variable_name, context_index)
 	return value

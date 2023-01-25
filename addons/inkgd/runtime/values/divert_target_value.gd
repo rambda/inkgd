@@ -17,13 +17,10 @@ class_name InkDivertTargetValue
 
 var target_path :
 	get:
-		return target_path # TODOConverter40 Copy here content of get_target_path
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_target_path # InkPath
-func get_target_path():
-	return value
-func set_target_path(value):
-	self.value = value
+		return value
+	set(value):
+		self.value = value
+
 
 func get_value_type():
 	return ValueType.DIVERT_TARGET
@@ -59,6 +56,6 @@ func get_class():
 	return "DivertTargetValue"
 
 static func new_with(val):
-	var value = DivertTargetValue().new()
+	var value = InkDivertTargetValue.new()
 	value._init_with(val)
 	return value

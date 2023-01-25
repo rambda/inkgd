@@ -33,33 +33,23 @@ static func InkNativeFunctionCall() -> GDScript:
 static func call_with_name(function_name) -> InkNativeFunctionCall:
 	return InkNativeFunctionCall().new_with_name(function_name)
 
-var name: String :
+var name: String:
 	get:
-		return name # TODOConverter40 Copy here content of get_name
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_name
-func get_name() -> String:
-	return _name
+		return _name
+	set(value):
+		_name = value
+		if !_is_prototype:
+			_prototype = self._static_native_function_call.native_functions[_name]
+var _name: String
 
-func set_name(value: String):
-	_name = value
-	if !_is_prototype:
-		_prototype = self._static_native_function_call.native_functions[_name]
-var _name
-
-var number_of_parameters: int :
+var number_of_parameters: int:
 	get:
-		return number_of_parameters # TODOConverter40 Copy here content of get_number_of_parameters
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_number_of_parameters
-func get_number_of_parameters() -> int:
-	if _prototype:
-		return _prototype.number_of_parameters
-	else:
-		return _number_of_parameters
-
-func set_number_of_parameters(value: int):
-	_number_of_parameters = value
+		if _prototype:
+			return _prototype.number_of_parameters
+		else:
+			return _number_of_parameters
+	set(value):
+		_number_of_parameters = value
 
 var _number_of_parameters = 0
 
@@ -70,7 +60,7 @@ var _number_of_parameters = 0
 # The method takes a `StoryErrorMetadata` object as a parameter that
 # doesn't exist in upstream. The metadat are used in case an 'exception'
 # is raised. For more information, see story.gd.
-func call_with_parameters(parameters: Array, metadata: StoryErrorMetadata) -> InkObject:
+func call_with_parameters(parameters: Array[InkObject], metadata: StoryErrorMetadata) -> InkObject:
 	if _prototype:
 		return _prototype.call_with_parameters(parameters, metadata)
 
@@ -328,10 +318,9 @@ func is_class(type):
 func get_class():
 	return "NativeFunctionCall"
 
-var _static_native_function_call: InkStaticNativeFunctionCall setget \
-		 , get_static_native_function_call
-func get_static_native_function_call():
-	return _weak_static_native_function_call.get_ref()
+var _static_native_function_call: InkStaticNativeFunctionCall:
+	get:
+		return _weak_static_native_function_call.get_ref()
 var _weak_static_native_function_call = WeakRef.new()
 
 func find_static_objects():

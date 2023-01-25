@@ -37,13 +37,6 @@ var InkVariablesState = load("res://addons/inkgd/runtime/variables_state.gd")
 var InkFlow = load("res://addons/inkgd/runtime/flow.gd")
 
 # ############################################################################ #
-# Self-reference
-# ############################################################################ #
-
-static func InkStoryState() -> GDScript:
-	return load("res://addons/inkgd/runtime/story_state.gd") as GDScript
-
-# ############################################################################ #
 
 const INK_SAVE_STATE_VERSION: int = 9
 const MIN_COMPATIBLE_LOAD_VERSION: int = 8
@@ -54,7 +47,7 @@ signal on_did_load_state()
 
 # ############################################################################ #
 
-func JSON.new().stringify() -> String:
+func to_json() -> String:
 	var writer: InkSimpleJSON.Writer = InkSimpleJSON.Writer.new()
 	write_json(writer)
 	return writer._to_string()
@@ -148,21 +141,25 @@ func turns_since_for_container(container: InkContainer) -> int:
 	else:
 		return -1
 
-var callstack_depth: int setget , get_callstack_depth # int
+var callstack_depth: int:
+	get = get_callstack_depth # int
 func get_callstack_depth() -> int:
 	return self.callstack.depth
 
-var output_stream: Array setget , get_output_stream # Array<InkObject>
+var output_stream: Array:
+	get = get_output_stream # Array<InkObject>
 func get_output_stream() -> Array:
 	return self._current_flow.output_stream
 
-var current_choices: Array setget , get_current_choices # Array<Choice>
+var current_choices: Array:
+	get = get_current_choices # Array<Choice>
 func get_current_choices() -> Array:
 	if self.can_continue:
 		return []
 	return self._current_flow.current_choices
 
-var generated_choices: Array setget , get_generated_choices # Array<Choice>
+var generated_choices: Array:
+	get = get_generated_choices # Array<Choice>
 func get_generated_choices() -> Array:
 	return self._current_flow.current_choices
 
@@ -175,9 +172,9 @@ var current_warnings = null
 # InkVariablesState
 var variables_state
 
-var callstack: InkCallStack :
+var callstack: InkCallStack:
 	get:
-		return callstack # TODOConverter40 Copy here content of get_callstack 
+		return callstack # TODOConverter40 Copy here content of get_callstack
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_callstack() -> InkCallStack:
@@ -187,7 +184,7 @@ func get_callstack() -> InkCallStack:
 var evaluation_stack: Array
 
 # Pointer
-var diverted_pointer: InkPointer = InkPointer.null()
+var diverted_pointer: InkPointer = InkPointer.new_null()
 
 var current_turn_index: int = 0
 var story_seed: int = 0
@@ -196,7 +193,7 @@ var did_safe_exit: bool = false
 
 var story :
 	get:
-		return story # TODOConverter40 Copy here content of get_story 
+		return story # TODOConverter40 Copy here content of get_story
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_story():
@@ -206,7 +203,7 @@ var _story = WeakRef.new()
 # String?
 var current_path_string :
 	get:
-		return current_path_string # TODOConverter40 Copy here content of get_current_path_string 
+		return current_path_string # TODOConverter40 Copy here content of get_current_path_string
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_path_string():
@@ -243,7 +240,7 @@ func set_previous_pointer(value: InkPointer):
 
 var can_continue: bool :
 	get:
-		return can_continue # TODOConverter40 Copy here content of get_can_continue 
+		return can_continue # TODOConverter40 Copy here content of get_can_continue
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_can_continue() -> bool:
@@ -251,7 +248,7 @@ func get_can_continue() -> bool:
 
 var has_error: bool :
 	get:
-		return has_error # TODOConverter40 Copy here content of get_has_error 
+		return has_error # TODOConverter40 Copy here content of get_has_error
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_has_error() -> bool:
@@ -259,7 +256,7 @@ func get_has_error() -> bool:
 
 var has_warning: bool :
 	get:
-		return has_warning # TODOConverter40 Copy here content of get_has_warning 
+		return has_warning # TODOConverter40 Copy here content of get_has_warning
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_has_warning() -> bool:
@@ -267,7 +264,7 @@ func get_has_warning() -> bool:
 
 var current_text: String :
 	get:
-		return current_text # TODOConverter40 Copy here content of get_current_text 
+		return current_text # TODOConverter40 Copy here content of get_current_text
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_text():
@@ -322,7 +319,7 @@ func clean_output_whitespace(str_to_clean: String) -> String:
 # Array<String>
 var current_tags: Array :
 	get:
-		return current_tags # TODOConverter40 Copy here content of get_current_tags 
+		return current_tags # TODOConverter40 Copy here content of get_current_tags
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_tags():
@@ -343,15 +340,15 @@ var _current_tags: Array = []
 
 var current_flow_name: String :
 	get:
-		return current_flow_name # TODOConverter40 Copy here content of get_current_flow_name 
+		return current_flow_name # TODOConverter40 Copy here content of get_current_flow_name
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_flow_name() -> String:
 	return self._current_flow.name
 
-var in_expression_evaluation: bool setget \
-		set_in_expression_evaluation, \
-		get_in_expression_evaluation
+var in_expression_evaluation: bool:
+	set = set_in_expression_evaluation,
+	get = get_in_expression_evaluation
 func get_in_expression_evaluation() -> bool:
 	return self.callstack.current_element.in_expression_evaluation
 func set_in_expression_evaluation(value: bool):
@@ -434,7 +431,7 @@ func remove_flow_internal(flow_name: String) -> void:
 
 # () -> InkStoryState
 func copy_and_start_patching():
-	var copy = InkStoryState().new(self.story)
+	var copy = InkStoryState.new(self.story)
 
 	copy._patch = InkStatePatch.new(self._patch)
 
@@ -515,22 +512,22 @@ func write_json(writer: InkSimpleJSON.Writer) -> void:
 	if self._named_flows != null:
 		for named_flow_key in self._named_flows.keys():
 			var named_flow_value = self._named_flows[named_flow_key]
-			writer.write_property(named_flow_key, funcref(named_flow_value, "write_json"))
+			writer.write_property(named_flow_key, named_flow_value.write_json)
 	else:
-		writer.write_property(self._current_flow.name, funcref(self._current_flow, "write_json"))
+		writer.write_property(self._current_flow.name, self._current_flow.write_json)
 
 	writer.write_object_end()
 	writer.write_property_end()
 
 	writer.write_property("currentFlowName", self._current_flow.name)
-	writer.write_property("variablesState", funcref(self.variables_state, "write_json"))
-	writer.write_property("evalStack", funcref(self, "_anonymous_write_property_eval_stack"))
+	writer.write_property("variablesState", self.variables_state.write_json)
+	writer.write_property("evalStack", self._anonymous_write_property_eval_stack)
 
 	if !self.diverted_pointer.is_null:
 		writer.write_property("currentDivertTarget", self.diverted_pointer.path.components_string)
 
-	writer.write_property("visitCounts", funcref(self, "_anonymous_write_property_visit_counts"))
-	writer.write_property("turnIndices", funcref(self, "_anonymous_write_property_turn_indices"))
+	writer.write_property("visitCounts", self._anonymous_write_property_visit_counts)
+	writer.write_property("turnIndices", self._anonymous_write_property_turn_indices)
 
 	writer.write_property("turnIdx", self.current_turn_index)
 	writer.write_property("storySeed", self.story_seed)
@@ -647,7 +644,7 @@ func pop_from_output_stream(count: int) -> void:
 	self.output_stream_dirty()
 
 
-func try_splitting_head_tail_whitespace(single: InkStringValue) -> InkStringValue:
+func try_splitting_head_tail_whitespace(single: InkStringValue) -> Array[InkStringValue]:
 	var _str = single.value
 
 	var head_first_newline_idx = -1
@@ -686,7 +683,7 @@ func try_splitting_head_tail_whitespace(single: InkStringValue) -> InkStringValu
 		j -= 1
 
 	if head_first_newline_idx == -1 && tail_last_newline_idx == -1:
-		return null
+		return []
 
 	var list_texts = [] # Array<StringValue>
 	var inner_str_start = 0
@@ -830,7 +827,7 @@ func remove_existing_glue() -> void:
 
 var output_stream_ends_in_newline: bool :
 	get:
-		return output_stream_ends_in_newline # TODOConverter40 Copy here content of get_output_stream_ends_in_newline 
+		return output_stream_ends_in_newline # TODOConverter40 Copy here content of get_output_stream_ends_in_newline
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_output_stream_ends_in_newline() -> bool:
@@ -854,7 +851,7 @@ func get_output_stream_ends_in_newline() -> bool:
 
 var output_stream_contains_content: bool :
 	get:
-		return output_stream_contains_content # TODOConverter40 Copy here content of get_output_stream_contains_content 
+		return output_stream_contains_content # TODOConverter40 Copy here content of get_output_stream_contains_content
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_output_stream_contains_content() -> bool:
@@ -867,7 +864,7 @@ func get_output_stream_contains_content() -> bool:
 
 var in_string_evaluation: bool :
 	get:
-		return in_string_evaluation # TODOConverter40 Copy here content of get_in_string_evaluation 
+		return in_string_evaluation # TODOConverter40 Copy here content of get_in_string_evaluation
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_in_string_evaluation() -> bool:
@@ -922,8 +919,8 @@ func pop_evaluation_stack(number_of_objects: int = -1):
 		return []
 
 	var popped = Utils.get_range(self.evaluation_stack,
-								 self.evaluation_stack.size() - number_of_objects,
-								 number_of_objects)
+								self.evaluation_stack.size() - number_of_objects,
+								number_of_objects)
 
 	Utils.remove_range(
 		self.evaluation_stack,
@@ -938,8 +935,8 @@ func force_end() -> void:
 
 	self._current_flow.current_choices.clear()
 
-	self.current_pointer = InkPointer.null()
-	self.previous_pointer = InkPointer.null()
+	self.current_pointer = InkPointer.new_null()
+	self.previous_pointer = InkPointer.new_null()
 
 	self.did_safe_exit = true
 
@@ -1025,7 +1022,7 @@ func pass_arguments_to_evaluation_stack(arguments) -> void:
 # () -> bool
 func try_exit_function_evaluation_from_game() -> bool:
 	if self.callstack.current_element.type == PushPopType.FUNCTION_EVALUATION_FROM_GAME:
-		self.current_pointer = InkPointer.null()
+		self.current_pointer = InkPointer.new_null()
 		self.did_safe_exit = true
 		return true
 
@@ -1125,7 +1122,7 @@ func get_class() -> String:
 
 var Json :
 	get:
-		return Json # TODOConverter40 Copy here content of get_Json 
+		return Json # TODOConverter40 Copy here content of get_Json
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_Json():

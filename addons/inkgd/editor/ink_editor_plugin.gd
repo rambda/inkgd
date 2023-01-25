@@ -184,37 +184,34 @@ func _remove_autoloads():
 
 ## Registers the script templates provided by the plugin.
 func _add_templates():
-	var dir = Directory.new()
 	var names = _get_plugin_templates_names()
 
 	# Setup the templates folder for the project
-	var template_dir_path = ProjectSettings.get_setting("editor/script_templates_search_path")
-	if !dir.dir_exists(template_dir_path):
-		dir.make_dir(template_dir_path)
+	var template_dir_path = ProjectSettings.get_setting("editor/script/templates_search_path")
+	if !DirAccess.dir_exists_absolute(template_dir_path):
+		DirAccess.make_dir_recursive_absolute(template_dir_path)
 
 	for name in names:
 		var template_file_path = template_dir_path + "/" + name
-		dir.copy("res://addons/inkgd/editor/templates/" + name, template_file_path)
+		DirAccess.copy_absolute("res://addons/inkgd/editor/templates/" + name, template_file_path)
 
 
 ## Unregisters the script templates provided by the plugin.
 func _remove_templates():
-	var dir = Directory.new()
 	var names = _get_plugin_templates_names()
-	var template_dir_path = ProjectSettings.get_setting("editor/script_templates_search_path")
+	var template_dir_path = ProjectSettings.get_setting("editor/script/templates_search_path")
 
 	for name in names:
 		var template_file_path = template_dir_path + "/" + name
-		if dir.file_exists(template_file_path):
-			dir.remove_at(template_file_path)
+		if DirAccess.dir_exists_absolute(template_file_path):
+			DirAccess.remove_absolute(template_file_path)
 
 
 ## Get all the script templates provided by the plugin.
 func _get_plugin_templates_names() -> Array:
-	var dir = Directory.new()
+	var dir = DirAccess.open("res://addons/inkgd/editor/templates/")
 	var plugin_template_names = []
 
-	dir.change_dir("res://addons/inkgd/editor/templates/")
 	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 
 	var temp = dir.get_next()

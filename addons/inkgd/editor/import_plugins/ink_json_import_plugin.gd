@@ -41,7 +41,7 @@ func _get_save_extension():
 func _get_resource_type():
 	return "Resource";
 
-func _get_import_options(preset):
+func _get_import_options(_path: String, _preset_index: int) -> Array[Dictionary]:
 	return [
 		{
 			"name": "compress",
@@ -49,13 +49,13 @@ func _get_import_options(preset):
 		}
 	]
 
-func _get_option_visibility(option, options):
+func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
 	return true
 
 func _get_preset_count():
 	return 0
 
-func import(source_file, save_path, options, r_platform_variants, r_gen_files):
+func _import(source_file, save_path, options, r_platform_variants, r_gen_files):
 	_configuration.retrieve()
 
 	var raw_json = _get_file_content(source_file)
@@ -70,15 +70,15 @@ func import(source_file, save_path, options, r_platform_variants, r_gen_files):
 	resource.json = raw_json
 
 	var flags = ResourceSaver.FLAG_COMPRESS if options["compress"] else 0
-	return ResourceSaver.save("%s.%s" % [save_path, _get_save_extension()], resource, flags)
+	return ResourceSaver.save(resource, "%s.%s" % [save_path, _get_save_extension()], flags)
 
 # ############################################################################ #
 # Private Helpers
 # ############################################################################ #
 
 func _get_file_content(source_file):
-	var file = File.new()
-	var err = file.open(source_file, File.READ)
+	var file := FileAccess.open(source_file, FileAccess.READ)
+	var err := file.get_open_error()
 	if err != OK:
 		return err
 

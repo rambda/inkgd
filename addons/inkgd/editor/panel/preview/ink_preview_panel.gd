@@ -61,7 +61,7 @@ var _ink_player = InkPlayerFactory.create()
 # On Ready | Private Properties
 # ############################################################################ #
 
-@onready var _play_icon = get_icon("Play", "EditorIcons")
+@onready var _play_icon = get_theme_icon("Play", "EditorIcons")
 
 # ############################################################################ #
 # On Ready | Private Nodes
@@ -100,9 +100,9 @@ func _ready():
 	_apply_configuration()
 	_update_story_picker()
 
-	var load_icon = get_icon("Load", "EditorIcons")
-	var stop_icon = get_icon("Stop", "EditorIcons")
-	var clear_icon = get_icon("Clear", "EditorIcons")
+	var load_icon = get_theme_icon("Load", "EditorIcons")
+	var stop_icon = get_theme_icon("Stop", "EditorIcons")
+	var clear_icon = get_theme_icon("Clear", "EditorIcons")
 
 	_start_button.icon = _play_icon
 	_load_story_button.icon = load_icon
@@ -111,7 +111,7 @@ func _ready():
 
 	_stop_button.visible = false
 
-	_choice_area_container.minimum_size = Vector2(200, 0) * editor_interface.scale
+	_choice_area_container.custom_minimum_size = Vector2(200, 0) * editor_interface.scale
 	_choice_area_container.visible = false
 
 	_file_dialog.connect("file_selected",Callable(self,"_on_file_selected"))
@@ -288,7 +288,7 @@ func _continue_story():
 		if !tags.is_empty():
 			var tag_label = Label.new()
 			tag_label.autowrap = true
-			tag_label.align = Label.ALIGNMENT_CENTER
+			tag_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			tag_label.text = "# " + ", ".join(PackedStringArray(tags))
 			tag_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.4))
 
@@ -311,7 +311,7 @@ func _continue_story():
 	else:
 		var label = Label.new()
 		label.text = "End of the story."
-		label.align = Label.ALIGN_RIGHT
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 		_story_container.add_child(label)
 
@@ -345,24 +345,16 @@ func _disable_command_strip(disabled: bool):
 
 func _connect_signals():
 	if configuration != null:
-		var is_connected = configuration.is_connected(
-				"story_configuration_changed",
-				self,
-				"_configuration_changed"
-		)
+		var is_connected = configuration.story_configuration_changed.is_connected(self._configuration_changed)
 
 		if !is_connected:
-			configuration.connect(
-					"story_configuration_changed",
-					self,
-					"_configuration_changed"
-			)
+			configuration.story_configuration_changed.connect(self._configuration_changed)
 
-	_ink_player.connect("loaded",Callable(self,"_story_loaded"))
-	_pick_story_button.connect("item_selected",Callable(self,"_pick_story_button_selected"))
-	_load_story_button.connect("pressed",Callable(self,"_load_story_button_pressed"))
-	_start_button.connect("pressed",Callable(self,"_start_button_pressed"))
-	_stop_button.connect("pressed",Callable(self,"_stop_button_pressed"))
-	_clear_button.connect("pressed",Callable(self,"_clear_content"))
+	_ink_player.loaded.connect(self._story_loaded)
+	_pick_story_button.item_selected.connect(self._pick_story_button_selected)
+	_load_story_button.pressed.connect(self._load_story_button_pressed)
+	_start_button.pressed.connect(self._start_button_pressed)
+	_stop_button.pressed.connect(self._stop_button_pressed)
+	_clear_button.pressed.connect(self._clear_content)
 
-	_scroll_container.get_v_scroll_bar().connect("changed",Callable(self,"_scrollbar_changed"))
+	_scroll_container.get_v_scroll_bar().changed.connect(self._scrollbar_changed)

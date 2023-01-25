@@ -25,7 +25,7 @@ var InkStringSet := preload("res://addons/inkgd/runtime/extra/string_set.gd") as
 # Dictionary<String, InkObject>
 var globals: Dictionary :
 	get:
-		return globals # TODOConverter40 Copy here content of get_globals 
+		return globals # TODOConverter40 Copy here content of get_globals
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_globals() -> Dictionary:
@@ -34,7 +34,7 @@ func get_globals() -> Dictionary:
 # StringSet
 var changed_variables: InkStringSet :
 	get:
-		return changed_variables # TODOConverter40 Copy here content of get_changed_variables 
+		return changed_variables # TODOConverter40 Copy here content of get_changed_variables
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_changed_variables() -> InkStringSet:
@@ -43,7 +43,7 @@ func get_changed_variables() -> InkStringSet:
 # Dictionary<InkContainer, int>
 var visit_counts: Dictionary :
 	get:
-		return visit_counts # TODOConverter40 Copy here content of get_visit_counts 
+		return visit_counts # TODOConverter40 Copy here content of get_visit_counts
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_visit_counts() -> Dictionary:
@@ -52,7 +52,7 @@ func get_visit_counts() -> Dictionary:
 # Dictionary<InkContainer, int>
 var turn_indices :
 	get:
-		return turn_indices # TODOConverter40 Copy here content of get_turn_indices 
+		return turn_indices # TODOConverter40 Copy here content of get_turn_indices
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_turn_indices() -> Dictionary:

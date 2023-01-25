@@ -28,37 +28,26 @@ extends Popup
 # ############################################################################ #
 
 ## The title of the progress.
-var title: String :
-	get:
-		return title # TODOConverter40 Copy here content of get_title
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_title
 func set_title(text: String):
+	title = text
 	_title_label.text = text
+
 func get_title() -> String:
 	return _title_label.text
 
 ## The name of the current step.
 var current_step_name: String :
 	get:
-		return current_step_name # TODOConverter40 Copy here content of get_current_step_name
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_current_step_name
-func set_current_step_name(text: String):
-	_current_step_label.text = text
-func get_current_step_name() -> String:
-	return _current_step_label.text
+		return _current_step_label.text
+	set(text):
+		_current_step_label.text = text
 
 ## The current progress.
 var progress: float :
 	get:
-		return progress # TODOConverter40 Copy here content of get_progress
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_progress
-func set_progress(progress: float):
-	_progress_bar.value = progress
-func get_progress() -> float:
-	return _progress_bar.value
+		return _progress_bar.value
+	set(progress):
+		_progress_bar.value = progress
 
 func update_layout(scale: float) -> void:
 	_margin_container.add_theme_constant_override("offset_right", 10 * scale)

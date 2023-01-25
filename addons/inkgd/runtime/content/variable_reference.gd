@@ -24,29 +24,20 @@ var path_for_count = null
 # Container?
 var container_for_count :
 	get:
-		return container_for_count # TODOConverter40 Copy here content of get_container_for_count 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_container_for_count():
-	return self.resolve_path(path_for_count).container
+		return self.resolve_path(path_for_count).container
 
 # String?
 var path_string_for_count :
 	get:
-		return path_string_for_count # TODOConverter40 Copy here content of get_path_string_for_count
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_path_string_for_count
-func get_path_string_for_count():
-	if path_for_count == null:
-		return null
+		if path_for_count == null:
+			return null
 
-	return compact_path_string(path_for_count)
-
-func set_path_string_for_count(value):
-	if value == null:
-		path_for_count = null
-	else:
-		path_for_count = InkPath().new_with_components_string(value)
+		return compact_path_string(path_for_count)
+	set(value):
+		if value == null:
+			path_for_count = null
+		else:
+			path_for_count = InkPath.new_with_components_string(value)
 
 # ############################################################################ #
 

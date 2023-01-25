@@ -23,9 +23,9 @@ func get_is_truthy():
 
 var is_newline # bool
 var is_inline_whitespace # bool
-var is_non_whitespace setget , get_is_non_whitespace # bool
-func get_is_non_whitespace():
-	return !is_newline && !is_inline_whitespace
+var is_non_whitespace:
+	get:
+		return !is_newline && !is_inline_whitespace
 
 func _init():
 	value = ""
@@ -44,13 +44,13 @@ func cast(new_type, metadata = null):
 
 	if new_type == ValueType.INT:
 		if self.value.is_valid_int():
-			return IntValue().new_with(int(self.value))
+			return InkIntValue.new_with(int(self.value))
 		else:
 			return null
 
 	if new_type == ValueType.FLOAT:
 		if self.value.is_valid_float():
-			return FloatValue().new_with(float(self.value))
+			return InkFloatValue.new_with(float(self.value))
 		else:
 			return null
 
@@ -77,6 +77,6 @@ func _sanitize_value():
 			break
 
 static func new_with(val):
-	var value = StringValue().new()
+	var value = InkStringValue.new()
 	value._init_with(val)
 	return value

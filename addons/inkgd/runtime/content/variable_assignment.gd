@@ -14,13 +14,6 @@ extends InkObject
 class_name InkVariableAssignment
 
 # ############################################################################ #
-# Self-reference
-# ############################################################################ #
-
-static func InkVariableAssignment() -> GDScript:
-	return load("res://addons/inkgd/runtime/content/variable_assignment.gd") as GDScript
-
-# ############################################################################ #
 
 # String
 var variable_name = null
@@ -53,6 +46,6 @@ static func new_with(
 		variable_name: String,
 		is_new_declaration: bool
 ) -> InkVariableAssignment:
-	var variable_assignment = InkVariableAssignment().new()
+	var variable_assignment = InkVariableAssignment.new()
 	variable_assignment._init_with(variable_name, is_new_declaration)
 	return variable_assignment

@@ -25,10 +25,7 @@ class_name InkPointer
 # Imports
 # ############################################################################ #
 
-var InkPath := preload("res://addons/inkgd/runtime/ink_path.gd") as GDScript
-
-static func InkPointer() -> GDScript:
-	return load("res://addons/inkgd/runtime/structs/pointer.gd") as GDScript
+const InkPath := preload("res://addons/inkgd/runtime/ink_path.gd")
 
 # ############################################################################ #
 
@@ -36,24 +33,17 @@ static func InkPointer() -> GDScript:
 # Encapsulating container into a weak ref.
 var container: InkContainer :
 	get:
-		return container # TODOConverter40 Copy here content of get_container
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_container
-func set_container(value: InkContainer) -> void:
-	assert(false) #,"Pointer is immutable, cannot set container.")
-func get_container() -> InkContainer:
-	return self._container.get_ref()
+		return self._container.get_ref()
+	set(_value):
+		assert(false) #,"Pointer is immutable, cannot set container.")
+
 var _container: WeakRef = WeakRef.new()
 
 var index: int :
+	set(_value):
+		assert(false) #,"Pointer is immutable, cannot set index.")
 	get:
-		return index # TODOConverter40 Copy here content of get_index
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_index
-func set_index(value: int):
-	assert(false) #,"Pointer is immutable, cannot set index.")
-func get_index() -> int:
-	return _index
+		return _index
 var _index: int = 0 # int
 
 # (InkContainer, int) -> InkPointer
@@ -63,7 +53,7 @@ func _init(container: InkContainer = null,index: int = 0):
 	else:
 		self._container = weakref(container)
 
-	self._index = index
+	self.index = index
 
 # () -> InkContainer
 func resolve():
@@ -79,11 +69,8 @@ func resolve():
 # () -> bool
 var is_null: bool :
 	get:
-		return is_null # TODOConverter40 Copy here content of get_is_null 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_is_null() -> bool:
-	return self.container == null
+		return self.container == null
+
 
 # ############################################################################ #
 
@@ -91,19 +78,16 @@ func get_is_null() -> bool:
 # () -> InkPath
 var path: InkPath :
 	get:
-		return path # TODOConverter40 Copy here content of get_path 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_path() -> InkPath:
-	if self.is_null:
-		return null
+		if self.is_null:
+			return null
 
-	if self.index >= 0:
-		return self.container.path.path_by_appending_component(
-				InkPath.Component.new(self.index)
-		)
-	else:
-		return self.container.path
+		if self.index >= 0:
+			return self.container.path.path_by_appending_component(
+					InkPath.Component.new(self.index)
+			)
+		else:
+			return self.container.path
+
 
  ############################################################################ #
 
@@ -115,13 +99,13 @@ func _to_string() -> String:
 
 # (InkContainer) -> InkPointer
 static func start_of(container: InkContainer) -> InkPointer:
-	return InkPointer().new(container, 0)
+	return InkPointer.new(container, 0)
 
 # ############################################################################ #
 
 # () -> InkPointer
-static func null():
-	return InkPointer().new(null, -1)
+static func new_null():
+	return InkPointer.new(null, -1)
 
 # ############################################################################ #
 # GDScript extra methods
@@ -133,5 +117,5 @@ func is_class(type: String) -> bool:
 func get_class() -> String:
 	return "Pointer"
 
-func duplicate() -> InkPointer:
-	return InkPointer().new(self.container, self.index)
+func duplicat1e() -> InkPointer:
+	return InkPointer.new(self.container, self.index)

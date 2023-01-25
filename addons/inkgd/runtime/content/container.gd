@@ -26,53 +26,45 @@ var name = null
 # Array<InkObject>
 var content: Array :
 	get:
-		return content # TODOConverter40 Copy here content of get_content
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_content
-func get_content() -> Array:
-	return self._content
-func set_content(value: Array):
-	add_content(value)
+		return self._content
+	set(value):
+		add_content(value)
 
 # Array<InkObject>
-var _content: Array
+var _content: Array[InkObject]
 
 # Dictionary<string, INamedContent>
 var named_content: Dictionary
 
 # Dictionary<string, InkObject>?
-var named_only_content :
+var named_only_content: Dictionary:
 	get:
-		return named_only_content # TODOConverter40 Copy here content of get_named_only_content
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_named_only_content
-func get_named_only_content():
-	var named_only_content_dict = {} # Dictionary<string, InkObject>
-	for key in self.named_content:
-		named_only_content_dict[key] = self.named_content[key]
+		var named_only_content_dict = {} # Dictionary<string, InkObject>
+		for key in self.named_content:
+			named_only_content_dict[key] = self.named_content[key]
 
-	for c in self.content:
-		var named = Utils.as_INamedContent_or_null(c)
-		if named != null && named.has_valid_name:
-			named_only_content_dict.erase(named.name)
+		for c in self.content:
+			var named = Utils.as_INamedContent_or_null(c)
+			if named != null && named.has_valid_name:
+				named_only_content_dict.erase(named.name)
 
-	if named_only_content_dict.size() == 0:
-		named_only_content_dict = null
+		if named_only_content_dict.size() == 0:
+			named_only_content_dict = null
 
-	return named_only_content_dict
-func set_named_only_content(value):
-	var existing_named_only = named_only_content
-	if existing_named_only != null:
-		for key in existing_named_only:
-			self.named_content.erase(key)
+		return named_only_content_dict
+	set(value):
+		var existing_named_only = named_only_content
+		if existing_named_only != null:
+			for key in existing_named_only:
+				self.named_content.erase(key)
 
-	if value == null:
-		return
+		if value == null:
+			return
 
-	for key in value:
-		var named = Utils.as_INamedContent_or_null(value[key])
-		if named != null:
-			add_to_named_content_only(named)
+		for key in value:
+			var named = Utils.as_INamedContent_or_null(value[key])
+			if named != null:
+				add_to_named_content_only(named)
 
 
 var visits_should_be_counted: bool = false
@@ -88,44 +80,32 @@ enum CountFlags {
 # CountFlags
 var count_flags: int :
 	get:
-		return count_flags # TODOConverter40 Copy here content of get_count_flags
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_count_flags
-func get_count_flags() -> int:
-	var flags = 0
+		var flags = 0
 
-	if visits_should_be_counted:     flags |= CountFlags.VISITS
-	if turn_index_should_be_counted: flags |= CountFlags.TURNS
-	if counting_at_start_only:       flags |= CountFlags.COUNT_START_ONLY
+		if visits_should_be_counted:     flags |= CountFlags.VISITS
+		if turn_index_should_be_counted: flags |= CountFlags.TURNS
+		if counting_at_start_only:       flags |= CountFlags.COUNT_START_ONLY
 
-	if flags == CountFlags.COUNT_START_ONLY:
-		flags = 0
+		if flags == CountFlags.COUNT_START_ONLY:
+			flags = 0
 
-	return flags
-func set_count_flags(value: int):
-	var flag = value
-	if (flag & CountFlags.VISITS) > 0:           visits_should_be_counted = true
-	if (flag & CountFlags.TURNS) > 0:            turn_index_should_be_counted = true
-	if (flag & CountFlags.COUNT_START_ONLY) > 0: counting_at_start_only = true
+		return flags
+	set(value):
+		var flag = value
+		if (flag & CountFlags.VISITS) > 0:           visits_should_be_counted = true
+		if (flag & CountFlags.TURNS) > 0:            turn_index_should_be_counted = true
+		if (flag & CountFlags.COUNT_START_ONLY) > 0: counting_at_start_only = true
 
 var has_valid_name: bool :
 	get:
-		return has_valid_name # TODOConverter40 Copy here content of get_has_valid_name 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_has_valid_name() -> bool:
-	return self.name != null && self.name.length() > 0
+		return self.name != null && self.name.length() > 0
 
 var path_to_first_leaf_content: InkPath :
 	get:
-		return path_to_first_leaf_content # TODOConverter40 Copy here content of get_path_to_first_leaf_content 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_path_to_first_leaf_content() -> InkPath:
-	if self._path_to_first_leaf_content == null:
-		self._path_to_first_leaf_content = self.path.path_by_appending_path(self.internal_path_to_first_leaf_content)
+		if self._path_to_first_leaf_content == null:
+			self._path_to_first_leaf_content = self.path.path_by_appending_path(self.internal_path_to_first_leaf_content)
 
-	return self._path_to_first_leaf_content
+		return self._path_to_first_leaf_content
 
 # InkPath?
 var _path_to_first_leaf_content = null
@@ -133,18 +113,15 @@ var _path_to_first_leaf_content = null
 # TODO: Make inspectable
 var internal_path_to_first_leaf_content: InkPath :
 	get:
-		return internal_path_to_first_leaf_content # TODOConverter40 Copy here content of get_internal_path_to_first_leaf_content 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_internal_path_to_first_leaf_content() -> InkPath:
-	var components: Array = [] # Array<Path3D.Component>
-	var container: InkContainer = self
-	while container != null:
-		if container.content.size() > 0:
-			components.append(InkPath().Component.new(0))
-			container = Utils.as_or_null(container.content[0], "InkContainer")
+		var components: Array = [] # Array<Path3D.Component>
+		var container: InkContainer = self
+		while container != null:
+			if container.content.size() > 0:
+				components.append(InkPath.Component.new(0))
+				container = Utils.as_or_null(container.content[0], "InkContainer")
 
-	return InkPath().new_with_components(components)
+		return InkPath.new_with_components(components)
+
 
 func _init():
 	self._content = [] # Array<InkObject>

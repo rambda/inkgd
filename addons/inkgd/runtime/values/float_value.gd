@@ -15,6 +15,11 @@ class_name InkFloatValue
 
 # ############################################################################ #
 
+const BoolValue = preload("res://addons/inkgd/runtime/values/bool_value.gd")
+const IntValue = preload("res://addons/inkgd/runtime/values/int_value.gd")
+const StringValue = preload("res://addons/inkgd/runtime/values/string_value.gd")
+
+
 func get_value_type():
 	return ValueType.FLOAT
 
@@ -32,13 +37,13 @@ func cast(new_type, metadata = null):
 		return self
 
 	if new_type == ValueType.BOOL:
-		return BoolValue().new_with(false if value == 0 else true)
+		return BoolValue.new_with(false if value == 0 else true)
 
 	if new_type == ValueType.INT:
-		return IntValue().new_with(int(value))
+		return IntValue.new_with(int(value))
 
 	if new_type == ValueType.STRING:
-		return StringValue().new_with(str(value)) # TODO: Check formating
+		return StringValue.new_with(str(value)) # TODO: Check formating
 
 	Utils.throw_story_exception(bad_cast_exception_message(new_type), false, metadata)
 	return null
@@ -54,6 +59,6 @@ func get_class():
 	return "FloatValue"
 
 static func new_with(val):
-	var value = FloatValue().new()
+	var value = InkFloatValue.new()
 	value._init_with(val)
 	return value

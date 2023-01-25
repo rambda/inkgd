@@ -19,39 +19,10 @@ class_name InkValue
 # ############################################################################ #
 
 const ValueType = preload("res://addons/inkgd/runtime/values/value_type.gd").ValueType
-var InkList = load("res://addons/inkgd/runtime/lists/ink_list.gd")
+const InkList = preload("res://addons/inkgd/runtime/lists/ink_list.gd")
 
 # ############################################################################ #
 # STATIC REFERENCE
-# ############################################################################ #
-
-static func Utils():
-	return load("res://addons/inkgd/runtime/extra/utils.gd")
-
-static func Value():
-	return load("res://addons/inkgd/runtime/values/value.gd")
-
-static func BoolValue():
-	return load("res://addons/inkgd/runtime/values/bool_value.gd")
-
-static func IntValue():
-	return load("res://addons/inkgd/runtime/values/int_value.gd")
-
-static func FloatValue():
-	return load("res://addons/inkgd/runtime/values/float_value.gd")
-
-static func StringValue():
-	return load("res://addons/inkgd/runtime/values/string_value.gd")
-
-static func DivertTargetValue():
-	return load("res://addons/inkgd/runtime/values/divert_target_value.gd")
-
-static func VariablePointerValue():
-	return load("res://addons/inkgd/runtime/values/variable_pointer_value.gd")
-
-static func ListValue():
-	return load("res://addons/inkgd/runtime/values/list_value.gd")
-
 # ############################################################################ #
 
 var value # Variant
@@ -59,19 +30,12 @@ var value # Variant
 # ValueType
 var value_type: int :
 	get:
-		return value_type # TODOConverter40 Copy here content of get_value_type 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_value_type() -> int:
-	return -1
+		return -1
+
 
 var is_truthy: bool :
 	get:
-		return is_truthy # TODOConverter40 Copy here content of get_is_truthy 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_is_truthy() -> bool:
-	return false
+		return false
 
 # ############################################################################ #
 
@@ -79,9 +43,9 @@ func get_is_truthy() -> bool:
 func cast(new_type: int) -> InkValue:
 	return null
 
-var value_object setget , get_value_object # Variant
-func get_value_object():
-	return value
+var value_object:
+	get:
+		return value
 
 # ############################################################################ #
 
@@ -95,17 +59,17 @@ static func create(val) -> InkValue:
 	# But it's not applicable here.
 
 	if val is bool:
-		return BoolValue().new_with(val)
+		return load("res://addons/inkgd/runtime/values/bool_value.gd").new_with(val)
 	if val is int:
-		return IntValue().new_with(val)
+		return load("res://addons/inkgd/runtime/values/int_value.gd").new_with(val)
 	elif val is float:
-		return FloatValue().new_with(val)
+		return load("res://addons/inkgd/runtime/values/float_value.gd").new_with(val)
 	elif val is String:
-		return StringValue().new_with(val)
-	elif Utils().is_ink_class(val, "InkPath"):
-		return DivertTargetValue().new_with(val)
-	elif Utils().is_ink_class(val, "InkList"):
-		return ListValue().new_with(val)
+		return load("res://addons/inkgd/runtime/values/string_value.gd").new_with(val)
+	elif Utils.is_ink_class(val, "InkPath"):
+		return load("res://addons/inkgd/runtime/values/divert_target_value.gd").new_with(val)
+	elif Utils.is_ink_class(val, "InkList"):
+		return load("res://addons/inkgd/runtime/values/list_value.gd").new_with(val)
 
 	return null
 
@@ -134,6 +98,6 @@ func get_class() -> String:
 	return "Value"
 
 static func new_with(val) -> InkValue:
-	var value = Value().new()
+	var value = InkValue.new()
 	value._init_with(val)
 	return value

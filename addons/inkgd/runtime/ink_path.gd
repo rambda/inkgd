@@ -23,10 +23,12 @@ class Component extends InkBase:
 	var index = 0 # int
 	var name = null # String
 
-	var is_index setget , get_is_index # bool
+	var is_index:
+		get = get_is_index # bool
 	func get_is_index(): return index >= 0
 
-	var is_parent setget , get_is_parent # bool
+	var is_parent:
+		get = get_is_parent # bool
 	func get_is_parent():
 		return name == parent_id
 
@@ -86,7 +88,8 @@ func get_component(index):
 
 var is_relative = false # bool
 
-var head setget , get_head # Component
+var head:
+	get = get_head # Component
 func get_head():
 	if _components.size() > 0:
 		return _components.front()
@@ -94,28 +97,34 @@ func get_head():
 		return null
 
 # TODO: Make inspectable
-var tail setget , get_tail # InkPath
+var tail:
+	get = get_tail # InkPath
 func get_tail():
 	if _components.size() >= 2:
 		var tail_comps = _components.duplicate()
 		tail_comps.pop_front()
 
-		return InkPath().new_with_components(tail_comps)
+		return InkPath.new_with_components(tail_comps)
 	else:
-		return InkPath().self()
+		var new := InkPath.new()
+		new.is_relative = true
+		return new
 
-var length setget , get_length # int
+var length:
+	get = get_length # int
 func get_length():
 	return _components.size()
 
-var last_component setget , get_last_component # Component
+var last_component:
+	get = get_last_component # Component
 func get_last_component():
 	if _components.size() > 0:
 		return _components.back()
 	else:
 		return null
 
-var contains_named_component setget , get_contains_named_component # bool
+var contains_named_component:
+	get = get_contains_named_component # bool
 func get_contains_named_component():
 	for comp in _components:
 		if !comp.is_index:
@@ -140,15 +149,10 @@ func _init_with_components_string(components_string):
 	self._components = []
 	self.components_string = components_string
 
-# () -> InkPath
-static func self():
-	var path = InkPath().new()
-	path.is_relative = true
-	return path
 
 # (InkPath) -> InkPath
 func path_by_appending_path(path_to_append):
-	var p = InkPath().new()
+	var p = InkPath.new()
 
 	var upward_moves = 0
 
@@ -174,7 +178,7 @@ func path_by_appending_path(path_to_append):
 
 # (Component) -> InkPath
 func path_by_appending_component(c):
-	var p = InkPath().new()
+	var p = InkPath.new()
 	p._components = p._components + self._components
 	p._components.append(c)
 	return p
@@ -186,7 +190,7 @@ var components_string :
 		mod_value  # TODOConverter40 Copy here content of set_components_string # String
 func get_components_string():
 	if _components_string == null:
-		_components_string = ".", _components.join(Utils)
+		_components_string = Utils.join(".", _components)
 		if self.is_relative:
 			_components_string = "." + _components_string
 
@@ -230,24 +234,24 @@ func equals(other_path):
 
 	return Utils.array_equal(other_path._components, self._components, true)
 
-var _components = null # Array<Component>
+var _components: Array[Component] = null # Array<Component>
 
 # ############################################################################ #
 # GDScript extra methods
 # ############################################################################ #
 
 static func new_with_head_tail(head, tail):
-	var path = InkPath().new()
+	var path = InkPath.new()
 	path._init_with_head_tail(head, tail)
 	return path
 
 static func new_with_components(components, relative = false):
-	var path = InkPath().new()
+	var path = InkPath.new()
 	path._init_with_components(components, relative)
 	return path
 
 static func new_with_components_string(components_string):
-	var path = InkPath().new()
+	var path = InkPath.new()
 	path._init_with_components_string(components_string)
 	return path
 
@@ -260,6 +264,3 @@ func is_class(type):
 
 func get_class():
 	return "InkPath"
-
-static func InkPath():
-	return load("res://addons/inkgd/runtime/ink_path.gd")

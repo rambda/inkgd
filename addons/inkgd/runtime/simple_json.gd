@@ -314,7 +314,7 @@ class Writer extends InkBase:
 	# (Callable) -> void
 	func write_object(inner: Callable) -> void:
 		write_object_start()
-		inner.call_func(self)
+		inner.call(self)
 		write_object_end()
 
 	func write_object_start() -> void:
@@ -342,7 +342,7 @@ class Writer extends InkBase:
 			write_property_end()
 		elif content is Callable:
 			write_property_start(name)
-			content.call_func(self)
+			content.call(self)
 			write_property_end()
 		else:
 			push_error("Wrong type for 'content': %s" % str(content))
@@ -535,14 +535,16 @@ class Writer extends InkBase:
 		):
 			increment_child_count()
 
-	var state: int setget , get_state # StateElement.State
+	var state: int:
+		get = get_state # StateElement.State
 	func get_state() -> int:
 		if _state_stack.size() > 0:
 			return _state_stack.front().type
 		else:
 			return InkStateElement.State.NONE
 
-	var child_count: int setget , get_child_count # int
+	var child_count: int:
+		get = get_child_count # int
 	func get_child_count() -> int:
 		if _state_stack.size() > 0:
 			return _state_stack.front().child_count

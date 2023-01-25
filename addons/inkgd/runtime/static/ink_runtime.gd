@@ -21,8 +21,8 @@ extends Node
 # Imports
 # ############################################################################ #
 
-var InkStaticJSON := load("res://addons/inkgd/runtime/static/json.gd") as GDScript
-var InkStaticNativeFunctionCall := load("res://addons/inkgd/runtime/static/native_function_call.gd") as GDScript
+const InkStaticJSON := preload("res://addons/inkgd/runtime/static/json.gd")
+const InkStaticNativeFunctionCall := preload("res://addons/inkgd/runtime/static/native_function_call.gd")
 
 # ############################################################################ #
 # Signals
@@ -53,39 +53,31 @@ var stop_execution_on_error: bool = true
 
 var should_pause_execution_on_runtime_error: bool :
 	get:
-		return should_pause_execution_on_runtime_error # TODOConverter40 Copy here content of get_speore
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_speore
-func get_speore() -> bool:
-	printerr(
-			"'should_pause_execution_on_runtime_error' is deprecated, " +
-			"use 'stop_execution_on_exception' instead."
-	)
-	return stop_execution_on_exception
-func set_speore(value: bool):
-	printerr(
-			"'should_pause_execution_on_runtime_error' is deprecated, " +
-			"use 'stop_execution_on_exception' instead."
-	)
-	stop_execution_on_exception = value
+		printerr(
+				"'should_pause_execution_on_runtime_error' is deprecated, " +
+				"use 'stop_execution_on_exception' instead."
+		)
+		return stop_execution_on_exception
+	set(value):
+		printerr(
+				"'should_pause_execution_on_runtime_error' is deprecated, " +
+				"use 'stop_execution_on_exception' instead."
+		)
+		stop_execution_on_exception = value
 
 var should_pause_execution_on_story_error: bool :
 	get:
-		return should_pause_execution_on_story_error # TODOConverter40 Copy here content of get_speose
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_speose
-func get_speose() -> bool:
-	printerr(
-		"'should_pause_execution_on_story_error' is deprecated, " +
-		"use 'stop_execution_on_error' instead."
-	)
-	return stop_execution_on_error
-func set_speose(value: bool):
-	printerr(
-		"'should_pause_execution_on_story_error' is deprecated, " +
-		"use 'stop_execution_on_error' instead."
-	)
-	stop_execution_on_error = value
+		printerr(
+			"'should_pause_execution_on_story_error' is deprecated, " +
+			"use 'stop_execution_on_error' instead."
+		)
+		return stop_execution_on_error
+	set(value):
+		printerr(
+			"'should_pause_execution_on_story_error' is deprecated, " +
+			"use 'stop_execution_on_error' instead."
+		)
+		stop_execution_on_error = value
 
 # ############################################################################ #
 # "Static" Properties
@@ -163,7 +155,7 @@ func _handle_generic_exception(
 	if OS.is_debug_build():
 		if should_pause_execution:
 			assert(false) #,message)
-		elif Engine.editor_hint:
+		elif Engine.is_editor_hint():
 			printerr(message)
 			if stack_trace.size() > 0:
 				printerr("Stack trace:")

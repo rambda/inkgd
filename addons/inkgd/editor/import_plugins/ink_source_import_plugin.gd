@@ -28,18 +28,18 @@ func _get_save_extension():
 func _get_resource_type():
 	return "Resource";
 
-func _get_import_options(preset):
+func _get_import_options(_path: String, _preset_index: int) -> Array[Dictionary]:
 	return []
 
-func _get_option_visibility(option, options):
+func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
 	return true
 
 func _get_preset_count():
 	return 0
 
-func import(source_file, save_path, options, r_platform_variants, r_gen_files):
+func _import(source_file, save_path, options, r_platform_variants, r_gen_files):
 	return ResourceSaver.save(
-			"%s.%s" % [save_path, _get_save_extension()],
 			Resource.new(),
+			"%s.%s" % [save_path, _get_save_extension()],
 			ResourceSaver.FLAG_COMPRESS
 	)

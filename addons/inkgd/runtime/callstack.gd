@@ -17,10 +17,10 @@ class_name InkCallStack
 # Imports
 # ############################################################################ #
 
-var PushPopType = preload("res://addons/inkgd/runtime/enums/push_pop.gd").PushPopType
-var InkPointer := preload("res://addons/inkgd/runtime/structs/pointer.gd") as GDScript
+const PushPopType = preload("res://addons/inkgd/runtime/enums/push_pop.gd").PushPopType
+const InkPointer := preload("res://addons/inkgd/runtime/structs/pointer.gd")
 
-var InkListValue := load("res://addons/inkgd/runtime/values/list_value.gd") as GDScript
+const InkListValue = preload("res://addons/inkgd/runtime/values/list_value.gd")
 
 # ############################################################################ #
 
@@ -29,11 +29,11 @@ class Element extends InkBase:
 	# Imports
 	# ######################################################################## #
 
-	var Pointer = load("res://addons/inkgd/runtime/structs/pointer.gd")
+	const Pointer = preload("res://addons/inkgd/runtime/structs/pointer.gd")
 
 	# ######################################################################## #
 
-	var current_pointer = Pointer.null() # Pointer
+	var current_pointer = Pointer.new_null() # Pointer
 
 	var in_expression_evaluation = false # bool
 	var temporary_variables = null # Dictionary<String, InkObject>
@@ -78,7 +78,7 @@ class InkThread extends InkBase:
 
 	var callstack = null # Array<Element>
 	var thread_index = 0 # int
-	var previous_pointer = Pointer.null() # Pointer
+	var previous_pointer = Pointer.new_null() # Pointer
 
 	func _init():
 		get_static_json()
@@ -93,7 +93,7 @@ class InkThread extends InkBase:
 			var jelement_obj = jel_tok
 			var push_pop_type = int(jelement_obj["type"])
 
-			var pointer = Pointer.null()
+			var pointer = Pointer.new_null()
 			var current_container_path_str = null
 			var current_container_path_str_token = null
 
@@ -198,12 +198,8 @@ class InkThread extends InkBase:
 
 	# ######################################################################## #
 	var Json :
-	get:
-		return Json # TODOConverter40 Copy here content of get_Json 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-	func get_Json():
-		return _Json.get_ref()
+		get:
+			return _Json.get_ref()
 
 	var _Json = WeakRef.new()
 
@@ -211,32 +207,24 @@ class InkThread extends InkBase:
 		var InkRuntime = Engine.get_main_loop().root.get_node("__InkRuntime")
 
 		Utils.__assert__(InkRuntime != null,
-					 str("Could not retrieve 'InkRuntime' singleton from the scene tree."))
+					str("Could not retrieve 'InkRuntime' singleton from the scene tree."))
 
 		_Json = weakref(InkRuntime.json)
 
 # () -> Array<InkElement>
 var elements :
 	get:
-		return elements # TODOConverter40 Copy here content of get_elements 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_elements():
-	return self.callstack
+		self.callstack
 
 # () -> int
 var depth :
 	get:
-		return depth # TODOConverter40 Copy here content of get_depth 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_depth():
-	return self.elements.size()
+		return self.elements.size()
 
 # () -> InkElement
 var current_element :
 	get:
-		return current_element # TODOConverter40 Copy here content of get_current_element 
+		return current_element # TODOConverter40 Copy here content of get_current_element
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_element():
@@ -247,7 +235,7 @@ func get_current_element():
 # () -> int
 var current_element_index :
 	get:
-		return current_element_index # TODOConverter40 Copy here content of get_current_element_index 
+		return current_element_index # TODOConverter40 Copy here content of get_current_element_index
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_current_element_index():
@@ -265,14 +253,14 @@ func get_current_thread():
 
 func set_current_thread(value):
 	Utils.__assert__(_threads.size() == 1,
-				 "Shouldn't be directly setting the current thread when we have a stack of them")
+				"Shouldn't be directly setting the current thread when we have a stack of them")
 	self._threads.clear()
 	self._threads.append(value)
 
 # () -> bool
 var can_pop :
 	get:
-		return can_pop # TODOConverter40 Copy here content of get_can_pop 
+		return can_pop # TODOConverter40 Copy here content of get_can_pop
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_can_pop():
@@ -314,7 +302,7 @@ func set_json_token(jobject, story_context):
 
 # (SimpleJson.Writer) -> void
 func write_json(writer):
-	writer.write_object(funcref(self, "_anonymous_write_json"))
+	writer.write_object(self._anonymous_write_json)
 
 # () -> void
 func push_thread():
@@ -340,7 +328,7 @@ func pop_thread():
 # () -> bool
 var can_pop_thread :
 	get:
-		return can_pop_thread # TODOConverter40 Copy here content of get_can_pop_thread 
+		return can_pop_thread # TODOConverter40 Copy here content of get_can_pop_thread
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_can_pop_thread():
@@ -349,7 +337,7 @@ func get_can_pop_thread():
 # () -> bool
 var element_is_evaluate_from_game :
 	get:
-		return element_is_evaluate_from_game # TODOConverter40 Copy here content of get_element_is_evaluate_from_game 
+		return element_is_evaluate_from_game # TODOConverter40 Copy here content of get_element_is_evaluate_from_game
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_element_is_evaluate_from_game():
@@ -432,7 +420,7 @@ func thread_with_index(index):
 
 var callstack :
 	get:
-		return callstack # TODOConverter40 Copy here content of get_callstack 
+		return callstack # TODOConverter40 Copy here content of get_callstack
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_callstack():
@@ -440,7 +428,7 @@ func get_callstack():
 
 var callstack_trace :
 	get:
-		return callstack_trace # TODOConverter40 Copy here content of get_callstack_trace 
+		return callstack_trace # TODOConverter40 Copy here content of get_callstack_trace
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_callstack_trace():
@@ -450,7 +438,7 @@ func get_callstack_trace():
 		var thread = _threads[t]
 		var is_current = (t == _threads.size() - 1)
 		sb += str("=== THREAD ", str(t + 1), "/", str(_threads.size()), " ",
-				 ("(current) " if is_current else "" ), "===\n")
+				("(current) " if is_current else "" ), "===\n")
 
 		var i = 0
 		while i < thread.callstack.size():
@@ -472,7 +460,7 @@ func get_callstack_trace():
 
 var _threads = null # Array<InkThread>
 var _thread_counter = 0 # int
-var _start_of_root = InkPointer.null() # Pointer
+var _start_of_root = InkPointer.new_null() # Pointer
 
 # ############################################################################ #
 # GDScript extra methods

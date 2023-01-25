@@ -17,35 +17,27 @@ class_name InkListDefinition
 # Imports
 # ############################################################################ #
 
-var InkTryGetResult = preload("res://addons/inkgd/runtime/extra/try_get_result.gd")
-var InkListItem = preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
+const InkTryGetResult = preload("res://addons/inkgd/runtime/extra/try_get_result.gd")
+const InkListItem = preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
 
 # ############################################################################ #
 
-var name: String :
+var name: String:
 	get:
-		return name # TODOConverter40 Copy here content of get_name 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_name() -> String:
-	return _name
+		return _name
 
 # Dictionary<InkListItem, int> => Dictionary<String, int>
 # Note: 'InkListItem' should actually be serialized into a String, because it
 # needs to be a value type.
-var items: Dictionary :
+var items: Dictionary:
 	get:
-		return items # TODOConverter40 Copy here content of get_items 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_items() -> Dictionary:
-	if _items == null:
-		_items = {}
-		for item_name_and_value_key in _item_name_to_values:
-			var item = InkListItem.new_with_origin_name(self.name, item_name_and_value_key)
-			_items[item.serialized()] = _item_name_to_values[item_name_and_value_key]
+		if _items == null:
+			_items = {}
+			for item_name_and_value_key in _item_name_to_values:
+				var item = InkListItem.new_with_origin_name(self.name, item_name_and_value_key)
+				_items[item.serialized()] = _item_name_to_values[item_name_and_value_key]
 
-	return _items
+		return _items
 var _items
 
 # ############################################################################ #
@@ -75,11 +67,11 @@ func try_get_item_with_value(val: int) -> InkTryGetResult:
 					InkListItem.new_with_origin_name(self.name, named_item_key)
 			)
 
-	return InkTryGetResult.new(false, InkListItem.null())
+	return InkTryGetResult.new(false, InkListItem.new_null())
 
 # (InkListItem) -> { result: InkListItem, exists: bool }
 func try_get_value_for_item(item: InkListItem) -> InkTryGetResult:
-	if !item.item_name:
+	if item.item_name.is_empty():
 		return InkTryGetResult.new(false, 0)
 
 	var value = _item_name_to_values.get(item.item_name)
@@ -90,7 +82,7 @@ func try_get_value_for_item(item: InkListItem) -> InkTryGetResult:
 	return InkTryGetResult.new(true, value)
 
 # (String name, Dictionary<String, int>) -> InkListDefinition
-func _init(name: String,items: Dictionary):
+func _init(name: String, items: Dictionary):
 	_name = name
 	_item_name_to_values = items
 
@@ -108,4 +100,4 @@ func get_class() -> String:
 	return "InkListDefinition"
 
 func _to_string() -> String:
-	return "[InkListDefinition \"%s\"]" % get_name()
+	return "[InkListDefinition \"%s\"]" % self.name

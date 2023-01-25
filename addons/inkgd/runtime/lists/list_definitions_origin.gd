@@ -25,17 +25,13 @@ var InkListValue = load("res://addons/inkgd/runtime/values/list_value.gd")
 # ############################################################################ #
 
 # Array<InkListDefinition>
-var lists: Array :
+var lists: Array[InkListDefinition] :
 	get:
-		return lists # TODOConverter40 Copy here content of get_lists 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_lists() -> Array:
-	var list_of_lists = []
-	for named_list_key in _lists:
-		list_of_lists.append(_lists[named_list_key])
+		var list_of_lists = []
+		for named_list_key in _lists:
+			list_of_lists.append(_lists[named_list_key])
 
-	return list_of_lists
+		return list_of_lists
 
 # ############################################################################ #
 

@@ -19,13 +19,6 @@ class_name InkFlow
 var CallStack = load("res://addons/inkgd/runtime/callstack.gd")
 
 # ############################################################################ #
-# Self-reference
-# ############################################################################ #
-
-static func Flow():
-	return load("res://addons/inkgd/runtime/flow.gd")
-
-# ############################################################################ #
 
 var name # string
 var callstack # CallStack
@@ -57,10 +50,10 @@ func _init_with_name_and_jobject(name, story, jobject):
 # (SimpleJson.Writer) -> void
 func write_json(writer):
 	writer.write_object_start()
-	writer.write_property("callstack", funcref(self.callstack, "write_json"))
+	writer.write_property("callstack", self.callstack.write_json)
 	writer.write_property(
 		"outputStream",
-		funcref(self, "_anonymous_write_property_output_stream")
+		self._anonymous_write_property_output_stream
 	)
 
 	var has_choice_threads = false
@@ -83,7 +76,7 @@ func write_json(writer):
 
 	writer.write_property(
 		"currentChoices",
-		funcref(self, "_anonymous_write_property_current_choices")
+		self._anonymous_write_property_current_choices
 	)
 
 	writer.write_object_end()
@@ -126,19 +119,19 @@ func get_class():
 	return "Flow"
 
 static func new_with_name(name, story):
-	var flow = Flow().new()
+	var flow = InkFlow.new()
 	flow._init_with_name(name, story)
 	return flow
 
 static func new_with_name_and_jobject(name, story, jobject):
-	var flow = Flow().new()
+	var flow = InkFlow.new()
 	flow._init_with_name_and_jobject(name, story, jobject)
 	return flow
 
 # ############################################################################ #
 var Json :
 	get:
-		return Json # TODOConverter40 Copy here content of get_Json 
+		return Json # TODOConverter40 Copy here content of get_Json
 	set(mod_value):
 		mod_value  # TODOConverter40  Non existent set function
 func get_Json():
@@ -150,6 +143,6 @@ func get_static_json():
 	var InkRuntime = Engine.get_main_loop().root.get_node("__InkRuntime")
 
 	Utils.__assert__(InkRuntime != null,
-				 str("Could not retrieve 'InkRuntime' singleton from the scene tree."))
+				str("Could not retrieve 'InkRuntime' singleton from the scene tree."))
 
 	_Json = weakref(InkRuntime.json)

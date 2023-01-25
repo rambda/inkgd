@@ -30,13 +30,8 @@ var editor_filesystem: EditorFileSystem
 ## `true` if the editor is running checked Windows, `false` otherwise.
 var is_running_on_windows: bool :
 	get:
-		return is_running_on_windows # TODOConverter40 Copy here content of get_is_running_on_windows 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_is_running_on_windows() -> bool:
-	var os_name = OS.get_name()
-	return (os_name == "Windows" || os_name == "UWP")
-
+		var os_name = OS.get_name()
+		return (os_name == "Windows" || os_name == "UWP")
 
 # ############################################################################ #
 # Overrides

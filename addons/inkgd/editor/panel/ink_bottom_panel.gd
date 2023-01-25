@@ -1,4 +1,4 @@
-# warning-ignore-all:return_value_discarded
+ # warning-ignore-all:return_value_discarded
 
 # ############################################################################ #
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -75,7 +75,7 @@ func _ready():
 	_tab_container.add_child(_preview_panel)
 	_tab_container.add_child(_configuration_panel)
 
-	_beta_button.connect("pressed",Callable(self,"_open_github_issues"))
+	_beta_button.pressed.connect(self._open_github_issues)
 
 	_set_minimum_panel_size()
 
@@ -96,11 +96,11 @@ func _create_progress_texture() -> AnimatedTexture:
 	animated_texture.frames = 8
 
 	for index in range(8):
-		var texture = get_icon(str("Progress", (index + 1)), "EditorIcons")
+		var texture = get_theme_icon(str("Progress", (index + 1)), "EditorIcons")
 		animated_texture.set_frame_texture(index, texture)
 
 	return animated_texture
 
 func _set_minimum_panel_size():
 	# Adapting the minimum size of the panel to the scale of the editor.
-	minimum_size = Vector2(900, 245) * editor_interface.scale
+	custom_minimum_size = Vector2(900, 245) * editor_interface.scale

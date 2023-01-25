@@ -249,7 +249,7 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 		write_choice(writer, choice)
 		return
 
-	Utils.throw_exception("Failed to convert runtime object to Json token: %s", obj)
+	Utils.throw_exception("Failed to convert runtime object to Json token: %s")
 	return
 
 # (Dictionary<String, Variant>) -> Dictionary<String, InkObject>

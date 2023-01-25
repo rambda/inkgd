@@ -20,14 +20,11 @@ var _start_time: int = -1
 
 var elapsed_milliseconds :
 	get:
-		return elapsed_milliseconds # TODOConverter40 Copy here content of get_elapsed_milliseconds 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_elapsed_milliseconds() -> int:
-	if _start_time == -1:
-		return 0
+		if _start_time == -1:
+			return 0
 
-	return Time.get_ticks_msec() - _start_time
+		return Time.get_ticks_msec() - _start_time
+
 
 # ############################################################################ #
 

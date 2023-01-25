@@ -31,13 +31,9 @@ extends Window
 ## The message displayed in the dialog.
 var message_text: String :
 	get:
-		return message_text # TODOConverter40 Copy here content of get_message_text
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_message_text
-func set_message_text(text: String):
-	_message_label.text = text
-func get_message_text() -> String:
-	return _message_label.text
+		return _message_label.text
+	set(text):
+		_message_label.text = text
 
 ## An output, often the result of a command, than can optionally be displayed
 ## in the dialog.
@@ -45,14 +41,10 @@ func get_message_text() -> String:
 ## Setting this property to null hides the corresponding panel in the dialog.
 var output_text: String :
 	get:
-		return output_text # TODOConverter40 Copy here content of get_output_text
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_output_text
-func set_output_text(text: String):
-	_output_label.text = text
-	_output_label.visible = !(text == null || text.length() == 0)
-func get_output_text() -> String:
-	return _output_label.text
+		return _output_label.text # TODOConverter40 Copy here content of get_output_text
+	set(text):
+		_output_label.text = text
+		_output_label.visible = !(text == null || text.length() == 0)
 
 # ############################################################################ #
 # Overriden Methods
@@ -99,11 +91,11 @@ func _get_source_font():
 
 ## Gets the theme currently used by the editor.
 func _retrieve_base_theme():
-	var parent: Control = self
+	var parent = self
 
 	while(parent != null && parent.theme == null):
 		var older_parent = parent.get_parent()
-		if older_parent is Control:
+		if "theme" in older_parent:
 			parent = older_parent
 		else:
 			break

@@ -17,35 +17,18 @@ extends InkObject
 
 class_name InkListItem
 
-# ############################################################################ #
-# Self-reference
-# ############################################################################ #
-
-static func InkListItem():
-	return load("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
-
-# ############################################################################ #
-
 # Originally these were simple variables, but they are turned into properties to
 # make the object "immutable". That way it can be passed around without being
 # duplicated.
 
-var origin_name :
+var origin_name:
 	get:
-		return origin_name # TODOConverter40 Copy here content of get_origin_name 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_origin_name():
-	return _origin_name
+		return _origin_name
 var _origin_name = null # String
 
-var item_name :
+var item_name:
 	get:
-		return item_name # TODOConverter40 Copy here content of get_item_name 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_item_name():
-	return _item_name
+		return _item_name
 var _item_name = null # String
 
 # ############################################################################ #
@@ -61,31 +44,23 @@ func _init_with_full_name(full_name):
 	self._origin_name = name_parts[0]
 	self._item_name = name_parts[1]
 
-static func null() -> InkListItem:
-	return InkListItem().new_with_origin_name(null, null)
+static func new_null() -> InkListItem:
+	return InkListItem.new_with_origin_name(null, null)
 
 # ############################################################################ #
 
 var is_null: bool :
 	get:
-		return is_null # TODOConverter40 Copy here content of get_is_null 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_is_null() -> bool:
-	return self.origin_name == null && self.item_name == null
+		return self.origin_name == null && self.item_name == null
 
 # String
-var full_name :
+var full_name: String:
 	get:
-		return full_name # TODOConverter40 Copy here content of get_full_name 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_full_name():
-	# In C#, concatenating null produce nothing, in GDScript, it appends "Null".
-	return (
-			(self.origin_name if self.origin_name else "?") + "." +
-			(self.item_name if self.item_name else "")
-	)
+		# In C#, concatenating null produce nothing, in GDScript, it appends "Null".
+		return (
+				(self.origin_name if self.origin_name else "?") + "." +
+				(self.item_name if self.item_name else "")
+		)
 
 # ############################################################################ #
 
@@ -108,13 +83,13 @@ func equals(obj: InkObject) -> bool:
 
 # (string, string) -> InkListItem
 static func new_with_origin_name(origin_name, item_name) -> InkListItem:
-	var list_item = InkListItem().new()
+	var list_item = InkListItem.new()
 	list_item._init_with_origin_name(origin_name, item_name)
 	return list_item
 
 # (string) -> InkListItem
 static func new_with_full_name(full_name) -> InkListItem:
-	var list_item = InkListItem().new()
+	var list_item = InkListItem.new()
 	list_item._init_with_full_name(full_name)
 	return list_item
 
@@ -138,7 +113,7 @@ func get_class() -> String:
 # instance. The result is intended to be used as a key inside a Map.
 func serialized() -> String:
 	# We are simply using a JSON representation as a value-typed key.
-	var json_print = JSON.print(
+	var json_print = JSON.stringify(
 			{ "originName": self.origin_name, "itemName": self.item_name }
 	)
 	return json_print
@@ -147,13 +122,11 @@ func serialized() -> String:
 #
 # (String) -> InkListItem
 static func from_serialized_key(key: String) -> InkListItem:
-	var test_json_conv = JSON.new()
-	test_json_conv.parse(key).result
-	var obj = test_json_conv.get_data()
-	if !InkListItem()._is_like_ink_list_item(obj):
-		return InkListItem().null()
+	var obj = JSON.parse_string(key)
+	if !InkListItem._is_like_ink_list_item(obj):
+		return InkListItem.new_null()
 
-	return InkListItem().new_with_origin_name(obj["originName"], obj["itemName"])
+	return InkListItem.new_with_origin_name(obj["originName"], obj["itemName"])
 
 # Determines whether the given item is sufficiently `InkListItem`-like
 # to be used as a template when reconstructing the InkListItem.
