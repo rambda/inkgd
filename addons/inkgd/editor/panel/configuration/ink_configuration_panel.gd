@@ -107,6 +107,7 @@ func _ready():
 
 	_mono_support_container.visible = _can_run_mono()
 
+	_file_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
 	add_child(_file_dialog)
 
 
@@ -233,7 +234,7 @@ func _reset_file_dialog():
 
 func _update_save_and_cleanup(value, line_edit):
 	line_edit.text = value
-	line_edit.update()
+	line_edit.queue_redraw()
 
 	configuration.persist()
 

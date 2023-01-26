@@ -110,7 +110,7 @@ func _exit_tree():
 	remove_custom_type("InkPlayer")
 
 
-func build():
+func _build():
 	if _configuration.compilation_mode == InkConfiguration.BuildMode.DURING_BUILD:
 		var previous_result = true
 		for story_configuration in _configuration.stories:
