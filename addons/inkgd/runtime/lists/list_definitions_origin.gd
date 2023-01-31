@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -16,11 +14,6 @@ class_name InkListDefinitionsOrigin
 # ############################################################################ #
 # Imports
 # ############################################################################ #
-
-var InkTryGetResult = preload("res://addons/inkgd/runtime/extra/try_get_result.gd")
-var InkListItem = preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
-
-var InkListValue = load("res://addons/inkgd/runtime/values/list_value.gd")
 
 # ############################################################################ #
 
@@ -56,7 +49,7 @@ func _init(lists: Array):
 
 # (String) -> { result: String, exists: bool }
 func try_list_get_definition(name: String) -> InkTryGetResult:
-	if name == null:
+	if name == "":
 		return InkTryGetResult.new(false, null)
 
 	var definition = _lists.get(name)

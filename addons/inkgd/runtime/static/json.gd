@@ -9,7 +9,7 @@
 
 extends InkBase
 
-class_name InkStaticJSON
+class_name Json
 
 # In the C# code this class has only static methods. In the GDScript, it will rather
 # be a unique object, added to the InkRuntime singleton.
@@ -18,47 +18,17 @@ class_name InkStaticJSON
 # IMPORTS
 # ############################################################################ #
 
-var PushPopType = preload("res://addons/inkgd/runtime/enums/push_pop.gd").PushPopType
-var InkListItem = preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
-
-# ############################################################################ #
-
-var InkNativeFunctionCall = load("res://addons/inkgd/runtime/content/native_function_call.gd")
-
-var InkValue = load("res://addons/inkgd/runtime/values/value.gd")
-var InkStringValue = load("res://addons/inkgd/runtime/values/string_value.gd")
-var InkDivertTargetValue = load("res://addons/inkgd/runtime/values/divert_target_value.gd")
-var InkVariablePointerValue = load("res://addons/inkgd/runtime/values/variable_pointer_value.gd")
-var InkListValue = load("res://addons/inkgd/runtime/values/list_value.gd")
-
-var InkControlCommand = load("res://addons/inkgd/runtime/content/control_command.gd")
-var InkGlue = load("res://addons/inkgd/runtime/content/glue.gd")
-var InkVoid = load("res://addons/inkgd/runtime/content/void.gd")
-
-var InkPath = load("res://addons/inkgd/runtime/ink_path.gd")
-var InkDivert = load("res://addons/inkgd/runtime/content/divert.gd")
-var InkTag = load("res://addons/inkgd/runtime/content/tag.gd")
-
-var InkContainer = load("res://addons/inkgd/runtime/content/container.gd")
-var InkChoice = load("res://addons/inkgd/runtime/content/choices/choice.gd")
-var InkChoicePoint = load("res://addons/inkgd/runtime/content/choices/choice_point.gd")
-
-var InkList = load("res://addons/inkgd/runtime/lists/ink_list.gd")
-var InkListDefinition = load("res://addons/inkgd/runtime/lists/list_definition.gd")
-var InkListDefinitionsOrigin = load("res://addons/inkgd/runtime/lists/list_definitions_origin.gd")
-
-var InkVariableReference = load("res://addons/inkgd/runtime/content/variable_reference.gd")
-var InkVariableAssignment = load("res://addons/inkgd/runtime/content/variable_assignment.gd")
+const PushPopType = preload("res://addons/inkgd/runtime/enums/push_pop.gd").PushPopType
 
 # ############################################################################ #
 
 # (Array<Variant>, bool) -> Array
-func jarray_to_runtime_obj_list(jarray: Array, skip_last = false) -> Array:
+static func jarray_to_runtime_obj_list(jarray: Array, skip_last := false) -> Array[InkObject]:
 	var count = jarray.size()
 	if skip_last:
 		count -= 1
 
-	var list = []
+	var list: Array[InkObject] = []
 	var i = 0
 	while (i < count):
 		var jtok = jarray[i]
@@ -70,7 +40,7 @@ func jarray_to_runtime_obj_list(jarray: Array, skip_last = false) -> Array:
 	return list
 
 # (self.Json.Writer, Dictionary<String, InkObject>) -> void
-func write_dictionary_runtime_objs(writer, dictionary: Dictionary) -> void:
+static func write_dictionary_runtime_objs(writer, dictionary: Dictionary) -> void:
 	writer.write_object_start()
 	for key in dictionary:
 		writer.write_property_start(key)
@@ -79,27 +49,27 @@ func write_dictionary_runtime_objs(writer, dictionary: Dictionary) -> void:
 	writer.write_object_end()
 
 # (self.Json.Writer, Array<InkObject>) -> void
-func write_list_runtime_objs(writer, list: Array) -> void:
+static func write_list_runtime_objs(writer, list: Array) -> void:
 	writer.write_array_start()
 	for val in list:
 		write_runtime_object(writer, val)
 	writer.write_array_end()
 
 # (self.Json.Writer, Array<Int>) -> void
-func write_int_dictionary(writer, dict: Dictionary) -> void:
+static func write_int_dictionary(writer, dict: Dictionary) -> void:
 	writer.write_object_start()
 	for key in dict:
 		writer.write_property(key, dict[key])
 	writer.write_object_end()
 
 # (self.Json.Writer, InkObject) -> void
-func write_runtime_object(writer, obj: InkObject) -> void:
-	var container = Utils.as_or_null(obj, "InkContainer")
+static func write_runtime_object(writer, obj: InkObject) -> void:
+	var container = obj as InkContainer
 	if container:
 		write_runtime_container(writer, container)
 		return
 
-	var divert = Utils.as_or_null(obj, "Divert")
+	var divert = obj as InkDivert
 	if divert:
 		var div_type_key = "->" # String
 		if divert.is_external:
@@ -132,7 +102,7 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 		writer.write_object_end()
 		return
 
-	var choice_point = Utils.as_or_null(obj, "ChoicePoint")
+	var choice_point = obj as InkChoicePoint
 	if choice_point:
 		writer.write_object_start()
 		writer.write_property("*", choice_point.path_string_on_choice)
@@ -140,22 +110,22 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 		writer.write_object_end()
 		return
 
-	var bool_val = Utils.as_or_null(obj, "BoolValue")
+	var bool_val = obj as InkBoolValue
 	if bool_val:
 		writer.write(bool_val.value)
 		return
 
-	var int_val = Utils.as_or_null(obj, "IntValue")
+	var int_val = obj as InkIntValue
 	if int_val:
 		writer.write(int_val.value)
 		return
 
-	var float_val = Utils.as_or_null(obj, "FloatValue")
+	var float_val = obj as InkFloatValue
 	if float_val:
 		writer.write(float_val.value)
 		return
 
-	var str_val = Utils.as_or_null(obj, "StringValue")
+	var str_val = obj as InkStringValue
 	if str_val:
 		if str_val.is_newline:
 			writer.write_string("\\n", false)
@@ -166,19 +136,19 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 			writer.write_string_end()
 		return
 
-	var list_val = Utils.as_or_null(obj, "ListValue")
+	var list_val = obj as InkListValue
 	if list_val:
 		write_ink_list(writer, list_val)
 		return
 
-	var div_target_val = Utils.as_or_null(obj, "DivertTargetValue")
+	var div_target_val = obj as InkDivertTargetValue
 	if div_target_val:
 		writer.write_object_start()
 		writer.write_property("^->", div_target_val.value.components_string)
 		writer.write_object_end()
 		return
 
-	var var_ptr_val = Utils.as_or_null(obj, "VariablePointerValue")
+	var var_ptr_val = obj as InkVariablePointerValue
 	if var_ptr_val:
 		writer.write_object_start()
 		writer.write_property("^var", var_ptr_val.value)
@@ -186,17 +156,17 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 		writer.write_object_end()
 		return
 
-	var glue = Utils.as_or_null(obj, "Glue")
+	var glue = obj as InkGlue
 	if glue:
 		writer.write("<>")
 		return
 
-	var control_cmd = Utils.as_or_null(obj, "ControlCommand")
+	var control_cmd = obj as InkControlCommand
 	if control_cmd:
-		writer.write(self._control_command_names[control_cmd.command_type])
+		writer.write(_get_control_command_names()[control_cmd.command_type])
 		return
 
-	var native_func = Utils.as_or_null(obj, "NativeFunctionCall")
+	var native_func = obj as InkNativeFunctionCall
 	if native_func:
 		var name = native_func.name
 
@@ -205,12 +175,12 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 		writer.write(name)
 		return
 
-	var var_ref = Utils.as_or_null(obj, "VariableReference")
+	var var_ref = obj as InkVariableReference
 	if var_ref:
 		writer.write_object_start()
 
 		var read_count_path = var_ref.path_string_for_count
-		if read_count_path != null:
+		if read_count_path != "":
 			writer.write_property(["CNT?"], read_count_path)
 		else:
 			writer.write_property(["VAR?"], var_ref.name)
@@ -218,7 +188,7 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 		writer.write_object_end()
 		return
 
-	var var_ass = Utils.as_or_null(obj, "VariableAssignment")
+	var var_ass = obj as InkVariableAssignment
 	if var_ass:
 		writer.write_object_start()
 
@@ -232,19 +202,19 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 
 		return
 
-	var void_obj = Utils.as_or_null(obj, "Void")
+	var void_obj = obj as InkVoid
 	if void_obj:
 		writer.write("void")
 		return
 
-	var tag = Utils.as_or_null(obj, "Tag")
+	var tag = obj as InkTag
 	if tag:
 		writer.write_object_start()
 		writer.write_property("#", tag.text)
 		writer.write_object_end()
 		return
 
-	var choice = Utils.as_or_null(obj, "Choice")
+	var choice = obj as InkChoice
 	if choice:
 		write_choice(writer, choice)
 		return
@@ -253,48 +223,48 @@ func write_runtime_object(writer, obj: InkObject) -> void:
 	return
 
 # (Dictionary<String, Variant>) -> Dictionary<String, InkObject>
-func jobject_to_dictionary_runtime_objs(jobject: Dictionary) -> Dictionary:
+static func jobject_to_dictionary_runtime_objs(jobject: Dictionary) -> Dictionary:
 	var dict = {}
 
 	for key in jobject:
+		assert(key is String)
 		dict[key] = jtoken_to_runtime_object(jobject[key])
 
 	return dict
 
 # (Dictionary<String, Variant>) -> Dictionary<String, int>
-func jobject_to_int_dictionary(jobject: Dictionary) -> Dictionary:
+static func jobject_to_int_dictionary(jobject: Dictionary) -> Dictionary:
 	var dict = {}
 	for key in jobject:
+		assert(key is String)
 		dict[key] = int(jobject[key])
 
 	return dict
 
 # (Variant) -> InkObject
-func jtoken_to_runtime_object(token) -> InkObject:
+static func jtoken_to_runtime_object(token) -> InkObject:
 
 	if token is int || token is float || token is bool:
 		return InkValue.create(token)
 
 	if token is String:
-		var _str = token
+		var _str: String = token
 
-		var first_char = _str[0]
+		var first_char: String = _str[0]
 		if first_char == "^":
-			return InkStringValue.new_with(_str.substr(1, _str.length() - 1))
+			return InkStringValue.new(_str.substr(1, _str.length() - 1))
 		elif first_char == "\n" && _str.length() == 1:
-			return InkStringValue.new_with("\n")
+			return InkStringValue.new("\n")
 
 		if _str == "<>": return InkGlue.new()
 
-		var i = 0
-		while (i < _control_command_names.size()):
-			var cmd_name = _control_command_names[i]
-			if _str == cmd_name:
-				return InkControlCommand.new(i)
-			i += 1
+		var _control_command_names := _get_control_command_names()
+		var i := _control_command_names.find(_str)
+		if i > 0:
+			return InkControlCommand.new(i)
 
 		if _str == "L^": _str = "^"
-		if _static_native_function_call.call_exists_with_name(_str):
+		if InkNativeFunctionCall.call_exists_with_name(_str):
 			return InkNativeFunctionCall.call_with_name(_str)
 
 		if _str == "->->":
@@ -306,12 +276,12 @@ func jtoken_to_runtime_object(token) -> InkObject:
 			return InkVoid.new()
 
 	if token is Dictionary:
-		var obj = token
+		var obj: Dictionary = token
 		var prop_value
 
 		if obj.has("^->"):
 			prop_value = obj["^->"]
-			return InkDivertTargetValue.new_with(
+			return InkDivertTargetValue.new(
 					InkPath.new_with_components_string(str(prop_value))
 			)
 
@@ -428,7 +398,7 @@ func jtoken_to_runtime_object(token) -> InkObject:
 				var val = list_content[name_to_val_key]
 				raw_list.set_item(item, val)
 
-			return InkListValue.new_with(raw_list)
+			return InkListValue.new(raw_list)
 
 		if obj.has("originalChoicePath"):
 			return jobject_to_choice(obj)
@@ -444,25 +414,25 @@ func jtoken_to_runtime_object(token) -> InkObject:
 	return null
 
 # (self.Json.Writer, InkContainer, Bool) -> void
-func write_runtime_container(writer, container: InkContainer, without_name = false) -> void:
+static func write_runtime_container(writer, container: InkContainer, without_name := false) -> void:
 	writer.write_array_start()
 
 	for c in container.content:
 		write_runtime_object(writer, c)
 
-	var named_only_content = container.named_only_content
-	var count_flags = container.count_flags
-	var has_name_property = (container.name != null) && !without_name
+	var named_only_content := container.named_only_content
+	var count_flags := container.count_flags
+	var has_name_property := (container.name != "") && !without_name
 
-	var has_terminator = named_only_content != null || count_flags > 0 || has_name_property
+	var has_terminator := (!named_only_content.is_empty()) || count_flags > 0 || has_name_property
 
 	if has_terminator:
 		writer.write_object_start()
 
-	if named_only_content != null:
+	if not named_only_content.is_empty():
 		for named_content_key in named_only_content:
 			var name = named_content_key
-			var named_container = Utils.as_or_null(named_only_content[named_content_key], "InkContainer")
+			var named_container = named_only_content[named_content_key] as InkContainer
 			writer.write_property_start(name)
 			write_runtime_container(writer, named_container, true)
 			writer.write_property_end()
@@ -481,12 +451,12 @@ func write_runtime_container(writer, container: InkContainer, without_name = fal
 	writer.write_array_end()
 
 # (Array<Variant>) -> InkContainer
-func jarray_to_container(jarray: Array) -> InkContainer:
-	var container = InkContainer.new()
+static func jarray_to_container(jarray: Array) -> InkContainer:
+	var container: InkContainer = InkContainer.new()
 	container.content = jarray_to_runtime_obj_list(jarray, true)
 
-	var terminating_obj = Utils.as_or_null(jarray.back(), "Dictionary") # Dictionary<string, Variant>
-	if terminating_obj != null:
+	var terminating_obj = jarray.back() # Dictionary<string, Variant>
+	if terminating_obj is Dictionary:
 		var named_only_content = {} # new Dictionary<String, InkObject>
 
 		for key in terminating_obj:
@@ -496,7 +466,7 @@ func jarray_to_container(jarray: Array) -> InkContainer:
 				container.name = str(terminating_obj[key])
 			else:
 				var named_content_item = jtoken_to_runtime_object(terminating_obj[key])
-				var named_sub_container = Utils.as_or_null(named_content_item, "InkContainer")
+				var named_sub_container = named_content_item as InkContainer
 				if named_sub_container:
 					named_sub_container.name = key
 				named_only_content[key] = named_content_item
@@ -505,8 +475,8 @@ func jarray_to_container(jarray: Array) -> InkContainer:
 
 	return container
 
-# (Dictionary<String, Variant>) -> Choice
-func jobject_to_choice(jobj: Dictionary) -> InkChoice:
+# (Dictionary<String, Variant>) -> InkChoice
+static func jobject_to_choice(jobj: Dictionary) -> InkChoice:
 	var choice = InkChoice.new()
 	choice.text = str(jobj["text"])
 	choice.index = int(jobj["index"])
@@ -515,8 +485,8 @@ func jobject_to_choice(jobj: Dictionary) -> InkChoice:
 	choice.path_string_on_choice = str(jobj["targetPath"])
 	return choice
 
-# (self.Json.Writer, Choice) -> Void
-func write_choice(writer, choice: InkChoice) -> void:
+# (self.Json.Writer, InkChoice) -> Void
+static func write_choice(writer, choice: InkChoice) -> void:
 	writer.write_object_start()
 	writer.write_property("text", choice.text)
 	writer.write_property("index", choice.index)
@@ -525,8 +495,8 @@ func write_choice(writer, choice: InkChoice) -> void:
 	writer.write_property("targetPath", choice.path_string_on_choice)
 	writer.write_object_end()
 
-# (self.Json.Writer, ListValue) -> Void
-func write_ink_list(writer, list_val):
+# (self.Json.Writer, InkListValue) -> Void
+static func write_ink_list(writer, list_val):
 	var raw_list = list_val.value
 
 	writer.write_object_start()
@@ -564,7 +534,7 @@ func write_ink_list(writer, list_val):
 	writer.write_object_end()
 
 # (ListDefinitionsOrigin) -> Dictionary<String, Variant>
-func list_definitions_to_jtoken (origin):
+static func list_definitions_to_jtoken (origin: InkListDefinitionsOrigin) -> Dictionary:
 	var result = {} # Dictionary<String, Variant>
 	for def in origin.lists:
 		var list_def_json = {} # Dictionary<String, Variant>
@@ -578,14 +548,14 @@ func list_definitions_to_jtoken (origin):
 	return result
 
 # (Variant) -> ListDefinitionsOrigin
-func jtoken_to_list_definitions(obj):
-	var defs_obj = obj
+static func jtoken_to_list_definitions(obj: Variant) -> InkListDefinitionsOrigin:
+	var defs_obj: Dictionary = obj # Dictionary<String, Variant>
 
-	var all_defs = [] # Array<ListDefinition>
+	var all_defs: Array[InkListDefinition] = [] # Array<ListDefinition>
 
 	for k in defs_obj:
 		var name = str(k) # String
-		var list_def_json = defs_obj[k] # Dictionary<String, Variant>
+		var list_def_json: Dictionary = defs_obj[k] # Dictionary<String, Variant>
 
 
 		var items = {} # Dictionary<String, int>
@@ -597,11 +567,9 @@ func jtoken_to_list_definitions(obj):
 
 	return InkListDefinitionsOrigin.new(all_defs)
 
-func _init(native_function_call):
-	_static_native_function_call = native_function_call
-
-	_control_command_names = []
-
+static func init():
+	var _control_command_names: Array[String] = []
+#	_control_command_names.resize(InkControlCommand.CommandType.TOTAL_VALUES)
 	_control_command_names.append("ev")        # EVAL_START
 	_control_command_names.append("out")       # EVAL_OUTPUT
 	_control_command_names.append("/ev")       # EVAL_END
@@ -626,17 +594,23 @@ func _init(native_function_call):
 	_control_command_names.append("listInt")   # LIST_FROM_INT
 	_control_command_names.append("range")     # LIST_RANGE
 	_control_command_names.append("lrnd")      # LIST_RANDOM
+	_set_control_command_names(_control_command_names)
 
-	var i = 0
-	while i < InkControlCommand.CommandType.TOTAL_VALUES:
+	for i in InkControlCommand.CommandType.TOTAL_VALUES:
 		if _control_command_names[i] == null:
 			Utils.throw_exception("Control command not accounted for in serialisation")
-		i += 1
 
+	print(_get_control_command_names())
 # Array<String>
-var _control_command_names = null
+#var _control_command_names: Array[String] = [] # TODO Check if nullable
 
 # ############################################################################ #
 
-# Eventually a pointer to InkRuntime.StaticJson
-var _static_native_function_call = null
+const meta = "Json_control_command_names"
+
+static func _get_control_command_names() -> Array[String]:
+	var array = (Json as Script).get_meta(meta)
+	return array if array else []
+
+static func _set_control_command_names(value: Array[String]) -> void:
+	(Json as Script).set_meta(meta, value)

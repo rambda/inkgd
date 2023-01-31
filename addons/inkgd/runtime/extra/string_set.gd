@@ -27,9 +27,9 @@ func clear() -> void:
 	_dictionary.clear()
 
 func duplicate() -> InkStringSet:
-	var set = InkStringSet.new()
-	set._dictionary = _dictionary.duplicate()
-	return set
+	var str_set := InkStringSet.new()
+	str_set._dictionary = _dictionary.duplicate()
+	return str_set
 
 func enumerate() -> Array:
 	return _dictionary.keys()

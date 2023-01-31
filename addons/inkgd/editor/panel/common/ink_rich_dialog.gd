@@ -41,7 +41,7 @@ var message_text: String :
 ## Setting this property to null hides the corresponding panel in the dialog.
 var output_text: String :
 	get:
-		return _output_label.text # TODOConverter40 Copy here content of get_output_text
+		return _output_label.text
 	set(text):
 		_output_label.text = text
 		_output_label.visible = !(text == null || text.length() == 0)
@@ -51,7 +51,7 @@ var output_text: String :
 # ############################################################################ #
 
 func _ready():
-	_accept_button.connect("pressed",Callable(self,"_accept_button_pressed"))
+	_accept_button.pressed.connect(self._accept_button_pressed)
 
 	var font = _get_source_font()
 	if font != null:

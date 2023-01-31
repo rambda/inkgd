@@ -49,6 +49,12 @@ func _get_import_options(_path: String, _preset_index: int) -> Array[Dictionary]
 		}
 	]
 
+func _get_import_order() -> int:
+	return 0
+
+func _get_priority() -> float:
+	return 1.0
+
 func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
 	return true
 
@@ -84,5 +90,4 @@ func _get_file_content(source_file):
 
 	var text_content = file.get_as_text()
 
-	file.close()
 	return text_content

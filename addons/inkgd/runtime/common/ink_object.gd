@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -17,19 +15,18 @@ class_name InkObject
 # Imports
 # ############################################################################ #
 
-const InkPath = preload("res://addons/inkgd/runtime/ink_path.gd")
-
-# ############################################################################ #
-
 # () -> InkObject
 # Encapsulating parent into a weak ref.
 var parent: InkObject :
 	get:
-		return self._parent.get_ref()
+		return self._parent
+#		return self._parent.get_ref()
 	set(value):
-		self._parent = weakref(value)
+		self._parent = _parent
+#		self._parent = weakref(value)
 
-var _parent: WeakRef = WeakRef.new() # InkObject
+var _parent: InkObject # InkObjec
+#var _parent: WeakRef = WeakRef.new() # InkObject
 
 # ############################################################################ #
 
@@ -44,7 +41,7 @@ var debug_metadata: InkDebugMetadata:
 	set(value):
 		_debug_metadata = value
 
-var _debug_metadata = null # InkDebugMetadata
+var _debug_metadata: InkDebugMetadata = null # InkDebugMetadata
 
 # ############################################################################ #
 
@@ -56,11 +53,11 @@ var own_debug_metadata: InkDebugMetadata:
 # ############################################################################ #
 
 # (InkPath) -> int?
-func debug_line_number_of_path(path: InkPath):
+func debug_line_number_of_path(path: InkPath) -> int:
 	if path == null:
-		return null
+		return -1
 
-	var root = self.root_content_container
+	var root := self.root_content_container
 	if root != null:
 		var target_content = root.content_at_path(path).obj
 		if target_content:
@@ -68,48 +65,48 @@ func debug_line_number_of_path(path: InkPath):
 			if dm != null:
 				return dm.start_line_number
 
-	return null
+	return -1
 
 # TODO: Make inspectable
 # InkPath
 var path: InkPath :
 	get:
 		if _path == null:
-			if self.parent == null:
+			if not is_instance_valid(self.parent):
 				_path = InkPath.new()
 			else:
-				var comps: Array = [] # Stack<Path3D.Component>
+				var comps: Array[InkPath.Component] = [] # Stack<InkPath.Component>
 
 				var child = self
-				var container = Utils.as_or_null(child.parent, "InkContainer")
+				var container = child.parent as InkContainer
 
 				while container:
 					var named_child = Utils.as_INamedContent_or_null(child)
 					if (named_child != null && named_child.has_valid_name):
-						comps.push_front(InkPath.Component.new(named_child.name))
+						comps.push_front(InkPath.Component.new_with_name(named_child.name))
 					else:
-						comps.push_front(InkPath.Component.new(container.content.find(child)))
+						comps.push_front(InkPath.Component.new_with_index(container.content.find(child)))
 
 					child = container
-					container = Utils.as_or_null(container.parent, "InkContainer")
+					container = container.parent as InkContainer
 
 				_path = InkPath.new_with_components(comps)
 
 		return _path
 
-var _path = null # InkPath
+var _path: InkPath = null # InkPath
 
 # (InkPath) -> SearchResult
 func resolve_path(path: InkPath) -> InkSearchResult:
 	if path.is_relative:
-		var nearest_container = Utils.as_or_null(self, "InkContainer")
+		var nearest_container = self as InkContainer
 		if !nearest_container:
 			Utils.__assert__(
 					self.parent != null,
 					"Can't resolve relative path because we don't have a parent"
 			)
 
-			nearest_container = Utils.as_or_null(self.parent, "InkContainer")
+			nearest_container = self.parent as InkContainer
 
 			Utils.__assert__(nearest_container != null, "Expected parent to be a container")
 			Utils.__assert__(path.get_component(0).is_parent)
@@ -183,7 +180,7 @@ var root_content_container: InkContainer:
 		while (ancestor.parent):
 			ancestor = ancestor.parent
 
-		return Utils.as_or_null(ancestor, "InkContainer")
+		return ancestor as InkContainer
 
 # () -> InkObject
 func copy():

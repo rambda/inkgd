@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -21,15 +19,15 @@ class_name InkListItem
 # make the object "immutable". That way it can be passed around without being
 # duplicated.
 
-var origin_name:
+var origin_name: String:
 	get:
 		return _origin_name
-var _origin_name = null # String
+var _origin_name := "" # String
 
-var item_name:
+var item_name: String:
 	get:
 		return _item_name
-var _item_name = null # String
+var _item_name := "" # String
 
 # ############################################################################ #
 
@@ -51,7 +49,7 @@ static func new_null() -> InkListItem:
 
 var is_null: bool :
 	get:
-		return self.origin_name == null && self.item_name == null
+		return self.origin_name == "" && self.item_name == ""
 
 # String
 var full_name: String:
@@ -70,7 +68,7 @@ func _to_string() -> String:
 
 # (InkObject) -> bool
 func equals(obj: InkObject) -> bool:
-	if obj.is_class("InkListItem"):
+	if obj is InkListItem:
 		var other_item = obj
 		return (
 			other_item.item_name == self.item_name &&

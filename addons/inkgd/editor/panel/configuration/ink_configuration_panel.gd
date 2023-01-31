@@ -66,25 +66,25 @@ var _file_dialog_selection = FileDialogSelection.UNKNOWN
 # Nodes
 # ############################################################################ #
 
-@onready var _test_button = find_child("TestButton")
+@onready var _test_button = %TestButton
 
-@onready var _use_mono_label = find_child("UseMonoLabel")
-@onready var _use_mono_checkbox = find_child("UseMonoCheckBox")
+@onready var _use_mono_label = %UseMonoLabel
+@onready var _use_mono_checkbox = %UseMonoCheckBox
 
-@onready var _mono_label = find_child("MonoLabel")
-@onready var _mono_container = find_child("MonoH")
-@onready var _mono_line_edit = find_child("MonoLineEdit")
-@onready var _mono_dialog_button = find_child("MonoDialogButton")
+@onready var _mono_label = %MonoLabel
+@onready var _mono_container = %MonoH
+@onready var _mono_line_edit = %MonoLineEdit
+@onready var _mono_dialog_button = %MonoDialogButton
 
-@onready var _executable_line_edit = find_child("ExecutableLineEdit")
-@onready var _executable_dialog_button = find_child("ExecutableDialogButton")
+@onready var _executable_line_edit := %ExecutableLineEdit
+@onready var _executable_dialog_button = %ExecutableDialogButton
 
-@onready var _recompilation_mode_button = find_child("RecompilationModeOptionButton")
+@onready var _recompilation_mode_button = %RecompilationModeOptionButton
 
-@onready var _mono_support_container = find_child("MonoSupportV")
-@onready var _mono_support_documentation_button = find_child("DocumentationButton")
-@onready var _mono_support_presence_label = _mono_support_container.find_child("PresenceLabel")
-@onready var _mono_support_refresh_button = _mono_support_container.find_child("RefreshButton")
+@onready var _mono_support_container = %MonoSupportV
+@onready var _mono_support_documentation_button = %DocumentationButton
+@onready var _mono_support_presence_label = %PresenceLabel
+@onready var _mono_support_refresh_button = %RefreshButton
 
 
 # ############################################################################ #
@@ -174,7 +174,7 @@ func _test_button_pressed():
 		var dialog = AcceptDialog.new()
 		add_child(dialog)
 
-		dialog.window_title = "Success"
+		dialog.title = "Success"
 		dialog.dialog_text = "The configuration seems to be valid!"
 
 		dialog.popup_centered()
@@ -183,7 +183,7 @@ func _test_button_pressed():
 		add_child(dialog)
 
 
-		dialog.window_title = "Error"
+		dialog.title = "Error"
 		dialog.message_text = "Something went wrong while testing inklecate's setup. Please see the output below."
 		dialog.output_text = result.output
 		dialog.update_layout(editor_interface.scale)
@@ -281,27 +281,27 @@ func _set_button_icons():
 
 
 func _connect_signals():
-	editor_interface.editor_filesystem.connect("filesystem_changed",Callable(self,"_check_runtime_presence"))
+	editor_interface.editor_filesystem.filesystem_changed.connect(self._check_runtime_presence)
 
-	_test_button.connect("pressed",Callable(self,"_test_button_pressed"))
-	_use_mono_checkbox.connect("toggled",Callable(self,"_use_mono_toggled"))
+	_test_button.pressed.connect(self._test_button_pressed)
+	_use_mono_checkbox.toggled.connect(self._use_mono_toggled)
 
-	_mono_line_edit.connect("text_submitted",Callable(self,"_configuration_entered"))
-	_executable_line_edit.connect("text_submitted",Callable(self,"_configuration_entered"))
+	_mono_line_edit.text_submitted.connect(self._configuration_entered)
+	_executable_line_edit.text_submitted.connect(self._configuration_entered)
 
-	_mono_line_edit.connect("focus_exited",Callable(self,"_configuration_focus_exited"))
-	_executable_line_edit.connect("focus_exited",Callable(self,"_configuration_focus_exited"))
+	_mono_line_edit.focus_exited.connect(self._configuration_focus_exited)
+	_executable_line_edit.focus_exited.connect(self._configuration_focus_exited)
 
-	_mono_dialog_button.connect("pressed",Callable(self,"_mono_button_pressed"))
-	_executable_dialog_button.connect("pressed",Callable(self,"_executable_button_pressed"))
+	_mono_dialog_button.pressed.connect(self._mono_button_pressed)
+	_executable_dialog_button.pressed.connect(self._executable_button_pressed)
 
-	_recompilation_mode_button.connect("item_selected",Callable(self,"_recompilation_mode_button_selected"))
+	_recompilation_mode_button.item_selected.connect(self._recompilation_mode_button_selected)
 
-	_mono_support_documentation_button.connect("pressed",Callable(self,"_mono_support_documentation_pressed"))
-	_mono_support_refresh_button.connect("pressed",Callable(self,"_check_runtime_presence"))
+	_mono_support_documentation_button.pressed.connect(self._mono_support_documentation_pressed)
+	_mono_support_refresh_button.pressed.connect(self._check_runtime_presence)
 
-	_file_dialog.connect("file_selected",Callable(self,"_on_file_selected"))
+	_file_dialog.file_selected.connect(self._on_file_selected)
 
 
 func _can_run_mono():
-	return type_exists("_GodotSharp")
+	return GodotSharp.is_runtime_initialized()

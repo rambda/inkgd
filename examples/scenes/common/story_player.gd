@@ -36,9 +36,10 @@ const USE_SIGNALS = true
 # you can ignore those exports. They just make overriding
 # the story and creating multiple scenes easier.
 # For context, see main.tscn.
-@export var ink_file: Resource
-@export var title: String
+@export var ink_file: InkResource
+@export var title: String = ""
 @export var bind_externals: bool = false
+@export var loads_in_background: bool = true
 
 
 # ############################################################################ #
@@ -71,6 +72,7 @@ var _ink_player = InkPlayerFactory.create()
 # ############################################################################ #
 
 func _ready():
+	_ink_player.loads_in_background = loads_in_background
 	add_child(_ink_player)
 
 	# Again, if you're just trying to figure out how to use
@@ -140,7 +142,7 @@ func _prompt_choices(choices):
 		_story_vbox_container.add_child(_current_choice_container)
 
 		_current_choice_container.create_choices(choices)
-		_current_choice_container.connect("choice_selected",Callable(self,"_choice_selected"))
+		_current_choice_container.choice_selected.connect(self._choice_selected)
 
 
 func _ended():
@@ -211,8 +213,9 @@ func _bind_externals():
 	if !bind_externals:
 		return
 
-	_ink_player.observe_variables(["forceful", "evasive"], self, "_observe_variables")
-	_ink_player.bind_external_function("should_show_debug_menu", self, "_should_show_debug_menu")
+	var a := ["forceful", "evasive"]
+	_ink_player.observe_variables(a, _observe_variables)
+	_ink_player.bind_external_function("should_show_debug_menu", _should_show_debug_menu)
 
 
 func _evaluate_functions():
@@ -239,13 +242,13 @@ func _remove_loading_overlay():
 
 
 func _connect_signals():
-	_ink_player.connect("loaded",Callable(self,"_loaded"))
+	_ink_player.connect("loaded", self._loaded)
 
 
 func _connect_optional_signals():
-	_ink_player.connect("continued",Callable(self,"_continued"))
-	_ink_player.connect("prompt_choices",Callable(self,"_prompt_choices"))
-	_ink_player.connect("ended",Callable(self,"_ended"))
+	_ink_player.connect("continued", self._continued)
+	_ink_player.connect("prompt_choices", self._prompt_choices)
+	_ink_player.connect("ended", self._ended)
 
-	_ink_player.connect("exception_raised",Callable(self,"_exception_raised"))
-	_ink_player.connect("error_encountered",Callable(self,"_error_encountered"))
+	_ink_player.connect("exception_raised", self._exception_raised)
+	_ink_player.connect("error_encountered", self._error_encountered)

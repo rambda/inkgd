@@ -15,7 +15,6 @@ class_name InkPlayer
 
 const ErrorType = preload("res://addons/inkgd/runtime/enums/error.gd").ErrorType
 
-const InkRuntime = preload("res://addons/inkgd/runtime.gd")
 const InkResource = preload("res://addons/inkgd/editor/import_plugins/ink_resource.gd")
 const InkStory = preload("res://addons/inkgd/runtime/story.gd")
 const InkFunctionResult = preload("res://addons/inkgd/runtime/extra/function_result.gd")
@@ -93,89 +92,73 @@ signal ended()
 ## property is `false` and the appropriate function hasn't been binded, the
 ## _story will output an error.
 var allow_external_function_fallbacks: bool :
+	set(value):
+		if _story == null:
+			_push_null_story_error()
+			return
+
+		_story.allow_external_function_fallbacks = value
 	get:
-		return allow_external_function_fallbacks # TODOConverter40 Copy here content of get_aeff
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_aeff
-func set_aeff(value: bool):
-	if _story == null:
-		_push_null_story_error()
-		return
+		if _story == null:
+			_push_null_story_error()
+			return false
 
-	_story.allow_external_function_fallbacks = value
-func get_aeff() -> bool:
-	if _story == null:
-		_push_null_story_error()
-		return false
-
-	return _story.allow_external_function_fallbacks
+		return _story.allow_external_function_fallbacks
 
 # skips saving global values that remain equal to the initial values that were
 # declared in Ink.
 var do_not_save_default_values: bool :
+	set(value):
+		var ink_runtime = _ink_runtime.get_ref()
+		if ink_runtime == null:
+			_push_null_runtime_error()
+			return false
+
+		ink_runtime.dont_save_default_values = value
 	get:
-		return do_not_save_default_values # TODOConverter40 Copy here content of get_dnsdv
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_dnsdv
-func set_dnsdv(value: bool):
-	var ink_runtime = _ink_runtime.get_ref()
-	if ink_runtime == null:
-		_push_null_runtime_error()
-		return false
+		var ink_runtime = _ink_runtime.get_ref()
+		if ink_runtime == null:
+			_push_null_runtime_error()
+			return false
 
-	ink_runtime.dont_save_default_values = value
-func get_dnsdv() -> bool:
-	var ink_runtime = _ink_runtime.get_ref()
-	if ink_runtime == null:
-		_push_null_runtime_error()
-		return false
-
-	return ink_runtime.dont_save_default_values
+		return ink_runtime.dont_save_default_values
 
 ## Uses `assert` instead of `push_error` to report critical errors, thus
 ## making them more explicit during development.
 var stop_execution_on_exception: bool :
+	set(value):
+		var ink_runtime = _ink_runtime.get_ref()
+		if ink_runtime == null:
+			_push_null_runtime_error()
+			return
+
+		ink_runtime.stop_execution_on_exception = value
 	get:
-		return stop_execution_on_exception # TODOConverter40 Copy here content of get_seoex
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_seoex
-func set_seoex(value: bool):
-	var ink_runtime = _ink_runtime.get_ref()
-	if ink_runtime == null:
-		_push_null_runtime_error()
-		return
+		var ink_runtime = _ink_runtime.get_ref()
+		if ink_runtime == null:
+			_push_null_runtime_error()
+			return false
 
-	ink_runtime.stop_execution_on_exception = value
-func get_seoex() -> bool:
-	var ink_runtime = _ink_runtime.get_ref()
-	if ink_runtime == null:
-		_push_null_runtime_error()
-		return false
-
-	return ink_runtime.stop_execution_on_exception
+		return ink_runtime.stop_execution_on_exception
 
 ## Uses `assert` instead of `push_error` to report _story errors, thus
 ## making them more explicit during development.
 var stop_execution_on_error: bool :
+	set(value):
+		var ink_runtime = _ink_runtime.get_ref()
+		if ink_runtime == null:
+			_push_null_runtime_error()
+			return
+
+		ink_runtime.stop_execution_on_error = value
+
 	get:
-		return stop_execution_on_error # TODOConverter40 Copy here content of get_seoer
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_seoer
-func set_seoer(value: bool):
-	var ink_runtime = _ink_runtime.get_ref()
-	if ink_runtime == null:
-		_push_null_runtime_error()
-		return
+		var ink_runtime = _ink_runtime.get_ref()
+		if ink_runtime == null:
+			_push_null_runtime_error()
+			return false
 
-	ink_runtime.stop_execution_on_error = value
-
-func get_seoer() -> bool:
-	var ink_runtime = _ink_runtime.get_ref()
-	if ink_runtime == null:
-		_push_null_runtime_error()
-		return false
-
-	return ink_runtime.stop_execution_on_error
+		return ink_runtime.stop_execution_on_error
 
 
 # ############################################################################ #
@@ -186,15 +169,11 @@ func get_seoer() -> bool:
 ## choosen and hasn't reached the end).
 var can_continue: bool :
 	get:
-		return can_continue # TODOConverter40 Copy here content of get_can_continue
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_can_continue() -> bool:
-	if _story == null:
-		_push_null_story_error()
-		return false
+		if _story == null:
+			_push_null_story_error()
+			return false
 
-	return _story.can_continue
+		return _story.can_continue
 
 
 ## If `continue_async` was called (with milliseconds limit > 0) then this
@@ -202,124 +181,92 @@ func get_can_continue() -> bool:
 ## you need to call it again in order for the continue to fully complete.
 var async_continue_complete: bool :
 	get:
-		return async_continue_complete # TODOConverter40 Copy here content of get_async_continue_complete
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_async_continue_complete() -> bool:
-	if _story == null:
-		_push_null_story_error()
-		return false
+		if _story == null:
+			_push_null_story_error()
+			return false
 
-	return _story.async_continue_complete
+		return _story.async_continue_complete
 
 
 ## The content of the current line.
 var current_text: String :
 	get:
-		return current_text # TODOConverter40 Copy here content of get_current_text
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_text() -> String:
-	if _story == null:
-		_push_null_story_error()
-		return ""
+		if _story == null:
+			_push_null_story_error()
+			return ""
 
 
-	return _story.current_text
+		return _story.current_text
 
 
 ## The current choices. Empty is there are no choices for the current line.
 var current_choices: Array :
 	get:
-		return current_choices # TODOConverter40 Copy here content of get_current_choices
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_choices() -> Array:
-	if _story == null:
-		_push_null_story_error()
-		return []
+		if _story == null:
+			_push_null_story_error()
+			return []
 
-	var text_choices = []
-	for choice in _story.current_choices:
-		text_choices.append(choice.text)
+		var text_choices = []
+		for choice in _story.current_choices:
+			text_choices.append(choice.text)
 
-	return text_choices
+		return text_choices
 
 
 ## The current tags. Empty is there are no tags for the current line.
 var current_tags: Array :
 	get:
-		return current_tags # TODOConverter40 Copy here content of get_current_tags
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_tags() -> Array:
-	if _story == null:
-		_push_null_story_error()
-		return []
+		if _story == null:
+			_push_null_story_error()
+			return []
 
-	if _story.current_tags == null:
-		return []
+		if _story.current_tags == null:
+			return []
 
-	return _story.current_tags
+		return _story.current_tags
 
 
 ## The global tags for the _story. Empty if none have been declared.
 var global_tags: Array :
 	get:
-		return global_tags # TODOConverter40 Copy here content of get_global_tags
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_global_tags() -> Array:
-	if _story == null:
-		_push_null_story_error()
-		return []
+		if _story == null:
+			_push_null_story_error()
+			return []
 
-	if _story.global_tags == null:
-		return []
+		if _story.global_tags == null:
+			return []
 
-	return _story.global_tags
+		return _story.global_tags
 
 
 ## `true` if the _story currently has choices, `false` otherwise.
 var has_choices: bool :
 	get:
-		return has_choices # TODOConverter40 Copy here content of get_has_choices
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_has_choices() -> bool:
-	return !self.current_choices.is_empty()
+		return !self.current_choices.is_empty()
 
 
 ## The name of the current flow.
 var current_flow_name: String :
 	get:
-		return current_flow_name # TODOConverter40 Copy here content of get_current_flow_name
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_flow_name() -> String:
-	if _story == null:
-		_push_null_story_error()
-		return ""
+		if _story == null:
+			_push_null_story_error()
+			return ""
 
-	return _story.state.current_flow_name
+		return _story.state.current_flow_name
 
 
 ## The current story path.
 var current_path: String :
 	get:
-		return current_path # TODOConverter40 Copy here content of get_current_path
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_path() -> String:
-	if _story == null:
-		_push_null_story_error()
-		return ""
+		if _story == null:
+			_push_null_story_error()
+			return ""
 
-	var path = _story.state.current_path_string
-	if path == null:
-		return ""
-	else:
-		return path
+		var path = _story.state.current_path_string
+		if path == null:
+			return ""
+		else:
+			return path
 
 
 # ############################################################################ #
@@ -348,7 +295,8 @@ func _ready():
 	call_deferred("_add_runtime")
 
 func _exit_tree():
-	call_deferred("_remove_runtime")
+#	call_deferred("_remove_runtime")
+	_remove_runtime()
 
 
 # ############################################################################ #
@@ -373,7 +321,7 @@ func create_story() -> int:
 
 	if loads_in_background && _current_platform_supports_threads():
 		_thread = Thread.new()
-		var error = _thread.start(Callable(self,"_async_create_story").bind(ink_file.json))
+		var error = _thread.start(Callable(self._async_create_story).bind(ink_file.json))
 		if error != OK:
 			printerr("[inkgd] [ERROR] Could not start the thread: error code %d", error)
 			call_deferred("emit_signal", "loaded", false)
@@ -381,7 +329,8 @@ func create_story() -> int:
 		else:
 			return OK
 	else:
-		call_deferred("_create_and_finalize_story", ink_file.json)
+#		_create_and_finalize_story.call_deferred(ink_file.json)
+		_create_and_finalize_story(ink_file.json)
 		return OK
 
 
@@ -593,7 +542,7 @@ func set_state(state: String) -> void:
 
 
 ## Saves the current state to the given path.
-func save_state_to_path(path: String):
+func save_state_to_path(path: String) -> void:
 	if _story == null:
 		_push_null_story_error()
 		return
@@ -603,11 +552,10 @@ func save_state_to_path(path: String):
 
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	save_state_to_file(file)
-	file.close()
 
 
 ## Saves the current state to the file.
-func save_state_to_file(file: FileAccess):
+func save_state_to_file(file: FileAccess) -> void:
 	if _story == null:
 		_push_null_story_error()
 		return
@@ -618,7 +566,7 @@ func save_state_to_file(file: FileAccess):
 # TODO: Add save and load in background
 
 ## Loads the state from the given path.
-func load_state_from_path(path: String):
+func load_state_from_path(path: String) -> void:
 	if _story == null:
 		_push_null_story_error()
 		return
@@ -628,11 +576,10 @@ func load_state_from_path(path: String):
 
 	var file := FileAccess.open(path, FileAccess.READ)
 	load_state_from_file(file)
-	file.close()
 
 
 ## Loads the state from the given file.
-func load_state_from_file(file: FileAccess):
+func load_state_from_file(file: FileAccess) -> void:
 	if _story == null:
 		_push_null_story_error()
 		return
@@ -650,21 +597,21 @@ func load_state_from_file(file: FileAccess):
 # ############################################################################ #
 
 ## Returns the value of variable named 'name' or 'null' if it doesn't exist.
-func get_variable(name: String):
+func get_variable(varname: String):
 	if _story == null:
 		_push_null_story_error()
 		return null
 
-	return _story.variables_state.get(name)
+	return _story.variables_state.get(varname)
 
 
 ## Sets the value of variable named 'name'.
-func set_variable(name: String, value):
+func set_variable(varname: String, value):
 	if _story == null:
 		_push_null_story_error()
 		return
 
-	_story.variables_state.set(name, value)
+	_story.variables_state.set(varname, value)
 
 
 # ############################################################################ #
@@ -672,41 +619,41 @@ func set_variable(name: String, value):
 # ############################################################################ #
 
 ## Registers an observer for the given variables.
-func observe_variables(variable_names: Array, object: Object, method_name: String):
+func observe_variables(variable_names: Array[String], callable: Callable):
 	if _story == null:
 		_push_null_story_error()
 		return
 
-	_story.observe_variables(variable_names, object, method_name)
+	_story.observe_variables(variable_names, callable)
 
 
 ## Registers an observer for the given variable.
-func observe_variable(variable_name: String, object: Object, method_name: String):
+func observe_variable(variable_name: String, callable: Callable):
 	if _story == null:
 		_push_null_story_error()
 		return
 
-	_story.observe_variable(variable_name, object, method_name)
+	_story.observe_variable(variable_name, callable)
 
 
 ## Removes an observer for the given variable name. This method is highly
 ## specific and will only remove_at one observer.
-func remove_variable_observer(object: Object, method_name: String, specific_variable_name: String) -> void:
+func remove_variable_observer(observer: Callable, specific_variable_name: String) -> void:
 	if _story == null:
 		_push_null_story_error()
 		return
 
-	_story.remove_variable_observer(object, method_name, specific_variable_name)
+	_story.remove_variable_observer(observer, specific_variable_name)
 
 
 ## Removes all observers registered with the couple object/method_name,
 ## regardless of which variable they observed.
-func remove_variable_observer_for_all_variables(object: Object, method_name: String) -> void:
+func remove_variable_observer_for_all_variables(observer: Callable,) -> void:
 	if _story == null:
 		_push_null_story_error()
 		return
 
-	_story.remove_variable_observer(object, method_name)
+	_story.remove_variable_observer(observer)
 
 
 ## Removes all observers observing the given variable.
@@ -715,7 +662,7 @@ func remove_all_variable_observers(specific_variable_name: String) -> void:
 		_push_null_story_error()
 		return
 
-	_story.remove_variable_observer(null, null, specific_variable_name)
+	_story.remove_variable_observer(Callable(), specific_variable_name)
 
 
 # ############################################################################ #
@@ -724,16 +671,15 @@ func remove_all_variable_observers(specific_variable_name: String) -> void:
 
 ## Binds an external function.
 func bind_external_function(
-		func_name: String,
-		object: Object,
-		method_name: String,
-		lookahead_safe = false
+	ink_func_name: String,
+	godot_callable: Callable,
+	lookahead_safe = false
 ) -> void:
 	if _story == null:
 		_push_null_story_error()
 		return
 
-	_story.bind_external_function(func_name, object, method_name, lookahead_safe)
+	_story.bind_external_function(ink_func_name, godot_callable, lookahead_safe)
 
 
 ## Unbinds an external function.
@@ -826,7 +772,7 @@ func _create_story(json_story) -> void:
 
 func _async_create_story(json_story) -> void:
 	_create_story(json_story)
-	call_deferred("_async_creation_completed")
+	_async_creation_completed.call_deferred()
 
 
 func _async_creation_completed() -> void:
@@ -842,12 +788,12 @@ func _create_and_finalize_story(json_story) -> void:
 
 
 func _finalise_story_creation() -> void:
-	_story.connect("on_error",Callable(self,"_on_error"))
-	_story.connect("on_did_continue",Callable(self,"_on_did_continue"))
-	_story.connect("on_make_choice",Callable(self,"_on_make_choice"))
-	_story.connect("on_evaluate_function",Callable(self,"_on_evaluate_function"))
-	_story.connect("on_complete_evaluate_function",Callable(self,"_on_complete_evaluate_function"))
-	_story.connect("on_choose_path_string",Callable(self,"_on_choose_path_string"))
+	_story.on_error.connect(self._on_error)
+	_story.on_did_continue.connect(self._on_did_continue)
+	_story.on_make_choice.connect(self._on_make_choice)
+	_story.on_evaluate_function.connect(self._on_evaluate_function)
+	_story.on_complete_evaluate_function.connect(self._on_complete_evaluate_function)
+	_story.on_choose_path_string.connect(self._on_choose_path_string)
 
 	var ink_runtime = _ink_runtime.get_ref()
 	if ink_runtime == null:
@@ -859,23 +805,16 @@ func _finalise_story_creation() -> void:
 
 
 func _add_runtime() -> void:
-	# The InkRuntime is normaly an auto-loaded singleton,
-	# but if it's not present, it's added here.
-	var runtime: Node
-	if get_tree().root.has_node("__InkRuntime"):
-		runtime = get_tree().root.get_node("__InkRuntime")
-	else:
-		_manages_runtime = true
-		runtime = InkRuntime.init(get_tree().root)
+	if not InkRuntime.is_inited():
+		InkRuntime.init()
 
-	runtime.connect("exception_raised",Callable(self,"_exception_raised"))
-
-	_ink_runtime = weakref(runtime)
+	InkRuntime.exception_raised.connect(self._exception_raised)
+	_ink_runtime = weakref(InkRuntime)
 
 
 func _remove_runtime() -> void:
 	if _manages_runtime:
-		InkRuntime.deinit(get_tree().root)
+		InkRuntime.deinit()
 
 
 func _current_platform_supports_threads() -> bool:
@@ -906,7 +845,7 @@ func _push_story_error(message: String, type: int) -> void:
 			ErrorType.WARNING, ErrorType.AUTHOR:
 				push_warning(message)
 
-func _push_error(message: String):
+func _push_error(message: String) -> void:
 	if Engine.is_editor_hint():
 		printerr(message)
 

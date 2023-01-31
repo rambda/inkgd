@@ -22,7 +22,7 @@ func after_each():
 # ############################################################################ #
 
 func test_has_function() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.allow_external_function_fallbacks = true
 
 	assert_true(_ink_player.has_function("external_function"))
@@ -32,7 +32,7 @@ func test_has_function() -> void:
 
 
 func test_evaluate_function() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.allow_external_function_fallbacks = true
 
 	var result: InkFunctionResult = _ink_player.evaluate_function("the_function", [4])
@@ -44,7 +44,7 @@ func test_evaluate_function() -> void:
 
 
 func test_evaluate_missing_function() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.allow_external_function_fallbacks = true
 
 	_ink_player.evaluate_function("__function", [40])
@@ -53,7 +53,7 @@ func test_evaluate_missing_function() -> void:
 	assert_eq(_exception_messages_raised.size(), 1)
 
 func test_evaluate_missing_arguments() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.allow_external_function_fallbacks = true
 
 	_ink_player.evaluate_function("the_function", [])
@@ -63,7 +63,7 @@ func test_evaluate_missing_arguments() -> void:
 
 
 func test_function_fallback() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.allow_external_function_fallbacks = true
 
 	assert_eq(_ink_player.continue_story_maximally(), "The count is 7\n")
@@ -72,14 +72,14 @@ func test_function_fallback() -> void:
 
 
 func test_function_no_fallback() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.continue_story_maximally()
 
 	assert_eq(_exception_messages_raised.size(), 1)
 
 
 func test_function_binding() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.bind_external_function("external_function", self, "_external_function")
 
 	assert_eq(_ink_player.continue_story_maximally(), "The count is 14\n")

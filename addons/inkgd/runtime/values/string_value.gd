@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -15,11 +13,13 @@ class_name InkStringValue
 
 # ############################################################################ #
 
-func get_value_type():
+var value: String
+
+func get_value_type() -> ValueType:
 	return ValueType.STRING
 
-func get_is_truthy():
-	return value.length() > 0
+func get_is_truthy() -> bool:
+	return self.value.length() > 0
 
 var is_newline # bool
 var is_inline_whitespace # bool
@@ -27,30 +27,26 @@ var is_non_whitespace:
 	get:
 		return !is_newline && !is_inline_whitespace
 
-func _init():
-	value = ""
-	self._sanitize_value()
-
-func _init_with(val):
-	super._init_with(val)
+func _init(v: String):
+	self.value = v
 	self._sanitize_value()
 
 # The method takes a `StoryErrorMetadata` object as a parameter that
 # doesn't exist in upstream. The metadat are used in case an 'exception'
 # is raised. For more information, see story.gd.
-func cast(new_type, metadata = null):
+func cast(new_type, metadata: StoryErrorMetadata = null):
 	if new_type == self.value_type:
 		return self
 
 	if new_type == ValueType.INT:
 		if self.value.is_valid_int():
-			return InkIntValue.new_with(int(self.value))
+			return InkIntValue.new(int(self.value))
 		else:
 			return null
 
 	if new_type == ValueType.FLOAT:
 		if self.value.is_valid_float():
-			return InkFloatValue.new_with(float(self.value))
+			return InkFloatValue.new(float(self.value))
 		else:
 			return null
 
@@ -75,8 +71,3 @@ func _sanitize_value():
 		if c != ' ' && c != "\t":
 			is_inline_whitespace = false
 			break
-
-static func new_with(val):
-	var value = InkStringValue.new()
-	value._init_with(val)
-	return value

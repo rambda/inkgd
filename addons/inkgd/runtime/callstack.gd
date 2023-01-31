@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -29,11 +27,7 @@ class Element extends InkBase:
 	# Imports
 	# ######################################################################## #
 
-	const Pointer = preload("res://addons/inkgd/runtime/structs/pointer.gd")
-
-	# ######################################################################## #
-
-	var current_pointer = Pointer.new_null() # Pointer
+	var current_pointer := InkPointer.new_null() # Pointer
 
 	var in_expression_evaluation = false # bool
 	var temporary_variables = null # Dictionary<String, InkObject>
@@ -71,17 +65,11 @@ class InkThread extends InkBase:
 	# Imports
 	# ######################################################################## #
 
-	var Pointer = load("res://addons/inkgd/runtime/structs/pointer.gd")
-	var InkPath = load("res://addons/inkgd/runtime/ink_path.gd")
-
-	# ######################################################################## #
-
-	var callstack = null # Array<Element>
+	var callstack: Array[Element] = [] # Array<Element>
 	var thread_index = 0 # int
-	var previous_pointer = Pointer.new_null() # Pointer
+	var previous_pointer := InkPointer.new_null() # Pointer
 
 	func _init():
-		get_static_json()
 		callstack = []
 
 	# Dictionary<string, object>, Story
@@ -93,7 +81,7 @@ class InkThread extends InkBase:
 			var jelement_obj = jel_tok
 			var push_pop_type = int(jelement_obj["type"])
 
-			var pointer = Pointer.new_null()
+			var pointer = InkPointer.new_null()
 			var current_container_path_str = null
 			var current_container_path_str_token = null
 
@@ -102,7 +90,7 @@ class InkThread extends InkBase:
 				current_container_path_str = str(current_container_path_str_token)
 
 				var thread_pointer_result = story_context.content_at_path(InkPath.new_with_components_string(current_container_path_str))
-				pointer = Pointer.new(thread_pointer_result.container, int(jelement_obj["idx"]))
+				pointer = InkPointer.new(thread_pointer_result.container, int(jelement_obj["idx"]))
 
 				if thread_pointer_result.obj == null:
 					Utils.throw_exception(
@@ -125,7 +113,7 @@ class InkThread extends InkBase:
 			var temps
 			if jelement_obj.has("temp"):
 				temps = jelement_obj["temp"] # Dictionary<string, object>
-				el.temporary_variables = self.Json.jobject_to_dictionary_runtime_objs(temps)
+				el.temporary_variables = Json.jobject_to_dictionary_runtime_objs(temps)
 			else:
 				el.temporary_variables.clear()
 
@@ -164,7 +152,7 @@ class InkThread extends InkBase:
 
 			if el.temporary_variables.size() > 0:
 				writer.write_property_start("temp")
-				self.Json.write_dictionary_runtime_objs(writer, el.temporary_variables)
+				Json.write_dictionary_runtime_objs(writer, el.temporary_variables)
 				writer.write_property_end()
 
 			writer.write_object_end()
@@ -197,59 +185,42 @@ class InkThread extends InkBase:
 		return thread
 
 	# ######################################################################## #
-	var Json :
-		get:
-			return _Json.get_ref()
-
-	var _Json = WeakRef.new()
-
-	func get_static_json():
-		var InkRuntime = Engine.get_main_loop().root.get_node("__InkRuntime")
-
-		Utils.__assert__(InkRuntime != null,
-					str("Could not retrieve 'InkRuntime' singleton from the scene tree."))
-
-		_Json = weakref(InkRuntime.json)
 
 # () -> Array<InkElement>
-var elements :
+var elements: Array[Element]:
 	get:
-		self.callstack
+		return self.callstack
 
 # () -> int
-var depth :
+var depth: int:
 	get:
-		return self.elements.size()
+		if self.elements:
+			return self.elements.size()
+		return -1
 
 # () -> InkElement
-var current_element :
+var current_element: Element:
 	get:
-		return current_element # TODOConverter40 Copy here content of get_current_element
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_element():
-	var thread = self._threads.back()
-	var cs = thread.callstack
-	return cs.back()
+		if self._threads:
+			var thread = self._threads.back()
+			var cs = thread.callstack
+			return cs.back()
+		return null
 
 # () -> int
-var current_element_index :
+var current_element_index: int:
 	get:
-		return current_element_index # TODOConverter40 Copy here content of get_current_element_index
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_current_element_index():
-	return self.callstack.size() - 1
+		if self.callstack:
+			return self.callstack.size() - 1
+		return -1
 
 # () -> InkThread
 # (InkThread) -> void
-var current_thread :
+var current_thread: InkThread:
 	get:
-		return current_thread # TODOConverter40 Copy here content of get_current_thread
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_current_thread
-func get_current_thread():
-	return self._threads.back()
+		if self._threads:
+			return self._threads.back()
+		return null
 
 func set_current_thread(value):
 	Utils.__assert__(_threads.size() == 1,
@@ -258,13 +229,10 @@ func set_current_thread(value):
 	self._threads.append(value)
 
 # () -> bool
-var can_pop :
+var can_pop: bool:
 	get:
-		return can_pop # TODOConverter40 Copy here content of get_can_pop
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_can_pop():
-	return self.callstack.size() > 1
+		if !Engine.is_editor_hint(): return false
+		return self.callstack.size() > 1
 
 # (InkStory | CallStack) -> CallStack
 func _init(story_context_or_to_copy):
@@ -281,13 +249,13 @@ func _init(story_context_or_to_copy):
 		self._start_of_root = to_copy._start_of_root
 
 # () -> void
-func reset():
+func reset() -> void:
 	self._threads = []
 	self._threads.append(InkThread.new())
 	self._threads[0].callstack.append(Element.new(PushPopType.TUNNEL, self._start_of_root))
 
 # (Dictionary<string, object>, InkStory) -> void
-func set_json_token(jobject, story_context):
+func set_json_token(jobject, story_context) -> void:
 	self._threads.clear()
 	var jthreads = jobject["threads"]
 
@@ -301,50 +269,42 @@ func set_json_token(jobject, story_context):
 
 
 # (SimpleJson.Writer) -> void
-func write_json(writer):
+func write_json(writer) -> void:
 	writer.write_object(self._anonymous_write_json)
 
 # () -> void
-func push_thread():
+func push_thread() -> void:
 	var new_thread = self.current_thread.copy()
 	self._thread_counter += 1
 	new_thread.thread_index = self._thread_counter
 	self._threads.append(new_thread)
 
-# () -> void
-func fork_thread():
+# () -> InkThread
+func fork_thread() -> InkThread:
 	var forked_thread = self.current_thread.copy()
 	self._thread_counter += 1
 	forked_thread.thread_index = self._thread_counter
 	return forked_thread
 
 # () -> void
-func pop_thread():
+func pop_thread() -> void:
 	if self.can_pop_thread:
 		self._threads.erase(self.current_thread)
 	else:
 		Utils.throw_exception("Can't pop thread")
 
 # () -> bool
-var can_pop_thread :
+var can_pop_thread: bool:
 	get:
-		return can_pop_thread # TODOConverter40 Copy here content of get_can_pop_thread
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_can_pop_thread():
-	return _threads.size() > 1 && !self.element_is_evaluate_from_game
+		return _threads.size() > 1 && !self.element_is_evaluate_from_game
 
 # () -> bool
-var element_is_evaluate_from_game :
+var element_is_evaluate_from_game: bool:
 	get:
-		return element_is_evaluate_from_game # TODOConverter40 Copy here content of get_element_is_evaluate_from_game
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_element_is_evaluate_from_game():
-	return self.current_element.type == PushPopType.FUNCTION_EVALUATION_FROM_GAME
+		return self.current_element.type == PushPopType.FUNCTION_EVALUATION_FROM_GAME
 
 # (PushPopType, int, int) -> void
-func push(type, external_evaluation_stack_height = 0, output_stream_length_with_pushed = 0):
+func push(type, external_evaluation_stack_height = 0, output_stream_length_with_pushed = 0) -> void:
 	var element = Element.new(type, self.current_element.current_pointer, false)
 
 	element.evaluation_stack_height_when_pushed = external_evaluation_stack_height
@@ -353,17 +313,17 @@ func push(type, external_evaluation_stack_height = 0, output_stream_length_with_
 	self.callstack.append(element)
 
 # (PushPopType | null) -> void
-func can_pop_type(type = null):
+func can_pop_type(type: PushPopType) -> bool:
 	if !self.can_pop:
 		return false
 
-	if type == null:
-		return true
-
 	return self.current_element.type == type
 
+func pop() -> void:
+	self.callstack.pop_back()
+
 # (PushPopType | null) -> void
-func pop(type = null):
+func pop_type(type: PushPopType) -> void:
 	if can_pop_type(type):
 		self.callstack.pop_back()
 		return
@@ -386,7 +346,7 @@ func get_temporary_variable_with_name(name, context_index = -1) -> InkObject:
 		return null
 
 # (String, InkObject, bool, int) -> void
-func set_temporary_variable(name, value, declare_new, context_index = -1):
+func set_temporary_variable(name, value, declare_new, context_index = -1) -> void:
 	if context_index == -1:
 		context_index = self.current_element_index + 1
 
@@ -404,63 +364,55 @@ func set_temporary_variable(name, value, declare_new, context_index = -1):
 
 
 # (String) -> int
-func context_for_variable_named(name):
+func context_for_variable_named(name) -> int:
 	if self.current_element.temporary_variables.has(name):
 		return self.current_element_index + 1
 	else:
 		return 0
 
 # (int) -> InkThread | null
-func thread_with_index(index):
+func thread_with_index(index) -> InkThread:
 	for thread in self._threads:
 		if thread.thread_index == index:
 			return thread
 
 	return null
 
-var callstack :
+var callstack: Array[Element]:
 	get:
-		return callstack # TODOConverter40 Copy here content of get_callstack
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_callstack():
-	return self.current_thread.callstack
+		return self.current_thread.callstack
 
-var callstack_trace :
+var callstack_trace: String:
 	get:
-		return callstack_trace # TODOConverter40 Copy here content of get_callstack_trace
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_callstack_trace():
-	var sb = ""
-	var t = 0
-	while t < _threads.size():
-		var thread = _threads[t]
-		var is_current = (t == _threads.size() - 1)
-		sb += str("=== THREAD ", str(t + 1), "/", str(_threads.size()), " ",
-				("(current) " if is_current else "" ), "===\n")
+		var sb = ""
+		var t = 0
+		while t < _threads.size():
+			var thread = _threads[t]
+			var is_current = (t == _threads.size() - 1)
+			sb += str("=== THREAD ", str(t + 1), "/", str(_threads.size()), " ",
+					("(current) " if is_current else "" ), "===\n")
 
-		var i = 0
-		while i < thread.callstack.size():
-			if thread.callstack[i].type == PushPopType.FUNCTION:
-				sb += "  [FUNCTION] "
-			else:
-				sb += "  [TUNNEL] "
+			var i = 0
+			while i < thread.callstack.size():
+				if thread.callstack[i].type == PushPopType.FUNCTION:
+					sb += "  [FUNCTION] "
+				else:
+					sb += "  [TUNNEL] "
 
-			var pointer = thread.callstack[i].current_pointer
-			if !pointer.is_null:
-				sb += "<SOMEWHERE IN "
-				sb += pointer.container.path._to_string()
-				sb += "\n>"
+				var pointer = thread.callstack[i].current_pointer
+				if !pointer.is_null:
+					sb += "<SOMEWHERE IN "
+					sb += pointer.container.path._to_string()
+					sb += "\n>"
 
-			i += 1
-		t += 1
+				i += 1
+			t += 1
 
-	return sb
+		return sb
 
-var _threads = null # Array<InkThread>
-var _thread_counter = 0 # int
-var _start_of_root = InkPointer.new_null() # Pointer
+var _threads: Array[InkThread] # Array<InkThread>
+var _thread_counter := 0 # int
+var _start_of_root: InkPointer = InkPointer.new_null() # Pointer
 
 # ############################################################################ #
 # GDScript extra methods

@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -15,7 +13,9 @@ class_name InkDivertTargetValue
 
 # ############################################################################ #
 
-var target_path :
+var value: InkPath
+
+var target_path: InkPath:
 	get:
 		return value
 	set(value):
@@ -25,17 +25,17 @@ var target_path :
 func get_value_type():
 	return ValueType.DIVERT_TARGET
 
-func get_is_truthy():
+func get_is_truthy() -> bool:
 	Utils.throw_exception("Shouldn't be checking the truthiness of a divert target")
 	return false
 
-func _init():
-	value = null
+func _init(v: InkPath = null):
+	value = v
 
 # The method takes a `StoryErrorMetadata` object as a parameter that
 # doesn't exist in upstream. The metadat are used in case an 'exception'
 # is raised. For more information, see story.gd.
-func cast(new_type, metadata = null):
+func cast(new_type, metadata: StoryErrorMetadata = null):
 	if new_type == self.value_type:
 		return self
 
@@ -54,8 +54,3 @@ func is_class(type):
 
 func get_class():
 	return "DivertTargetValue"
-
-static func new_with(val):
-	var value = InkDivertTargetValue.new()
-	value._init_with(val)
-	return value

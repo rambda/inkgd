@@ -103,9 +103,9 @@ func _ready():
 		print("[inkgd] [INFO] Ink Stories Tab: dependencies not met, ignoring.")
 		return
 
-	configuration.connect("compilation_mode_changed",Callable(self,"_compilation_mode_changed"))
+	configuration.compilation_mode_changed.connect(self._compilation_mode_changed)
 
-	editor_interface.editor_filesystem.connect("resources_reimported",Callable(self,"_resources_reimported"))
+	editor_interface.editor_filesystem.resources_reimported.connect(self._resources_reimported)
 
 	_story_configuration_container.add_child(_empty_state_container)
 	add_child(_file_dialog)
@@ -288,7 +288,7 @@ func _compile_story(story_configuration, node = null):
 	var compiler = InkCompiler.new(compiler_configuration)
 
 	_compilers[compiler.identifier] = compiler
-	compiler.connect("story_compiled",Callable(self,"_handle_compilation"))
+	compiler.story_compiled.connect(self._handle_compilation)
 	compiler.compile_story()
 
 
@@ -305,7 +305,7 @@ func _handle_compilation(result):
 				var dialog = InkRichDialog.instantiate()
 				add_child(dialog)
 
-				dialog.window_title = "Success!"
+				dialog.title = "Success!"
 				dialog.message_text = "The story was successfully compiled."
 				dialog.output_text = result.output
 				dialog.update_layout(editor_interface.scale)
@@ -315,7 +315,7 @@ func _handle_compilation(result):
 				var dialog = AcceptDialog.new()
 				add_child(dialog)
 
-				dialog.window_title = "Success!"
+				dialog.title = "Success!"
 				dialog.dialog_text = "The story was successfully compiled."
 
 				dialog.popup_centered()
@@ -325,7 +325,7 @@ func _handle_compilation(result):
 			var dialog = InkRichDialog.instantiate()
 			add_child(dialog)
 
-			dialog.window_title = "Error"
+			dialog.title = "Error"
 			dialog.message_text = "The story could not be compiled. See inklecate's output below."
 			dialog.output_text = result.output
 			dialog.update_layout(editor_interface.scale)
@@ -454,12 +454,12 @@ func _add_new_story_configuration():
 
 	story_configuration.editor_interface = editor_interface
 
-	story_configuration.connect("configuration_changed",Callable(self,"_configuration_changed"))
-	story_configuration.connect("remove_button_pressed",Callable(self,"_remove_button_pressed"))
-	story_configuration.connect("build_button_pressed",Callable(self,"_build_button_pressed"))
-	story_configuration.connect("source_file_button_pressed",Callable(self,"_source_file_button_pressed"))
-	story_configuration.connect("target_file_button_pressed",Callable(self,"_target_file_button_pressed"))
-	story_configuration.connect("watched_folder_button_pressed",Callable(self,"_watched_folder_button_pressed"))
+	story_configuration.configuration_changed.connect(self._configuration_changed)
+	story_configuration.remove_button_pressed.connect(self._remove_button_pressed)
+	story_configuration.build_button_pressed.connect(self._build_button_pressed)
+	story_configuration.source_file_button_pressed.connect(self._source_file_button_pressed)
+	story_configuration.target_file_button_pressed.connect(self._target_file_button_pressed)
+	story_configuration.watched_folder_button_pressed.connect(self._watched_folder_button_pressed)
 
 	if _empty_state_container.get_parent() != null:
 		_story_configuration_container.remove_child(_empty_state_container)
@@ -514,10 +514,10 @@ func _disable_all_buttons(disable: bool):
 
 
 func _connect_signals():
-	_build_all_button.connect("pressed",Callable(self,"_build_all_button_pressed"))
-	_add_new_story_button.connect("pressed",Callable(self,"_add_new_story_button_pressed"))
+	_build_all_button.pressed.connect(self._build_all_button_pressed)
+	_add_new_story_button.pressed.connect(self._add_new_story_button_pressed)
 
-	_file_dialog.connect("file_selected",Callable(self,"_on_file_selected"))
-	_file_dialog.connect("dir_selected",Callable(self,"_on_file_selected"))
+	_file_dialog.file_selected.connect(self._on_file_selected)
+	_file_dialog.dir_selected.connect(self._on_file_selected)
 
 	_scroll_container.get_v_scroll_bar().connect("changed",Callable(self,"_scrollbar_changed"))

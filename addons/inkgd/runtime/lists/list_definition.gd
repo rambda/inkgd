@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -17,9 +15,6 @@ class_name InkListDefinition
 # Imports
 # ############################################################################ #
 
-const InkTryGetResult = preload("res://addons/inkgd/runtime/extra/try_get_result.gd")
-const InkListItem = preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
-
 # ############################################################################ #
 
 var name: String:
@@ -31,14 +26,12 @@ var name: String:
 # needs to be a value type.
 var items: Dictionary:
 	get:
-		if _items == null:
-			_items = {}
-			for item_name_and_value_key in _item_name_to_values:
-				var item = InkListItem.new_with_origin_name(self.name, item_name_and_value_key)
-				_items[item.serialized()] = _item_name_to_values[item_name_and_value_key]
+		for item_name_and_value_key in _item_name_to_values:
+			var item = InkListItem.new_with_origin_name(self.name, item_name_and_value_key)
+			_items[item.serialized()] = _item_name_to_values[item_name_and_value_key]
 
 		return _items
-var _items
+var _items: Dictionary
 
 # ############################################################################ #
 

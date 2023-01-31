@@ -44,7 +44,7 @@ func _init(editor_interface: EditorInterface):
 
 	scale = editor_interface.get_editor_scale()
 
-	self.editor_filesystem.connect("resources_reimported",Callable(self,"_resources_reimported"))
+	self.editor_filesystem.resources_reimported.connect(self._resources_reimported)
 
 # ############################################################################ #
 # Methods

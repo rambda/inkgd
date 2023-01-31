@@ -5,28 +5,22 @@
 // See LICENSE in the project root for license information.
 // /////////////////////////////////////////////////////////////////////////// /
 
-using Godot;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
-
 [Tool]
 
 public partial class InkPlayer : Node
 {
 	#region Signals
-	[Signal] public delegate void exception_raised(string message, Godot.Collections.Array<string> stack_trace);
-	[Signal] public delegate void error_encountered(string message, int type);
-	[Signal] public delegate void loaded(bool successfully);
-	[Signal] public delegate void continued(string text, Godot.Collections.Array<string> tags);
-	[Signal] public delegate void interrupted();
-	[Signal] public delegate void prompt_choices(Godot.Collections.Array<string> choices);
-	[Signal] public delegate void choice_made(string choice);
-	[Signal] public delegate void function_evaluating(Godot.Collections.Array<string> function_name, object[] arguments);
-	[Signal] public delegate void function_evaluated(Godot.Collections.Array<string> function_name, object[] arguments, Godot.Object function_result);
-	[Signal] public delegate void path_choosen(string path, object[] arguments);
-	[Signal] public delegate void ended();
+	[Signal] public delegate void exception_raisedEventHandler(string message, GCol.Array<string> stack_trace);
+	[Signal] public delegate void error_encounteredEventHandler(string message, int type);
+	[Signal] public delegate void loadedEventHandler(bool successfully);
+	[Signal] public delegate void continuedEventHandler(string text, GCol.Array<string> tags);
+	[Signal] public delegate void interruptedEventHandler();
+	[Signal] public delegate void prompt_choicesEventHandler(GCol.Array<string> choices);
+	[Signal] public delegate void choice_madeEventHandler(string choice);
+	[Signal] public delegate void function_evaluatingEventHandler(GCol.Array<string> function_name, GCol.Array arguments);
+	[Signal] public delegate void function_evaluatedEventHandler(GCol.Array<string> function_name, GCol.Array arguments, GObject function_result);
+	[Signal] public delegate void path_choosenEventHandler(string path, GCol.Array arguments);
+	[Signal] public delegate void endedEventHandler();
 	#endregion
 
 	#region Exported properties
@@ -90,6 +84,9 @@ public partial class InkPlayer : Node
 
 			return story.canContinue;
 		}
+		set {} // TODO: Remove
+		// godot bug: readonly property cannot be accessed from GDScript
+		// https://github.com/godotengine/godot/pull/67304
 	}
 
 	public bool async_continue_complete
@@ -103,6 +100,7 @@ public partial class InkPlayer : Node
 
 			return story.asyncContinueComplete;
 		}
+		set {} // TODO: Remove
 	}
 
 	public string current_text
@@ -123,76 +121,81 @@ public partial class InkPlayer : Node
 
 			return story.currentText ?? "";
 		}
+		set {} // TODO: Remove
 	}
 
-	public Godot.Collections.Array<string> current_choices
+	public GCol.Array<string> current_choices
 	{
 		get {
 			if (story == null)
 			{
 				PushNullStoryError();
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 
 			if (story.currentChoices == null)
 			{
 				PushNullStateError("current_choices");
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 
 			var choices = story.currentChoices?.ConvertAll(choice => choice.text).ToArray();
 
 			if (choices != null) {
-				return new Godot.Collections.Array<string>(choices);
+				return new GCol.Array<string>(choices);
 			} else {
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 		}
+		set {} // TODO: Remove
 	}
 
-	public Godot.Collections.Array<string> current_tags
+	public GCol.Array<string> current_tags
 	{
 		get {
 			if (story == null)
 			{
 				PushNullStoryError();
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 
 			if (story.currentTags == null)
 			{
 				PushNullStateError("current_tags");
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 
 			if (story.currentTags != null) {
-				return new Godot.Collections.Array<string>(story.currentTags);
+				return new GCol.Array<string>(story.currentTags);
 			} else {
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 		}
+		set {} // TODO: Remove
 	}
 
-	public Godot.Collections.Array<string> global_tags
+	public GCol.Array<string> global_tags
 	{
 		get {
 			if (story == null)
 			{
 				PushNullStoryError();
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 
 			if (story.globalTags != null) {
-				return new Godot.Collections.Array<string>(story.globalTags);
+				return new GCol.Array<string>(story.globalTags);
 			} else {
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 		}
+		set {} // TODO: Remove
 	}
 
 	public bool has_choices
 	{
 		get { return current_choices.Count > 0; }
+		set {} // TODO: Remove
 	}
 
 	public string current_flow_name
@@ -206,6 +209,7 @@ public partial class InkPlayer : Node
 
 			return story.state.currentFlowName;
 		}
+		set {} // TODO: Remove
 	}
 
 	public string current_path
@@ -219,12 +223,13 @@ public partial class InkPlayer : Node
 
 			return story.state.currentPathString;
 		}
+		set {} // TODO: Remove
 	}
 	#endregion
 
 	#region Private Properties
 	private Ink.Runtime.Story story = null;
-	private Thread thread = null;
+	private GodotThread thread = null;
 
 	private readonly InkBridger inkBridger = new InkBridger();
 	private Dictionary<string, List<FunctionReference>> observers =
@@ -257,8 +262,8 @@ public partial class InkPlayer : Node
 
 		if (loads_in_background && CurrentPlatformSupportsThreads())
 		{
-			thread = new Thread();
-			var error = thread.Start(this, "AsyncCreateStory", (string)ink_file.Get("json"));
+			thread = new GodotThread();
+			var error = thread.Start(Callable.From(() => AsyncCreateStory((string)ink_file.Get("json"))));
 			if (error != Error.Ok)
 			{
 				GD.PrintErr($"[inkgd] [ERROR] Could not start the thread: error code {error}.");
@@ -316,7 +321,7 @@ public partial class InkPlayer : Node
 			}
 			else if (has_choices)
 			{
-				EmitSignal("prompt_choices",  new object[] { current_choices });
+				EmitSignal("prompt_choices",  current_choices);
 			}
 			else
 			{
@@ -353,7 +358,7 @@ public partial class InkPlayer : Node
 			}
 			else if (has_choices)
 			{
-				EmitSignal("prompt_choices", new object[] { current_choices });
+				EmitSignal("prompt_choices", current_choices);
 			}
 			else
 			{
@@ -388,7 +393,7 @@ public partial class InkPlayer : Node
 			}
 			else if (has_choices)
 			{
-				EmitSignal("prompt_choices",  new object[] { current_choices });
+				EmitSignal("prompt_choices", current_choices);
 			}
 			else
 			{
@@ -493,27 +498,27 @@ public partial class InkPlayer : Node
 	#endregion
 
 	#region Methods | Tags
-	public Godot.Collections.Array<string> tags_for_content_at_path(string path)
+	public GCol.Array<string> tags_for_content_at_path(string path)
 	{
 		if (story == null)
 		{
 			PushNullStoryError();
-			return new Godot.Collections.Array<string>();
+			return new GCol.Array<string>();
 		}
 
 		try
 		{
 			var tags = story.TagsForContentAtPath(path);
 			if (tags != null) {
-				return new Godot.Collections.Array<string>(tags);
+				return new GCol.Array<string>(tags);
 			} else {
-				return new Godot.Collections.Array<string>();
+				return new GCol.Array<string>();
 			}
 		}
 		catch (Exception e)
 		{
 			HandleException(e);
-			return new Godot.Collections.Array<string>();
+			return new GCol.Array<string>();
 		}
 	}
 
@@ -615,13 +620,11 @@ public partial class InkPlayer : Node
 			sanitizedPath = path;
 		}
 
-		var file = new File();
-		file.Open(sanitizedPath, File.ModeFlags.Write);
+		var file = FileAccess.Open(sanitizedPath, FileAccess.ModeFlags.Write);
 		save_state_to_file(file);
-		file.Close();
 	}
 
-	public void save_state_to_file(Godot.File file)
+	public void save_state_to_file(Godot.FileAccess file)
 	{
 		if (story == null)
 		{
@@ -653,13 +656,11 @@ public partial class InkPlayer : Node
 			sanitizedPath = path;
 		}
 
-		var file = new File();
-		file.Open(sanitizedPath, File.ModeFlags.Read);
+		var file = FileAccess.Open(sanitizedPath, FileAccess.ModeFlags.Read);
 		load_state_from_file(file);
-		file.Close();
 	}
 
-	public void load_state_from_file(Godot.File file)
+	public void load_state_from_file(Godot.FileAccess file)
 	{
 		if (story == null)
 		{
@@ -679,7 +680,7 @@ public partial class InkPlayer : Node
 	#endregion
 
 	#region Methods | Variables
-	public object get_variable(string name)
+	public GObject get_variable(string name)
 	{
 		if (story == null)
 		{
@@ -696,7 +697,7 @@ public partial class InkPlayer : Node
 				return inkBridger.MakeGDInkList(inkList);
 			}
 
-			if (variable is Ink.Runtime.Path3D path)
+			if (variable is Ink.Runtime.Path path)
 			{
 				return inkBridger.MakeGDInkPath(path);
 			}
@@ -707,7 +708,7 @@ public partial class InkPlayer : Node
 			return null;
 		}
 
-		return story.variablesState[name];
+		return (GObject)story.variablesState[name]; // TODO CHECK
 	}
 
 	public void set_variable(string name, object value)
@@ -720,7 +721,7 @@ public partial class InkPlayer : Node
 
 		try
 		{
-			if (value is Godot.Object gdObject)
+			if (value is GObject gdObject)
 			{
 				if (IsInkObject(gdObject, "InkList"))
 				{
@@ -744,7 +745,7 @@ public partial class InkPlayer : Node
 	#endregion
 
 	#region Methods | Variable Observers
-	public void observe_variables(Godot.Collections.Array<string> variable_names, Godot.Object gd_object, string method_name)
+	public void observe_variables(GCol.Array<string> variable_names, GObject gd_object, string method_name)
 	{
 		if (story == null)
 		{
@@ -765,7 +766,7 @@ public partial class InkPlayer : Node
 		}
 	}
 
-	public void observe_variable(string variable_name, Godot.Object gd_object, string method_name)
+	public void observe_variable(string variable_name, GObject gd_object, string method_name)
 	{
 		if (story == null)
 		{
@@ -776,14 +777,14 @@ public partial class InkPlayer : Node
 		try
 		{
 			var instanceId = (int)gd_object.Call("get_instance_id");
-			var funcRef = GD.Callable(gd_object, method_name);
+			var callable = new Callable(gd_object, method_name);
 
 			var functionReference = new FunctionReference(
 				variable_name,
 				instanceId,
 				method_name,
 				(string variableName, object value) => {
-					funcRef.CallFuncv(new Godot.Collections.Array() { variableName, value });
+					callable.Call(new Variant[] { variableName, (Variant)value });
 				}
 			);
 
@@ -804,7 +805,7 @@ public partial class InkPlayer : Node
 		}
 	}
 
-	public void remove_variable_observer(Godot.Object gd_object, string method_name, string specific_variable_name)
+	public void remove_variable_observer(GObject gd_object, string method_name, string specific_variable_name)
 	{
 		if (story == null)
 		{
@@ -821,7 +822,7 @@ public partial class InkPlayer : Node
 
 				foreach(FunctionReference reference in validReferences) {
 					story.RemoveVariableObserver(reference.observer, specific_variable_name);
-					references.RemoveAt(reference);
+					references.Remove(reference);
 				}
 			}
 		}
@@ -831,7 +832,7 @@ public partial class InkPlayer : Node
 		}
 	}
 
-	public void remove_variable_observer_for_all_variables(Godot.Object gd_object, string method_name)
+	public void remove_variable_observer_for_all_variables(GObject gd_object, string method_name)
 	{
 		if (story == null)
 		{
@@ -850,7 +851,7 @@ public partial class InkPlayer : Node
 
 				foreach(FunctionReference reference in validReferences) {
 					story.RemoveVariableObserver(reference.observer);
-					kv.Value.RemoveAt(reference);
+					kv.Value.Remove(reference);
 				}
 			}
 		}
@@ -871,7 +872,7 @@ public partial class InkPlayer : Node
 		try
 		{
 			story.RemoveVariableObserver(null, specific_variable_name);
-			observers.RemoveAt(specific_variable_name);
+			observers.Remove(specific_variable_name);
 		}
 		catch (Exception e)
 		{
@@ -883,7 +884,7 @@ public partial class InkPlayer : Node
 	#region Methods | External Functions
 	public void bind_external_function(
 		string func_name,
-		Godot.Object gd_object,
+		GObject gd_object,
 		string method_name)
 	{
 		bind_external_function(func_name, gd_object, method_name, false);
@@ -891,7 +892,7 @@ public partial class InkPlayer : Node
 
 	public void bind_external_function(
 		string func_name,
-		Godot.Object gd_object,
+		GObject gd_object,
 		string method_name,
 		bool lookahead_safe)
 	{
@@ -905,7 +906,9 @@ public partial class InkPlayer : Node
 		{
 			story.BindExternalFunctionGeneral(
 				func_name,
-				(object[] args) => gd_object.Call(method_name, args),
+				(object[] args) => {
+					return gd_object.Call(method_name, ConvertToGDArray(args));
+				},
 				lookahead_safe);
 		}
 		catch (Exception e)
@@ -946,7 +949,7 @@ public partial class InkPlayer : Node
 		return story.HasFunction(function_name);
 	}
 
-	public Godot.Object evaluate_function(string function_name, object[] arguments)
+	public GObject evaluate_function(string function_name, GCol.Array arguments)
 	{
 		if (story == null)
 		{
@@ -958,7 +961,7 @@ public partial class InkPlayer : Node
 		// otherwise raise an exception.
 		object[] sanitizedArguments;
 		if (arguments != null) {
-			sanitizedArguments = arguments;
+			sanitizedArguments = ConvertToObjArray(arguments);
 		} else {
 			sanitizedArguments = new object[] { };
 		}
@@ -977,7 +980,7 @@ public partial class InkPlayer : Node
 	#endregion
 
 	#region Methods | Ink List Creation
-	public Godot.Object create_ink_list_with_origin(string single_origin_list_name)
+	public GObject create_ink_list_with_origin(string single_origin_list_name)
 	{
 		if (story == null)
 		{
@@ -997,7 +1000,7 @@ public partial class InkPlayer : Node
 		}
 	}
 
-	public Godot.Object create_ink_list_from_item_name(string item_name)
+	public GObject create_ink_list_from_item_name(string item_name)
 	{
 		if (story == null)
 		{
@@ -1019,6 +1022,23 @@ public partial class InkPlayer : Node
 	#endregion
 
 	#region Event Handlers
+	private object[] ConvertToObjArray(GCol.Array array)
+	{
+		var outArray = new object[array.Count];
+		for (int i=0; i<array.Count; i++)
+		{	
+			var e = array[i];
+			if (e.Obj is long) {outArray[i] = Convert.ToInt32(e.Obj);}
+			else outArray[i] = e.Obj;
+		}
+		return outArray;
+	}
+
+	private GCol.Array ConvertToGDArray(object[] objArray)
+	{	
+		return new GCol.Array( (from obj in objArray select (Variant)(dynamic)obj) );
+	}
+
 	private void onError(string message, Ink.ErrorType type)
 	{
 		if (stop_execution_on_error)
@@ -1034,23 +1054,23 @@ public partial class InkPlayer : Node
 		}
 		else
 		{
-			EmitSignal("error_encountered", new object[] { message, type });
+			EmitSignal("error_encountered", message, (int)type);
 		}
 	}
 
 	private void onDidContinue()
 	{
-		EmitSignal("continued",  new object[] { current_text, current_tags });
+		EmitSignal("continued", current_text, current_tags);
 	}
 
 	private void onMakeChoice(Ink.Runtime.Choice choice)
 	{
-		EmitSignal("choice_made",  new object[] { choice.text });
+		EmitSignal("choice_made", choice.text);
 	}
 
 	private void onEvaluateFunction(string functionName, object[] arguments)
 	{
-		EmitSignal("function_evaluating", new object[] { functionName, arguments });
+		EmitSignal("function_evaluating", functionName, ConvertToGDArray(arguments));
 	}
 
 	private void onCompleteEvaluateFunction(
@@ -1060,14 +1080,18 @@ public partial class InkPlayer : Node
 		object returnValue)
 	{
 		var functionResult = inkBridger.MakeFunctionResult(textOuput, returnValue);
-		var parameters = new object[] { functionName, arguments, functionResult };
+		var parameters = new Variant[] { 
+			functionName, 
+			ConvertToGDArray(arguments),
+			functionResult 
+		};
 
 		EmitSignal("function_evaluated", parameters);
 	}
 
 	private void onChoosePathString(string path, object[] arguments)
 	{
-		EmitSignal("path_choosen", new object[] { path, arguments });
+		EmitSignal("path_choosen", path, ConvertToGDArray(arguments));
 	}
 	#endregion
 
@@ -1100,7 +1124,7 @@ public partial class InkPlayer : Node
 		story.onCompleteEvaluateFunction += onCompleteEvaluateFunction;
 		story.onChoosePathString += onChoosePathString;
 
-		EmitSignal("loaded", new object[] { true });
+		EmitSignal("loaded", true);
 	}
 
 	private bool CurrentPlatformSupportsThreads()
@@ -1123,7 +1147,7 @@ public partial class InkPlayer : Node
 
 	private void PushStoryError(string message, Ink.ErrorType type)
 	{
-		if (Engine.EditorHint)
+		if (Engine.IsEditorHint())
 		{
 			switch (type)
 			{
@@ -1153,7 +1177,7 @@ public partial class InkPlayer : Node
 
 	private void PushError(string message)
 	{
-		if (Engine.EditorHint)
+		if (Engine.IsEditorHint())
 		{
 			GD.PrintErr(message);
 			foreach(string line in System.Environment.StackTrace.Split("\n"))
@@ -1170,16 +1194,16 @@ public partial class InkPlayer : Node
 	private bool IsValidResource(Resource resource)
 	{
 
-		var properties = resource.GetPropertyList().Cast<Godot.Collections.Dictionary>().ToList();
+		var properties = resource.GetPropertyList().Cast<GCol.Dictionary>().ToList();
 		return (
-			properties.Exists(element => "json".Equals(element["name"])) &&
-			resource.Get("json") is string
+			properties.Exists(element => "json" == element["name"].AsString()) &&
+			resource.Get("json").VariantType == Variant.Type.String
 		);
 	}
 
-	private bool IsInkObject(Godot.Object inkObject, string name)
+	private bool IsInkObject(GObject inkObject, string name)
 	{
-		return inkObject.HasMethod("is_class") && (bool)inkObject.Call("is_class", new object[] { name });
+		return inkObject.HasMethod("is_class") && (bool)inkObject.Call("is_class", new Variant[] { name });
 	}
 
 	private void HandleException(Exception e)
@@ -1199,7 +1223,7 @@ public partial class InkPlayer : Node
 		}
 		else
 		{
-			EmitSignal("exception_raised", new object[] { message, e.StackTrace.Split("\n") });
+			EmitSignal("exception_raised", message, e.StackTrace.Split("\n"));
 		}
 	}
 
@@ -1251,12 +1275,12 @@ public partial class InkPlayer : Node
 			this.observer = observer;
 		}
 
-		public bool Matches(string variableName, Godot.Object gdObject, string methodName)
+		public bool Matches(string variableName, GObject gdObject, string methodName)
 		{
 			return this.variableName.Equals(variableName) && Matches(gdObject, methodName);
 		}
 
-		public bool Matches(Godot.Object gdObject, string methodName)
+		public bool Matches(GObject gdObject, string methodName)
 		{
 			return (
 				(int)gdObject.Call("get_instance_id") == objectReferenceId &&

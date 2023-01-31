@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -18,7 +16,7 @@ class_name InkDivert
 # ############################################################################ #
 
 const PushPopType = preload("res://addons/inkgd/runtime/enums/push_pop.gd").PushPopType
-var InkPointer := load("res://addons/inkgd/runtime/structs/pointer.gd") as GDScript
+const InkPointer := preload("res://addons/inkgd/runtime/structs/pointer.gd")
 
 # ############################################################################ #
 
@@ -44,39 +42,39 @@ var target_pointer: InkPointer:
 
 			if self._target_path.last_component.is_index:
 				self._target_pointer = InkPointer.new(
-					Utils.as_or_null(target_obj.parent, "InkContainer"),
+					target_obj.parent as InkContainer,
 					self._target_path.last_component.index
 				)
 			else:
-				self._target_pointer = InkPointer.start_of(Utils.as_or_null(target_obj, "InkContainer"))
+				self._target_pointer = InkPointer.start_of(target_obj as InkContainer)
 
 		return self._target_pointer
 
 var _target_pointer: InkPointer = InkPointer.new_null()
 
 # String?
-var target_path_string :
+var target_path_string: String:
 	get:
 		if self.target_path == null:
-			return null
+			return ""
 
 		return self.compact_path_string(self.target_path)
 	set(value):
-		if value == null:
+		if value.is_empty():
 			self.target_path = null
 		else:
 			self.target_path = InkPath.new_with_components_string(value)
 
 # String
-var variable_divert_name = null
+var variable_divert_name := ""
 var has_variable_target: bool :
 	get:
-		return self.variable_divert_name != null
+		return self.variable_divert_name != ""
 
 var pushes_to_stack: bool = false
 
 # PushPopType
-var stack_push_type: int = 0
+var stack_push_type: PushPopType = PushPopType.TUNNEL
 
 var is_external: bool = false
 var external_args: int = 0
@@ -85,16 +83,16 @@ var is_conditional: bool = false
 
 
 # (int?) -> InkDivert
-func _init_with(stack_push_type = null):
-	self.pushes_to_stack = false
-
-	if stack_push_type != null:
-		self.pushes_to_stack = true
-		self.stack_push_type = stack_push_type
+#func _init_with(stack_push_type: PushPopType = null):
+#	self.pushes_to_stack = false
+#
+#	if stack_push_type != null:
+#		self.pushes_to_stack = true
+#		self.stack_push_type = stack_push_type
 
 # (InkBase) -> bool
 func equals(obj) -> bool:
-	var other_divert: InkDivert = Utils.as_or_null(obj, "Divert")
+	var other_divert: InkDivert = obj as InkDivert
 	if other_divert:
 		if self.has_variable_target == other_divert.has_variable_target:
 			if self.has_variable_target:
@@ -115,7 +113,7 @@ func _to_string() -> String:
 		var target_str: String = self.target_path._to_string()
 		var target_line_num = debug_line_number_of_path(self.target_path)
 		if target_line_num != null:
-			target_str = "line " + target_line_num
+			target_str = "line %d" % target_line_num
 
 		_string += "Divert"
 

@@ -55,12 +55,11 @@ func _validate_csproj(project_name: String, runtime_path: String) -> bool:
 		return false
 
 	var content = file.get_as_text()
-	file.close()
 
 	if content.find(runtime_path.replace("res://", "")) == -1:
 		print(
 				"[inkgd] [INFO] '%s.csproj' seems to be missing a " % project_name +
-				"<RefCounted> item matching '%s'. If you encounter " % runtime_path +
+				"<Reference> item matching '%s'. If you encounter " % runtime_path +
 				"further errors please refer to [TO BE ADDED] for help."
 		)
 		return false
@@ -77,7 +76,9 @@ func _scan_directory(path) -> String:
 		)
 		return ""
 
-	if directory.list_dir_begin()  != OK:# TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
+	directory.include_navigational = false
+	directory.include_hidden = false
+	if directory.list_dir_begin() != OK:
 		printerr(
 				"[inkgd] [ERROR] Could not list contents of '%s', " % path +
 				"can't look for ink-engine-runtime.dll."
@@ -86,7 +87,7 @@ func _scan_directory(path) -> String:
 
 	var file_name := directory.get_next()
 	while file_name != "":
-		if directory.current_is_dir():
+		if directory.current_is_dir() and !file_name.begins_with("."):
 			var ink_runtime = _scan_directory(
 					"%s/%s" % [directory.get_current_dir(), file_name]
 			)

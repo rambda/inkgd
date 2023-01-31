@@ -1,4 +1,3 @@
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -16,11 +15,6 @@ class_name InkList
 # Imports
 # ############################################################################ #
 
-const InkListItem = preload("res://addons/inkgd/runtime/lists/structs/ink_list_item.gd")
-const InkKeyValuePair = preload("res://addons/inkgd/runtime/extra/key_value_pair.gd")
-
-# ############################################################################ #
-
 # (Dictionary<InkItem, int>, Array<String>, Array<InkListDefinition>)
 func _init_from_csharp(items: Dictionary, origin_names: Array, origins: Array):
 	_dictionary = items
@@ -31,7 +25,7 @@ func _init_from_csharp(items: Dictionary, origin_names: Array, origins: Array):
 func _init_with_ink_list(other_list: InkList):
 	_dictionary = other_list._dictionary.duplicate()
 	_origin_names = other_list.origin_names
-	if other_list.origins != null:
+	if not other_list.origins.is_empty():
 		self.origins = other_list.origins.duplicate()
 
 # (string, Story) -> InkList
@@ -64,7 +58,7 @@ static func from_string(my_list_item: String, origin_story) -> InkList:
 		return null
 
 func add_item(item: InkListItem) -> void:
-	if item.origin_name == null:
+	if item.origin_name == "":
 		add_item_by_string(item.item_name)
 		return
 
@@ -120,10 +114,10 @@ func contains_item_named(item_name: String) -> bool:
 	return false
 
 # Array<ListDefinition>
-var origins = null
+var origins: Array[InkListDefinition] = []
 var origin_of_max_item: InkListDefinition :
 	get:
-		if origins == null:
+		if origins.is_empty():
 			return null
 
 		var max_origin_name = self.max_item.key.origin_name
@@ -137,9 +131,7 @@ var origin_of_max_item: InkListDefinition :
 var origin_names: Array[String]:
 	get:
 		if self.size() > 0:
-			if _origin_names == null && self.size() > 0:
-				_origin_names = []
-			else:
+			if not (_origin_names.is_empty() && self.size() > 0): # TODO Check
 				_origin_names.clear()
 
 			for item_key in keys():
@@ -147,15 +139,15 @@ var origin_names: Array[String]:
 
 		return _origin_names
 
-var _origin_names = null # Array<String>
+var _origin_names: Array[String] = [] # Array<String>
 
 func set_initial_origin_name(initial_origin_name: String) -> void:
 	_origin_names = [ initial_origin_name ]
 
 # (Array<String>) -> void
-func set_initial_origin_names(initial_origin_names) -> void:
-	if initial_origin_names == null:
-		_origin_names = null
+func set_initial_origin_names(initial_origin_names: Array[String]) -> void:
+	if initial_origin_names.is_empty():
+		_origin_names = []
 	else:
 		_origin_names = initial_origin_names.duplicate()
 
@@ -183,7 +175,7 @@ var min_item: InkKeyValuePair: # InkKeyValuePair<InkListItem, int>
 var inverse: InkList :
 	get:
 		var list: InkList = InkList.new()
-		if origins != null:
+		if not origins.is_empty():
 			for origin in origins:
 				for serialized_item_key in origin.items:
 					if !_dictionary.has(serialized_item_key):
@@ -195,7 +187,7 @@ var inverse: InkList :
 var all: InkList :
 	get:
 		var list: InkList = InkList.new()
-		if origins != null:
+		if not origins.is_empty():
 			for origin in origins:
 				for serialized_item_key in origin.items:
 					list._dictionary[serialized_item_key] = origin.items[serialized_item_key]
@@ -337,7 +329,7 @@ var ordered_items: Array: # Array<InkKeyValuePair<InkListItem, int>>
 		for key in keys():
 			ordered.append(InkKeyValuePair.new_with_key_value(key, get_item(key)))
 
-		ordered.sort_custom(Callable(KeyValueInkListItemSorter,"sort"))
+		ordered.sort_custom(Callable(InkKeyValueInkListItemSorter, &"sort")) # TODO: static func is not Callable, bug?
 		return ordered
 
 func _to_string() -> String:
@@ -375,7 +367,7 @@ static func new_with_single_item(single_item: InkListItem, single_value: int) ->
 	ink_list._init_with_single_item(single_item, single_value)
 	return ink_list
 
-class KeyValueInkListItemSorter:
+class InkKeyValueInkListItemSorter:
 	static func sort(a, b):
 		if a.value == b.value:
 			return a.key.origin_name.nocasecmp_to(b.key.origin_name) <= 0

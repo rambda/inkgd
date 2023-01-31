@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -24,8 +22,6 @@ class_name InkPointer
 # ############################################################################ #
 # Imports
 # ############################################################################ #
-
-const InkPath := preload("res://addons/inkgd/runtime/ink_path.gd")
 
 # ############################################################################ #
 
@@ -53,10 +49,10 @@ func _init(container: InkContainer = null,index: int = 0):
 	else:
 		self._container = weakref(container)
 
-	self.index = index
+	self._index = index
 
-# () -> InkContainer
-func resolve():
+# () -> InkObject？
+func resolve() -> InkObject:
 	if self.index < 0: return self.container
 	if self.container == null: return null
 	if self.container.content.size() == 0: return self.container
@@ -83,7 +79,7 @@ var path: InkPath :
 
 		if self.index >= 0:
 			return self.container.path.path_by_appending_component(
-					InkPath.Component.new(self.index)
+					InkPath.Component.new_with_index(self.index)
 			)
 		else:
 			return self.container.path
@@ -104,7 +100,7 @@ static func start_of(container: InkContainer) -> InkPointer:
 # ############################################################################ #
 
 # () -> InkPointer
-static func new_null():
+static func new_null() -> InkPointer:
 	return InkPointer.new(null, -1)
 
 # ############################################################################ #
@@ -117,5 +113,5 @@ func is_class(type: String) -> bool:
 func get_class() -> String:
 	return "Pointer"
 
-func duplicat1e() -> InkPointer:
+func dup() -> InkPointer: # FIXME Godot super class check bug
 	return InkPointer.new(self.container, self.index)

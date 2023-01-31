@@ -1,4 +1,3 @@
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -21,18 +20,17 @@ class_name InkSearchResult
 
 # ############################################################################ #
 
-var obj = null # InkObject
-var approximate = false # bool
+var obj: InkObject = null # InkObject
+var approximate := false # bool
 
-var correct_obj:
+var correct_obj: InkObject:
 	get = get_correct_obj # InkObject
 func get_correct_obj():
 	return null if approximate else obj
 
-var container:
-	get = get_container # Container
-func get_container():
-	return Utils.as_or_null(obj, "InkContainer")
+var container: InkContainer:
+	get:
+		return obj as InkContainer
 
 # ############################################################################ #
 # GDScript extra methods

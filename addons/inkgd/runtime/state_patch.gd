@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -17,46 +15,27 @@ class_name InkStatePatch
 # Imports
 # ############################################################################ #
 
-var InkTryGetResult := preload("res://addons/inkgd/runtime/extra/try_get_result.gd") as GDScript
-var InkStringSet := preload("res://addons/inkgd/runtime/extra/string_set.gd") as GDScript
-
 # ############################################################################ #
 
 # Dictionary<String, InkObject>
 var globals: Dictionary :
 	get:
-		return globals # TODOConverter40 Copy here content of get_globals
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_globals() -> Dictionary:
-	return _globals
+		return _globals
 
 # StringSet
 var changed_variables: InkStringSet :
 	get:
-		return changed_variables # TODOConverter40 Copy here content of get_changed_variables
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_changed_variables() -> InkStringSet:
-	return _changed_variables
+		return _changed_variables
 
 # Dictionary<InkContainer, int>
 var visit_counts: Dictionary :
 	get:
-		return visit_counts # TODOConverter40 Copy here content of get_visit_counts
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_visit_counts() -> Dictionary:
-	return _visit_counts
+		return _visit_counts
 
 # Dictionary<InkContainer, int>
 var turn_indices :
 	get:
-		return turn_indices # TODOConverter40 Copy here content of get_turn_indices
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_turn_indices() -> Dictionary:
-	return _turn_indices
+		return _turn_indices
 
 # ############################################################################ #
 

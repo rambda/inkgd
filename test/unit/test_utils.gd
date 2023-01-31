@@ -17,7 +17,7 @@ var Utils = preload("res://addons/inkgd/runtime/extra/utils.gd")
 # ############################################################################ #
 
 func test_is_ink_class():
-	assert_true(Utils.is_ink_class(InkBaseObject.new("Ink"), "InkBaseObject"))
+	assert_true(InkBaseObject.new("Ink") is InkBaseObject)
 
 func test_valid_as_INamedContent():
 	var name_content_like = INamedContentLike.new()
@@ -42,23 +42,23 @@ func test_trim_custom():
 # ############################################################################ #
 
 func test_array_join_single_element():
-	var joined_array = " . ", ["Ink"].join(Utils)
+	var joined_array = Utils.join(" . ", ["Ink"])
 	assert_eq(joined_array, "Ink", "")
 
 func test_array_join_two_element():
-	var joined_array = " . ", ["Ink", "Divert"].join(Utils)
+	var joined_array = Utils.join(" . ", ["Ink", "Divert"])
 	assert_eq(joined_array, "Ink . Divert", "")
 
 func test_array_join_multiple_elements():
-	var joined_array = " . ", ["Ink", "Divert", "Gather"].join(Utils)
+	var joined_array = Utils.join(" . ", ["Ink", "Divert", "Gather"])
 	assert_eq(joined_array, "Ink . Divert . Gather", "")
 
 func test_array_join_primitive_type():
-	var joined_array = "", [3, 67, 239].join(Utils)
+	var joined_array = Utils.join("", [3, 67, 239])
 	assert_eq(joined_array, "367239", "")
 
 func test_array_join_ink_base_type():
-	var joined_array = " - ", [InkBaseObject.new("Ink".join(Utils), InkBaseObject.new(42)])
+	var joined_array = Utils.join(" - ", [InkBaseObject.new("Ink"), InkBaseObject.new(42)])
 	assert_eq(joined_array, "Ink - 42", "")
 
 func test_array_valid_range():

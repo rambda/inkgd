@@ -1,4 +1,3 @@
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -16,30 +15,28 @@ class_name InkContainer
 # Imports
 # ############################################################################ #
 
-var InkSearchResult := load("res://addons/inkgd/runtime/search_result.gd") as GDScript
-
 # ############################################################################ #
 
 # String
-var name = null
+var name := ""
 
 # Array<InkObject>
-var content: Array :
+var content: Array[InkObject] :
 	get:
 		return self._content
 	set(value):
 		add_content(value)
 
 # Array<InkObject>
-var _content: Array[InkObject]
+var _content: Array[InkObject] = []
 
 # Dictionary<string, INamedContent>
-var named_content: Dictionary
+var named_content: Dictionary = {}
 
 # Dictionary<string, InkObject>?
 var named_only_content: Dictionary:
 	get:
-		var named_only_content_dict = {} # Dictionary<string, InkObject>
+		var named_only_content_dict := {} # Dictionary<string, InkObject>
 		for key in self.named_content:
 			named_only_content_dict[key] = self.named_content[key]
 
@@ -48,17 +45,17 @@ var named_only_content: Dictionary:
 			if named != null && named.has_valid_name:
 				named_only_content_dict.erase(named.name)
 
-		if named_only_content_dict.size() == 0:
-			named_only_content_dict = null
+#		if named_only_content_dict.size() == 0:
+#			named_only_content_dict = null
 
 		return named_only_content_dict
 	set(value):
-		var existing_named_only = named_only_content
-		if existing_named_only != null:
+		var existing_named_only := named_only_content
+		if not existing_named_only.is_empty():
 			for key in existing_named_only:
 				self.named_content.erase(key)
 
-		if value == null:
+		if value.is_empty():
 			return
 
 		for key in value:
@@ -108,27 +105,23 @@ var path_to_first_leaf_content: InkPath :
 		return self._path_to_first_leaf_content
 
 # InkPath?
-var _path_to_first_leaf_content = null
+var _path_to_first_leaf_content: InkPath = null
 
 # TODO: Make inspectable
 var internal_path_to_first_leaf_content: InkPath :
 	get:
-		var components: Array = [] # Array<Path3D.Component>
+		var components: Array[InkPath.Component] = [] # Array<Path.Component>
 		var container: InkContainer = self
 		while container != null:
 			if container.content.size() > 0:
-				components.append(InkPath.Component.new(0))
-				container = Utils.as_or_null(container.content[0], "InkContainer")
+				components.append(InkPath.Component.new_with_index(0))
+				container = container.content[0] as InkContainer
 
 		return InkPath.new_with_components(components)
 
 
-func _init():
-	self._content = [] # Array<InkObject>
-	self.named_content = {} # Dictionary<string, INamedContent>
-
 func add_content(content_obj_or_content_list) -> void:
-	if Utils.is_ink_class(content_obj_or_content_list, "InkObject"):
+	if content_obj_or_content_list is InkObject:
 		var content_obj = content_obj_or_content_list
 		self.content.append(content_obj)
 
@@ -163,7 +156,7 @@ func try_add_named_content(content_obj: InkObject) -> void:
 
 # (INamedContent) -> void
 func add_to_named_content_only(named_content_obj: InkObject) -> void:
-	Utils.__assert__(named_content_obj.is_class("InkObject"), "Can only add Runtime.Objects to a Runtime.Container")
+	Utils.__assert__(named_content_obj is InkObject, "Can only add Runtime.Objects to a Runtime.Container")
 	var runtime_obj = named_content_obj
 	runtime_obj.parent = self
 
@@ -220,7 +213,7 @@ func content_at_path(
 			break
 
 		current_obj = found_obj
-		current_container = Utils.as_or_null(found_obj, "InkContainer")
+		current_container = found_obj as InkContainer
 
 		i += 1
 
@@ -251,11 +244,11 @@ func build_string_of_hierarchy(
 	while i < self.content.size():
 		var obj = self.content[i]
 
-		if Utils.is_ink_class(obj, "InkContainer"):
+		if obj is InkContainer:
 			existing_hierarchy = obj.build_string_of_hierarchy(existing_hierarchy, indentation, pointed_obj)
 		else:
 			existing_hierarchy = _append_indentation(existing_hierarchy, indentation)
-			if Utils.is_ink_class(obj, "StringValue"):
+			if obj is InkStringValue:
 				existing_hierarchy += "\""
 				existing_hierarchy += obj._to_string().replace("\n", "\\n")
 				existing_hierarchy += "\""
@@ -265,7 +258,7 @@ func build_string_of_hierarchy(
 		if i != self.content.size() - 1:
 			existing_hierarchy += ","
 
-		if !Utils.is_ink_class(obj, "InkContainer") && obj == pointed_obj:
+		if !obj is InkContainer && obj == pointed_obj:
 			existing_hierarchy += "  <---"
 
 		existing_hierarchy += "\n"
@@ -286,7 +279,7 @@ func build_string_of_hierarchy(
 
 		for object_key in only_named:
 			var value = only_named[object_key]
-			Utils.__assert__(Utils.is_ink_class(value, "InkContainer"), "Can only print out named Containers")
+			Utils.__assert__(value is InkContainer, "Can only print out named Containers")
 			var container = value
 			existing_hierarchy = container.build_string_of_hierarchy(existing_hierarchy, indentation, pointed_obj)
 			existing_hierarchy += "\n"

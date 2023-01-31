@@ -12,16 +12,10 @@ extends "res://addons/gut/test.gd"
 # Imports
 # ############################################################################ #
 
-var InkRuntime = load("res://addons/inkgd/runtime.gd")
-var Story = load("res://addons/inkgd/runtime/story.gd")
-
-# ############################################################################ #
-
-var ink_runtime
+var ink_runtime: InkRuntime
 
 func before_all():
-	InkRuntime.init(get_tree().root, false)
-	ink_runtime = get_tree().root.get_node("__InkRuntime")
+	ink_runtime = InkRuntime.init(get_tree().root, false)
 
 func after_all():
 	InkRuntime.deinit(get_tree().root)
@@ -33,16 +27,15 @@ func load_resource(file_name: String) -> Resource:
 	return load("res://test/fixture/compiled/%s/%s.ink.json" % [_prefix(), file_name])
 
 func load_file(file_name: String) -> String:
-	var data_file = File.new()
 	var path = "res://test/fixture/compiled/%s/%s.ink.json" % [_prefix(), file_name]
+	var data_file = FileAccess.open(path, FileAccess.READ)
 
 	assert(
-			data_file.open(path, File.READ) == OK,
+			data_file != null,
 			"Could not load '%s'" % path
 	)
 
 	var data_text = data_file.get_as_text()
-	data_file.close()
 
 	return data_text
 

@@ -15,7 +15,7 @@ extends "res://test/integration/player/test_base.gd"
 # ############################################################################ #
 
 func test_continue() -> void:
-	await _load_story("flow").completed
+	await _load_story("flow")
 
 	assert_true(_ink_player.can_continue)
 	assert_eq(_ink_player.continue_story(), "Hello\n")
@@ -29,7 +29,7 @@ func test_continue() -> void:
 
 
 func test_tags() -> void:
-	await _load_story("flow").completed
+	await _load_story("flow")
 
 	assert_eq_shallow(_ink_player.global_tags, ["globalTag1", "globalTag2"])
 
@@ -42,7 +42,7 @@ func test_tags() -> void:
 
 
 func test_choices() -> void:
-	await _load_story("flow").completed
+	await _load_story("flow")
 
 	assert_false(_ink_player.has_choices)
 
@@ -60,7 +60,7 @@ func test_choices() -> void:
 
 
 func test_multi_flow() -> void:
-	await _load_story("flow").completed
+	await _load_story("flow")
 
 	_ink_player.switch_flow("new_flow")
 	_ink_player.choose_path("prologue")

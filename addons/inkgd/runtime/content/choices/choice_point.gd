@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -29,13 +27,15 @@ var path_on_choice: InkPath :
 		return _path_on_choice
 
 # InkPath?
-var _path_on_choice = null
+var _path_on_choice: InkPath = null
 
 # ############################################################################ #
 
 var choice_target: InkContainer :
 	get:
-		var cont = resolve_path(self._path_on_choice).container
+		if not _path_on_choice:
+			return null
+		var cont = resolve_path(path_on_choice).container
 		return cont
 
 # ############################################################################ #
@@ -85,10 +85,10 @@ func _init(once_only: bool = true):
 	self.once_only = once_only
 
 func _to_string() -> String:
-	var target_line_num = debug_line_number_of_path(self.path_on_choice)
-	var target_string = self.path_on_choice._to_string()
+	var target_line_num := debug_line_number_of_path(self.path_on_choice)
+	var target_string := self.path_on_choice._to_string()
 
-	if target_line_num != null:
+	if target_line_num != -1:
 		target_string = " line %d(%s)" % [target_line_num, target_string]
 
 	return "Choice: -> %s" % target_string

@@ -39,21 +39,17 @@ func after_each():
 # ############################################################################ #
 
 func test_dont_save_default_values() -> void:
-	await _load_story("variables").completed
+	await _load_story("variables")
 
 	_ink_player.continue_story_maximally()
 
-	var test_json_conv = JSON.new()
-	test_json_conv.parse(_ink_player.get_state()).result
-	var state1 = test_json_conv.get_data()
+	var state1 = JSON.parse_string(_ink_player.get_state())
 
 	_ink_player.choose_choice_index(1)
 	_ink_player.continue_story()
 	_ink_player.continue_story()
 
-	var test_json_conv = JSON.new()
-	test_json_conv.parse(_ink_player.get_state()).result
-	var state2 = test_json_conv.get_data()
+	var state2 = JSON.parse_string(_ink_player.get_state())
 
 	assert_eq(_exception_messages_raised.size(), 0)
 
@@ -61,17 +57,13 @@ func test_dont_save_default_values() -> void:
 	_ink_player.continue_story_maximally()
 	_ink_player.do_not_save_default_values = false
 
-	var test_json_conv = JSON.new()
-	test_json_conv.parse(_ink_player.get_state()).result
-	var state3 = test_json_conv.get_data()
+	var state3 = JSON.parse_string(_ink_player.get_state())
 
 	_ink_player.choose_choice_index(1)
 	_ink_player.continue_story()
 	_ink_player.continue_story()
 
-	var test_json_conv = JSON.new()
-	test_json_conv.parse(_ink_player.get_state()).result
-	var state4 = test_json_conv.get_data()
+	var state4 = JSON.parse_string(_ink_player.get_state())
 
 	assert_eq(state1["variablesState"].size(), 0)
 	assert_eq(state2["variablesState"].size(), 5)
@@ -80,7 +72,7 @@ func test_dont_save_default_values() -> void:
 
 
 func test_set_get_variable() -> void:
-	await _load_story("variables").completed
+	await _load_story("variables")
 
 	assert_eq(_ink_player.get_variable("anInteger"), 3)
 
@@ -101,7 +93,7 @@ func test_set_get_variable() -> void:
 # an observer can only be added once.
 
 func test_observe_variables() -> void:
-	await _load_story("variables").completed
+	await _load_story("variables")
 
 	_ink_player.observe_variables(
 			["aBoolean", "aString", "anInteger"],
@@ -134,7 +126,7 @@ func test_observe_variables() -> void:
 
 
 func test_remove_observer() -> void:
-	await _load_story("variables").completed
+	await _load_story("variables")
 
 	_ink_player.observe_variables(
 			["aBoolean", "aString", "anInteger"],
@@ -174,7 +166,7 @@ func test_remove_observer() -> void:
 
 
 func test_remove_observer_for_all_variables() -> void:
-	await _load_story("variables").completed
+	await _load_story("variables")
 
 	_ink_player.observe_variables(
 			["aBoolean", "aString", "anInteger"],
@@ -207,7 +199,7 @@ func test_remove_observer_for_all_variables() -> void:
 
 
 func test_remove_all_variable_observers() -> void:
-	await _load_story("variables").completed
+	await _load_story("variables")
 
 	_ink_player.observe_variable(
 			"aString",

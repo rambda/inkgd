@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -15,33 +13,31 @@ class_name InkVariablePointerValue
 
 # ############################################################################ #
 
-var variable_name :
+var value: String = ""
+
+var variable_name: String :
 	get:
 		return value
 	set(value):
 		self.value = value
 
 
-func get_value_type():
+func get_value_type() -> ValueType:
 	return ValueType.VARIABLE_POINTER
 
-func get_is_truthy():
+func get_is_truthy() -> bool:
 	Utils.throw_exception("Shouldn't be checking the truthiness of a variable pointer")
 	return false
 
-var context_index = 0 # int
-
-func _init_with_context(variable_name, context_index = -1):
-	super._init_with(variable_name)
-	self.context_index = context_index
+var context_index := 0 # int
 
 func _init():
-	value = null
+	pass
 
 # The method takes a `StoryErrorMetadata` object as a parameter that
 # doesn't exist in upstream. The metadat are used in case an 'exception'
 # is raised. For more information, see story.gd.
-func cast(new_type, metadata = null):
+func cast(new_type, metadata: StoryErrorMetadata = null):
 	if new_type == self.value_type:
 		return self
 
@@ -66,5 +62,6 @@ func get_class():
 
 static func new_with_context(variable_name, context_index = -1):
 	var value = InkVariablePointerValue.new()
-	value._init_with_context(variable_name, context_index)
+	value.value = variable_name
+	value.context_index = context_index
 	return value

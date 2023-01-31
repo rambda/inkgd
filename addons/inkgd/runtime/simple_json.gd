@@ -255,7 +255,7 @@ class Reader extends InkBase:
 		return true
 
 	# (bool | String, String) -> bool
-	func expect(condition_or_expected_str, message = null) -> bool:
+	func expect(condition_or_expected_str, message:="") -> bool:
 		var _condition = false
 
 		if condition_or_expected_str is String:
@@ -264,7 +264,7 @@ class Reader extends InkBase:
 			_condition = condition_or_expected_str
 
 		if !_condition:
-			if message == null:
+			if message == "":
 				message = "Unexpected token"
 			else:
 				message = "Expected " + message
@@ -303,9 +303,6 @@ class Writer extends InkBase:
 	# ######################################################################## #
 	# Imports
 	# ######################################################################## #
-
-	var InkStringWriter := load("res://addons/inkgd/runtime/extra/string_writer.gd") as GDScript
-	var InkStateElement := load("res://addons/inkgd/runtime/extra/state_element.gd") as GDScript
 
 	# (String) -> Writer
 	func _init():

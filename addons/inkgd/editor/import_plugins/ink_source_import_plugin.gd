@@ -28,6 +28,12 @@ func _get_save_extension():
 func _get_resource_type():
 	return "Resource";
 
+func _get_import_order() -> int:
+	return 0
+
+func _get_priority() -> float:
+	return 1.0
+
 func _get_import_options(_path: String, _preset_index: int) -> Array[Dictionary]:
 	return []
 

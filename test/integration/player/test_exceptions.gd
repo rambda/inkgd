@@ -20,12 +20,12 @@ var _error_messages_encountered := []
 
 func before_each():
 	super.before_each()
-	_ink_player.connect("error_encountered",Callable(self,"_error_encountered"))
+	_ink_player.error_encountered.connect(self._error_encountered)
 
 
 func after_each():
 	_error_messages_encountered = []
-	_ink_player.disconnect("error_encountered",Callable(self,"_error_encountered"))
+	_ink_player.error_encountered.disconnect(self._error_encountered)
 	super.after_each()
 
 # ############################################################################ #
@@ -33,7 +33,7 @@ func after_each():
 # ############################################################################ #
 
 func test_that_exception_is_received() -> void:
-	await _load_story("flow").completed
+	await _load_story("flow")
 	_ink_player.stop_execution_on_exception = false
 	_ink_player.remove_flow("DEFAULT_FLOW")
 
@@ -42,7 +42,7 @@ func test_that_exception_is_received() -> void:
 
 
 func test_that_argument_exception_is_received() -> void:
-	await _load_story("functions").completed
+	await _load_story("functions")
 	_ink_player.stop_execution_on_exception = false
 	_ink_player.allow_external_function_fallbacks = true
 	_ink_player.evaluate_function("the_function", [Vector2(3, 6)])
@@ -52,7 +52,7 @@ func test_that_argument_exception_is_received() -> void:
 
 
 func test_that_story_exception_is_received() -> void:
-	await _load_story("ink_error").completed
+	await _load_story("ink_error")
 	_ink_player.stop_execution_on_error = false
 	_ink_player.continue_story_maximally()
 
@@ -61,7 +61,7 @@ func test_that_story_exception_is_received() -> void:
 
 
 func test_that_external_story_exception_is_received() -> void:
-	await _load_story("flow").completed
+	await _load_story("flow")
 	_ink_player.stop_execution_on_error = false
 	_ink_player.set_variable("non_existing_variable", 3)
 

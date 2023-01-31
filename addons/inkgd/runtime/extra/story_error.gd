@@ -18,7 +18,7 @@ class_name StoryError
 
 var message: String
 var use_end_line_number: bool
-var metadata # StoryErrorMetadata | null
+var metadata: StoryErrorMetadata # StoryErrorMetadata | null
 
 # ############################################################################ #
 # Initialization

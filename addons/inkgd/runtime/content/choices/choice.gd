@@ -1,4 +1,3 @@
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -16,28 +15,26 @@ class_name InkChoice
 # Imports
 # ############################################################################ #
 
-var CallStack := load("res://addons/inkgd/runtime/callstack.gd") as GDScript
-
 # ############################################################################ #
 
-var text: String
+var text := "NO_TEXT"
 
-var path_string_on_choice: String :
+var path_string_on_choice: String:
 	get:
 		return target_path._to_string()
 	set(value):
 		target_path = InkPath.new_with_components_string(value)
 
 # String?
-var source_path = null
+var source_path := "NO_SOURCE_PATH"
 
 var index: int = 0
 
 # InkPath?
-var target_path = null
+var target_path: InkPath = null
 
 # CallStack.InkThread?
-var thread_at_generation = null
+var thread_at_generation: InkCallStack.InkThread = null
 
 var original_thread_index: int = 0
 

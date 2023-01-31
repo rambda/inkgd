@@ -18,9 +18,9 @@ const DO_NOT_USE_MONO_RUNTIME_SETTING = "inkgd/do_not_use_mono_runtime"
 
 static func create():
 	if _should_use_mono():
-		var InkPlayer = load("res://addons/inkgd/mono/InkPlayer.cs")
-		if InkPlayer.can_instantiate():
-			return InkPlayer.new()
+		var ink_player = load("res://addons/inkgd/mono/InkPlayer.cs")
+		if ink_player.can_instantiate():
+			return ink_player.new()
 		else:
 			printerr(
 					"[inkgd] [ERROR] InkPlayer can't be instantiated. Make sure that a suitable " +
@@ -31,7 +31,7 @@ static func create():
 			)
 			print("[inkgd] [INFO] Falling back to the GDScript runtime.")
 
-	# Falling back to GDscript.
+#	# Falling back to GDscript.
 	return load("res://addons/inkgd/ink_player.gd").new()
 
 
@@ -46,4 +46,4 @@ static func _should_use_mono() -> bool:
 		return _can_run_mono()
 
 static func _can_run_mono() -> bool:
-	return type_exists("_GodotSharp")
+	return GodotSharp.is_runtime_initialized()

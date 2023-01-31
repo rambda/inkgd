@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -20,35 +18,37 @@ const parent_id = "^"
 # ############################################################################ #
 
 class Component extends InkBase:
-	var index = 0 # int
-	var name = null # String
+	var index := 0 # int
+	var name := "NO_NAME" # String
 
-	var is_index:
+	var is_index: bool:
 		get = get_is_index # bool
 	func get_is_index(): return index >= 0
 
-	var is_parent:
+	var is_parent: bool:
 		get = get_is_parent # bool
 	func get_is_parent():
 		return name == parent_id
 
 	# ######################################################################## #
 
-	func _init(index_or_name):
-		if index_or_name is int:
-			var index = index_or_name
-			assert(index >= 0)
-			self.index = index
-			self.name = null
-		elif index_or_name is String:
-			var name = index_or_name
-			assert(name != null && name.length() > 0)
-			self.name = name
-			self.index = -1
+	static func new_with_index(index: int):
+		assert(index >= 0)
+		var c := Component.new()
+		c.index = index
+		c.name = "NO_NAME"
+		return c
+
+	static func new_with_name(name: String):
+		assert(name != null && name.length() > 0)
+		var c := Component.new()
+		c.name = name
+		c.index = -1
+		return c
 
 	# () -> Component
-	static func to_parent():
-		return Component.new(parent_id)
+	static func to_parent() -> Component:
+		return Component.new_with_name(parent_id)
 
 	# () -> String
 	func _to_string() -> String:
@@ -58,9 +58,9 @@ class Component extends InkBase:
 			return name
 
 	# (Component) -> bool
-	func equals(other_comp):
+	func equals(other_comp: Component) -> bool:
 		# Simple test to make sure the object is of the right type.
-		if !(other_comp is Object && other_comp.is_class("InkPath.Component")): return false
+		if !(other_comp is Object && other_comp is InkPath.Component): return false
 
 		if other_comp.is_index == self.is_index:
 			if self.is_index:
@@ -83,12 +83,12 @@ class Component extends InkBase:
 # ############################################################################ #
 
 # (int) -> Component
-func get_component(index):
+func get_component(index: int) -> Component:
 	return self._components[index]
 
-var is_relative = false # bool
+var is_relative := false # bool
 
-var head:
+var head: Component:
 	get = get_head # Component
 func get_head():
 	if _components.size() > 0:
@@ -97,7 +97,7 @@ func get_head():
 		return null
 
 # TODO: Make inspectable
-var tail:
+var tail: InkPath:
 	get = get_tail # InkPath
 func get_tail():
 	if _components.size() >= 2:
@@ -110,12 +110,12 @@ func get_tail():
 		new.is_relative = true
 		return new
 
-var length:
+var length: int:
 	get = get_length # int
 func get_length():
 	return _components.size()
 
-var last_component:
+var last_component: Component:
 	get = get_last_component # Component
 func get_last_component():
 	if _components.size() > 0:
@@ -123,7 +123,7 @@ func get_last_component():
 	else:
 		return null
 
-var contains_named_component:
+var contains_named_component: bool:
 	get = get_contains_named_component # bool
 func get_contains_named_component():
 	for comp in _components:
@@ -135,28 +135,28 @@ func get_contains_named_component():
 func _init():
 	self._components = []
 
-func _init_with_head_tail(head, tail):
+func _init_with_head_tail(head: Component, tail: Component) -> void:
 	self._components = []
 	self._components.append(head)
 	self._components = self._components + self.tail._components
 
-func _init_with_components(components, relative = false):
+func _init_with_components(components: Array[Component], relative := false) -> void:
 	self._components = []
 	self._components = self._components + components
 	self.is_relative = relative
 
-func _init_with_components_string(components_string):
+func _init_with_components_string(components_string: String) -> void:
 	self._components = []
 	self.components_string = components_string
 
 
 # (InkPath) -> InkPath
-func path_by_appending_path(path_to_append):
+func path_by_appending_path(path_to_append: InkPath) -> InkPath:
 	var p = InkPath.new()
 
 	var upward_moves = 0
 
-	var i = 0
+	var i := 0
 	while(i < path_to_append._components.size()):
 		if path_to_append._components[i].is_parent:
 			upward_moves += 1
@@ -177,54 +177,52 @@ func path_by_appending_path(path_to_append):
 	return p
 
 # (Component) -> InkPath
-func path_by_appending_component(c):
-	var p = InkPath.new()
+func path_by_appending_component(c: Component) -> InkPath:
+	var p := InkPath.new()
 	p._components = p._components + self._components
 	p._components.append(c)
 	return p
 
-var components_string :
+var components_string: String:
 	get:
-		return components_string # TODOConverter40 Copy here content of get_components_string
-	set(mod_value):
-		mod_value  # TODOConverter40 Copy here content of set_components_string # String
-func get_components_string():
-	if _components_string == null:
-		_components_string = Utils.join(".", _components)
-		if self.is_relative:
-			_components_string = "." + _components_string
+		if _components_string.is_empty():
+			_components_string = Utils.join(".", _components)
+			if self.is_relative:
+				_components_string = "." + _components_string
 
-	return _components_string
+		return _components_string
 
-func set_components_string(value):
-	_components.clear()
-	_components_string = value
+	set(value):
+		_components.clear()
+		_components_string = value
 
-	if (_components_string == null || _components_string.length() == 0):
-		return
+		if (_components_string.is_empty() || _components_string.length() == 0):
+			return
 
-	if _components_string[0] == '.':
-		self.is_relative = true
-		_components_string = _components_string.substr(1, _components_string.length() - 1)
-	else:
-		self.is_relative = false
-
-	var components_strings = _components_string.split(".")
-	for _str in components_strings:
-		if _str.is_valid_int():
-			_components.append(Component.new(int(_str)))
+		if _components_string[0] == '.':
+			self.is_relative = true
+			_components_string = _components_string.substr(1, _components_string.length() - 1)
 		else:
-			_components.append(Component.new(_str))
+			self.is_relative = false
 
-var _components_string # String
+		var components_strings := _components_string.split(".")
+		for _str in components_strings:
+			if _str.is_valid_int():
+				_components.append(Component.new_with_index(int(_str)))
+			else:
+				_components.append(Component.new_with_name(_str))
+
+var _components_string := ""
 
 func _to_string() -> String:
 	return self.components_string
 
 # (Component) -> bool
-func equals(other_path):
+func equals(other_path: InkPath) -> bool:
 	# Simple test to make sure the object is of the right type.
-	if !(other_path is Object && other_path.is_class("InkPath")): return false
+	if other_path == null:
+		assert(false)
+		return false
 
 	if other_path._components.size() != self._components.size():
 		return false
@@ -234,24 +232,24 @@ func equals(other_path):
 
 	return Utils.array_equal(other_path._components, self._components, true)
 
-var _components: Array[Component] = null # Array<Component>
+var _components: Array[Component] = [] # Array<Component>
 
 # ############################################################################ #
 # GDScript extra methods
 # ############################################################################ #
 
-static func new_with_head_tail(head, tail):
-	var path = InkPath.new()
+static func new_with_head_tail(head: Component, tail: Component) -> InkPath:
+	var path := InkPath.new()
 	path._init_with_head_tail(head, tail)
 	return path
 
-static func new_with_components(components, relative = false):
-	var path = InkPath.new()
+static func new_with_components(components: Array[Component], relative := false) -> InkPath:
+	var path := InkPath.new()
 	path._init_with_components(components, relative)
 	return path
 
-static func new_with_components_string(components_string):
-	var path = InkPath.new()
+static func new_with_components_string(components_string: String) -> InkPath:
+	var path := InkPath.new()
 	path._init_with_components_string(components_string)
 	return path
 

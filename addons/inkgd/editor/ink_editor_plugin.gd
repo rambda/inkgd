@@ -15,18 +15,19 @@ extends EditorPlugin
 # Imports
 # ############################################################################ #
 
-var InkJsonImportPlugin = preload("res://addons/inkgd/editor/import_plugins/ink_json_import_plugin.gd")
-var InkSourceImportPlugin = preload("res://addons/inkgd/editor/import_plugins/ink_source_import_plugin.gd")
+const InkJsonImportPlugin = preload("res://addons/inkgd/editor/import_plugins/ink_json_import_plugin.gd")
+const InkSourceImportPlugin = preload("res://addons/inkgd/editor/import_plugins/ink_source_import_plugin.gd")
 
-var InkBottomPanel = preload("res://addons/inkgd/editor/panel/ink_bottom_panel.tscn")
+const InkBottomPanel = preload("res://addons/inkgd/editor/panel/ink_bottom_panel.gd")
+var InkBottomPanelScene = load("res://addons/inkgd/editor/panel/ink_bottom_panel.tscn")
 
-var InkCSharpValidator = preload("res://addons/inkgd/editor/common/ink_csharp_validator.gd")
+const InkCSharpValidator = preload("res://addons/inkgd/editor/common/ink_csharp_validator.gd")
 
-var InkEditorInterface = load("res://addons/inkgd/editor/common/ink_editor_interface.gd")
-var InkConfiguration = load("res://addons/inkgd/editor/common/ink_configuration.gd")
+const InkEditorInterface = preload("res://addons/inkgd/editor/common/ink_editor_interface.gd")
+const InkConfiguration = preload("res://addons/inkgd/editor/common/ink_configuration.gd")
 
-var InkCompilationConfiguration = load("res://addons/inkgd/editor/common/executors/structures/ink_compilation_configuration.gd")
-var InkCompiler = load("res://addons/inkgd/editor/common/executors/ink_compiler.gd")
+const InkCompilationConfiguration = preload("res://addons/inkgd/editor/common/executors/structures/ink_compilation_configuration.gd")
+const InkCompiler = preload("res://addons/inkgd/editor/common/executors/ink_compiler.gd")
 
 # ############################################################################ #
 # Constant
@@ -41,7 +42,7 @@ const DO_NOT_USE_MONO_RUNTIME_SETTING = "inkgd/do_not_use_mono_runtime"
 
 var _editor_interface: InkEditorInterface = null
 var _configuration: InkConfiguration = null
-var _panel = null
+var _panel: InkBottomPanel = null
 
 var _ink_source_import_plugin: InkSourceImportPlugin = null
 var _ink_json_import_plugin: InkJsonImportPlugin = null
@@ -160,7 +161,7 @@ func _remove_import_plugin():
 
 
 func _add_bottom_panel():
-	_panel = InkBottomPanel.instantiate()
+	_panel = InkBottomPanelScene.instantiate()
 	_panel.editor_interface = _editor_interface
 	_panel.configuration = _configuration
 
@@ -174,12 +175,12 @@ func _remove_bottom_panel():
 
 ## Registers the Ink runtime node as an autoloaded singleton.
 func _add_autoloads():
-	add_autoload_singleton("__InkRuntime", "res://addons/inkgd/runtime/static/ink_runtime.gd")
+	add_autoload_singleton("InkRuntime", "res://addons/inkgd/runtime.gd")
 
 
 ## Unregisters the Ink runtime node from autoloaded singletons.
 func _remove_autoloads():
-	remove_autoload_singleton("__InkRuntime")
+	remove_autoload_singleton("InkRuntime")
 
 
 ## Registers the script templates provided by the plugin.
@@ -212,7 +213,9 @@ func _get_plugin_templates_names() -> Array:
 	var dir = DirAccess.open("res://addons/inkgd/editor/templates/")
 	var plugin_template_names = []
 
-	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
+	dir.list_dir_begin()
+	dir.include_navigational = false
+	dir.include_hidden = true
 
 	var temp = dir.get_next()
 	while temp != "":
@@ -258,4 +261,4 @@ func _should_use_mono():
 
 
 func _can_run_mono():
-	return type_exists("_GodotSharp")
+	return GodotSharp.is_runtime_initialized()

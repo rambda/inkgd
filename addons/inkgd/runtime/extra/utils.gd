@@ -22,17 +22,17 @@ const ValueType = preload("res://addons/inkgd/runtime/values/value_type.gd").Val
 # ############################################################################ #
 
 static func throw_exception(message: String) -> void:
-	InkRuntime().handle_exception(message)
+	InkRuntime.handle_exception(message)
 
 static func throw_story_exception(
 		message: String,
-		use_end_line_number = false,
-		metadata = null
+		use_end_line_number := false,
+		metadata: StoryErrorMetadata = null
 ) -> void:
-	InkRuntime().handle_story_exception(message, use_end_line_number, metadata)
+	InkRuntime.handle_story_exception(message, use_end_line_number, metadata)
 
 static func throw_argument_exception(message: String) -> void:
-	InkRuntime().handle_argument_exception(message)
+	InkRuntime.handle_argument_exception(message)
 
 # ############################################################################ #
 # Assertions
@@ -48,18 +48,8 @@ static func __assert__(condition: bool, message = "") -> void:
 # Type Assertion
 # ############################################################################ #
 
-static func as_or_null(variant, name_of_class: String):
-	if (
-			is_ink_class(variant, name_of_class) ||
-			name_of_class == "Dictionary" && variant is Dictionary ||
-			name_of_class == "Array" && variant is Array
-	):
-		return variant
-	else:
-		return null
-
-static func cast(variant, name_of_class: String):
-	if is_ink_class(variant, name_of_class):
+static func cast(variant, cls):
+	if variant is cls:
 		return variant
 	else:
 		push_error(
@@ -89,9 +79,6 @@ static func as_INamedContent_or_null(variant):
 				return variant
 
 	return null
-
-static func is_ink_class(object: Object, name_of_class: String) -> bool:
-	return (object is Object) && object.is_class(name_of_class)
 
 static func are_of_same_type(object1: Object, object2: Object) -> bool:
 	if (object1 is Object) && (object2 is Object):
@@ -191,7 +178,7 @@ static func join(joiner: String, array: Array) -> String:
 	var i = 0
 	for element in array:
 		var element_string
-		if is_ink_class(element, "InkBase"):
+		if element is InkBase:
 			element_string = element._to_string()
 		else:
 			element_string = str(element)
@@ -265,8 +252,3 @@ static func array_equal(a1: Array, a2: Array, use_equals = false) -> bool:
 		i += 1
 
 	return true
-
-# ############################################################################ #
-
-static func InkRuntime():
-	return Engine.get_main_loop().root.get_node("__InkRuntime")

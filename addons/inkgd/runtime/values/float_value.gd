@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -15,35 +13,32 @@ class_name InkFloatValue
 
 # ############################################################################ #
 
-const BoolValue = preload("res://addons/inkgd/runtime/values/bool_value.gd")
-const IntValue = preload("res://addons/inkgd/runtime/values/int_value.gd")
-const StringValue = preload("res://addons/inkgd/runtime/values/string_value.gd")
+var value: float
 
-
-func get_value_type():
+func get_value_type() -> ValueType:
 	return ValueType.FLOAT
 
-func get_is_truthy():
+func get_is_truthy() -> bool:
 	return value != 0.0
 
-func _init():
-	value = 0.0
+func _init(v: float):
+	value = v
 
 # The method takes a `StoryErrorMetadata` object as a parameter that
 # doesn't exist in upstream. The metadat are used in case an 'exception'
 # is raised. For more information, see story.gd.
-func cast(new_type, metadata = null):
+func cast(new_type, metadata: StoryErrorMetadata = null):
 	if new_type == self.value_type:
 		return self
 
 	if new_type == ValueType.BOOL:
-		return BoolValue.new_with(false if value == 0 else true)
+		return InkBoolValue.new(false if value == 0 else true)
 
 	if new_type == ValueType.INT:
-		return IntValue.new_with(int(value))
+		return InkIntValue.new(int(value))
 
 	if new_type == ValueType.STRING:
-		return StringValue.new_with(str(value)) # TODO: Check formating
+		return InkStringValue.new(str(value)) # TODO: Check formating
 
 	Utils.throw_story_exception(bad_cast_exception_message(new_type), false, metadata)
 	return null
@@ -57,8 +52,3 @@ func is_class(type):
 
 func get_class():
 	return "FloatValue"
-
-static func new_with(val):
-	var value = InkFloatValue.new()
-	value._init_with(val)
-	return value

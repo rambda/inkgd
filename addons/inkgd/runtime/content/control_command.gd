@@ -1,4 +1,3 @@
-# warning-ignore-all:shadowed_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -49,11 +48,12 @@ enum CommandType {
 # ############################################################################ #
 
 # CommandType
-var command_type: int
+var command_type: CommandType = CommandType.NOT_SET
+var command_name: get = get_command_name
 
 # ############################################################################ #
 
-func _init(command_type: int = CommandType.NOT_SET):
+func _init(command_type: CommandType = CommandType.NOT_SET):
 	self.command_type = command_type
 
 # ############################################################################ #
@@ -70,7 +70,7 @@ static func eval_output() -> InkControlCommand:
 static func eval_end() -> InkControlCommand:
 	return InkControlCommand.new(CommandType.EVAL_END)
 
-static func dup() -> InkControlCommand:
+static func dup() -> InkControlCommand:  # FIXME Godot super class check bug
 	return InkControlCommand.new(CommandType.DUPLICATE)
 #func duplicate(subresources: bool = false) -> Resource:
 #	return null
@@ -133,37 +133,39 @@ static func list_random() -> InkControlCommand:
 	return InkControlCommand.new(CommandType.LIST_RANDOM)
 
 # () -> String
-func _to_string() -> String:
-	var command_name: String = ""
+func get_command_name() -> String:
 	match self.command_type:
-		CommandType.NOT_SET:                command_name = "NOT_SET"
-		CommandType.EVAL_START:             command_name = "EVAL_START"
-		CommandType.EVAL_OUTPUT:            command_name = "EVAL_OUTPUT"
-		CommandType.EVAL_END:               command_name = "EVAL_END"
-		CommandType.DUPLICATE:              command_name = "DUPLICATE"
-		CommandType.POP_EVALUATED_VALUE:    command_name = "POP_EVALUATED_VALUE"
-		CommandType.POP_FUNCTION:           command_name = "POP_FUNCTION"
-		CommandType.POP_TUNNEL:             command_name = "POP_TUNNEL"
-		CommandType.BEGIN_STRING:           command_name = "BEGIN_STRING"
-		CommandType.END_STRING:             command_name = "END_STRING"
-		CommandType.NO_OP:                  command_name = "NO_OP"
-		CommandType.CHOICE_COUNT:           command_name = "CHOICE_COUNT"
-		CommandType.TURNS:                  command_name = "TURNS"
-		CommandType.TURNS_SINCE:            command_name = "TURNS_SINCE"
-		CommandType.READ_COUNT:             command_name = "READ_COUNT"
-		CommandType.RANDOM:                 command_name = "RANDOM"
-		CommandType.SEED_RANDOM:            command_name = "SEED_RANDOM"
-		CommandType.VISIT_INDEX:            command_name = "VISIT_INDEX"
-		CommandType.SEQUENCE_SHUFFLE_INDEX: command_name = "SEQUENCE_SHUFFLE_INDEX"
-		CommandType.START_THREAD:           command_name = "START_THREAD"
-		CommandType.DONE:                   command_name = "DONE"
-		CommandType.END:                    command_name = "END"
-		CommandType.LIST_FROM_INT:          command_name = "LIST_FROM_INT"
-		CommandType.LIST_RANGE:             command_name = "LIST_RANGE"
-		CommandType.LIST_RANDOM:            command_name = "LIST_RANDOM"
-		CommandType.TOTAL_VALUES:           command_name = "TOTAL_VALUES"
+		CommandType.NOT_SET:                return "NOT_SET"
+		CommandType.EVAL_START:             return "EVAL_START"
+		CommandType.EVAL_OUTPUT:            return "EVAL_OUTPUT"
+		CommandType.EVAL_END:               return "EVAL_END"
+		CommandType.DUPLICATE:              return "DUPLICATE"
+		CommandType.POP_EVALUATED_VALUE:    return "POP_EVALUATED_VALUE"
+		CommandType.POP_FUNCTION:           return "POP_FUNCTION"
+		CommandType.POP_TUNNEL:             return "POP_TUNNEL"
+		CommandType.BEGIN_STRING:           return "BEGIN_STRING"
+		CommandType.END_STRING:             return "END_STRING"
+		CommandType.NO_OP:                  return "NO_OP"
+		CommandType.CHOICE_COUNT:           return "CHOICE_COUNT"
+		CommandType.TURNS:                  return "TURNS"
+		CommandType.TURNS_SINCE:            return "TURNS_SINCE"
+		CommandType.READ_COUNT:             return "READ_COUNT"
+		CommandType.RANDOM:                 return "RANDOM"
+		CommandType.SEED_RANDOM:            return "SEED_RANDOM"
+		CommandType.VISIT_INDEX:            return "VISIT_INDEX"
+		CommandType.SEQUENCE_SHUFFLE_INDEX: return "SEQUENCE_SHUFFLE_INDEX"
+		CommandType.START_THREAD:           return "START_THREAD"
+		CommandType.DONE:                   return "DONE"
+		CommandType.END:                    return "END"
+		CommandType.LIST_FROM_INT:          return "LIST_FROM_INT"
+		CommandType.LIST_RANGE:             return "LIST_RANGE"
+		CommandType.LIST_RANDOM:            return "LIST_RANDOM"
+		CommandType.TOTAL_VALUES:           return "TOTAL_VALUES"
+		_:	return ""
 
-	return "Command(%s)" % command_name
+
+func _to_string() -> String:
+	return "Command(%s)" % get_command_name()
 
 # ############################################################################ #
 # GDScript extra methods

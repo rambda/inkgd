@@ -14,14 +14,10 @@ class_name InkGDProfiler
 
 var milliseconds_elaspsed: int :
 	get:
-		return milliseconds_elaspsed # TODOConverter40 Copy here content of get_milliseconds_elaspsed 
-	set(mod_value):
-		mod_value  # TODOConverter40  Non existent set function
-func get_milliseconds_elaspsed():
-	if _start_time == -1 || _end_time == -1:
-		return 0
+		if _start_time == -1 || _end_time == -1:
+			return 0
 
-	return _end_time - _start_time
+		return _end_time - _start_time
 
 
 # ############################################################################ #

@@ -30,15 +30,16 @@ func before_each():
 	super.before_each()
 
 	_ink_player = InkPlayerFactory.create()
+	_ink_player.loads_in_background = false
 	get_tree().root.add_child(_ink_player)
-	_ink_player.connect("exception_raised",Callable(self,"_exception_raised"))
+	_ink_player.exception_raised.connect(self._exception_raised)
 
 
 func after_each():
 	_exception_messages_raised = []
 	get_tree().root.remove_child(_ink_player)
-	_ink_player.disconnect("exception_raised",Callable(self,"_exception_raised"))
-	_ink_player.free()
+	_ink_player.exception_raised.disconnect(self._exception_raised)
+	_ink_player.queue_free()
 	_ink_player = null
 
 	super.after_each()
@@ -74,4 +75,4 @@ func _load_story(name):
 	assert_true(successfully, "The story did not load correctly.")
 
 func _can_run_mono():
-	return type_exists("_GodotSharp")
+	return GodotSharp.is_runtime_initialized()

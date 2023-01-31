@@ -4,12 +4,6 @@
 // See LICENSE in the project root for license information.
 // /////////////////////////////////////////////////////////////////////////// /
 
-using Godot;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
-
 public partial class InkBridger : Node
 {
 	#region Imports
@@ -30,68 +24,68 @@ public partial class InkBridger : Node
 	#endregion
 
 	#region Methods | Helpers
-	public bool IsInkObjectOfType(Godot.Object inkObject, string name)
+	public bool IsInkObjectOfType(GObject inkObject, string name)
 	{
-		return inkObject.HasMethod("is_class") && (bool)inkObject.Call("is_class", new object[] { name });
+		return inkObject.HasMethod("is_class") && (bool)inkObject.Call("is_class", new Variant[] { name });
 	}
 
-	public Godot.Object MakeFunctionResult(string textOutput, object returnValue)
+	public GObject MakeFunctionResult(string textOutput, object returnValue)
 	{
-		var parameters = new object[] { textOutput ?? "", returnValue };
-		return (Godot.Object) InkFunctionResult.New(parameters);
+		var parameters = new Variant[] { textOutput ?? "", (Variant)(dynamic)returnValue };
+		return (GObject) InkFunctionResult.New(parameters);
 	}
 	#endregion
 
 	#region Methods | Conversion -> (GDScript -> C#)
-	public Godot.Object MakeGDInkPath(Ink.Runtime.Path3D path) {
-		var inkPath = (Godot.Object) InkPath.New();
+	public GObject MakeGDInkPath(Ink.Runtime.Path path) {
+		var inkPath = (GObject) InkPath.New();
 		inkPath.Call("_init_with_components_string", path.componentsString);
 		return inkPath;
 	}
 
-	public Godot.Object MakeGDInkList(Ink.Runtime.InkList list)
+	public GObject MakeGDInkList(Ink.Runtime.InkList list)
 	{
-		var inkListBase = new Godot.Collections.Dictionary<string, int>();
+		var inkListBase = new GCol.Dictionary<string, int>();
 
 		foreach(KeyValuePair<Ink.Runtime.InkListItem, int> kv in list) {
-			inkListBase.Add(MakeGDInkListItem(kv.Key).Call("serialized") as string, kv.Value);
+			inkListBase.Add(MakeGDInkListItem(kv.Key).Call("serialized").AsString(), kv.Value);
 		}
-
-		object[] inkListParams = new object[] {
+	
+		GCol.Array inkListParams = new GCol.Array {
 			inkListBase,
 			list.originNames.ToArray(),
 			MakeGDInkListOrigins(list.origins)
 		};
 
-		var inkList = (Godot.Object) InkList.New();
+		var inkList = (GObject) InkList.New();
 		inkList.Call("_init_from_csharp", inkListParams);
 
 		return inkList;
 	}
 
-	public Ink.Runtime.Path3D MakeSharpInkPath(Godot.Object path) {
+	public Ink.Runtime.Path MakeSharpInkPath(GObject path) {
 		if (!IsInkObjectOfType(path, "InkPath"))
 		{
-			throw new ArgumentException("Expected a 'Godot.Object' of class 'InkPath'");
+			throw new ArgumentException("Expected a 'GObject' of class 'InkPath'");
 		}
 
-		return new Ink.Runtime.Path3D((string)path.Get("components_string"));
+		return new Ink.Runtime.Path((string)path.Get("components_string"));
 	}
 	#endregion
 
 	#region Methods | Conversion (GDScript -> C#)
-	public Ink.Runtime.InkList MakeSharpInkList(Godot.Object list, Ink.Runtime.Story story)
+	public Ink.Runtime.InkList MakeSharpInkList(GObject list, Ink.Runtime.Story story)
 	{
 		if (!IsInkObjectOfType(list, "InkList"))
 		{
-			throw new ArgumentException("Expected a 'Godot.Object' of class 'InkList'");
+			throw new ArgumentException("Expected a 'GObject' of class 'InkList'");
 		}
 
-		var underlyingDictionary = new Godot.Collections.Dictionary<string, int>(
-			(Godot.Collections.Dictionary)list.Get("_dictionary"));
+		var underlyinDictionaryionary = new GCol.Dictionary<string, int>(
+			(GCol.Dictionary)list.Get("_dictionary"));
 
-		var originNames = new Godot.Collections.Array<string>(
-			(Godot.Collections.Array)list.Get("origin_names"));
+		var originNames = new GCol.Array<string>(
+			(GCol.Array)list.Get("origin_names"));
 
 		var inkList = new Ink.Runtime.InkList();
 		inkList.origins = new List<Ink.Runtime.ListDefinition>();
@@ -114,7 +108,7 @@ public partial class InkBridger : Node
 			}
 		}
 
-		foreach(KeyValuePair<string, int> kv in underlyingDictionary)
+		foreach(KeyValuePair<string, int> kv in underlyinDictionaryionary)
 		{
 			inkList[MakeSharpInkListItem(kv.Key)] = kv.Value;
 		}
@@ -124,10 +118,10 @@ public partial class InkBridger : Node
 	#endregion
 
 	#region Private Methods | Conversion (C# -> GDScript)
-	private Godot.Collections.Array<Godot.Object> MakeGDInkListOrigins(
+	private GCol.Array<GObject> MakeGDInkListOrigins(
 		List<Ink.Runtime.ListDefinition> listDefinitions)
 	{
-		var inkListDefinitions = new Godot.Collections.Array<Godot.Object>();
+		var inkListDefinitions = new GCol.Array<GObject>();
 
 		foreach(Ink.Runtime.ListDefinition listDefinition in listDefinitions) {
 			var inkListDefinition = MakeGDListDefinition(listDefinition);
@@ -137,26 +131,26 @@ public partial class InkBridger : Node
 		return inkListDefinitions;
 	}
 
-	private Godot.Object MakeGDListDefinition(Ink.Runtime.ListDefinition listDefinition)
+	private GObject MakeGDListDefinition(Ink.Runtime.ListDefinition listDefinition)
 	{
-		var items = new Godot.Collections.Dictionary<Godot.Object, int>();
+		var items = new GCol.Dictionary<GObject, int>();
 
 		foreach(KeyValuePair<Ink.Runtime.InkListItem, int> kv in listDefinition.items) {
 			var inkListItem = MakeGDInkListItem(kv.Key);
 			items.Add(inkListItem, kv.Value);
 		}
 
-		var definitionParams = new object[] { listDefinition.name, items };
-		var inkListDefinition = (Godot.Object) InkListDefinition.New(definitionParams);
+		var definitionParams = new Variant[] { listDefinition.name, items };
+		var inkListDefinition = (GObject) InkListDefinition.New(definitionParams);
 
 		return inkListDefinition;
 	}
 
-	private Godot.Object MakeGDInkListItem(Ink.Runtime.InkListItem listItem)
+	private GObject MakeGDInkListItem(Ink.Runtime.InkListItem listItem)
 	{
-		object[] itemParams = new object[] { listItem.fullName };
+		Variant[] itemParams = new Variant[] { listItem.fullName };
 
-		var inkListItem = (Godot.Object) InkListItem.New();
+		var inkListItem = (GObject) InkListItem.New();
 		inkListItem.Call("_init_with_full_name", itemParams);
 
 		return inkListItem;
@@ -167,15 +161,15 @@ public partial class InkBridger : Node
 	private Ink.Runtime.InkListItem MakeSharpInkListItem(string listItemKey)
 	{
 
-		var listItem = (Godot.Object) InkListItem.Call("from_serialized_key", new object[] { listItemKey });
+		var listItem = (GObject) InkListItem.Call("from_serialized_key", new Variant[] { listItemKey });
 
 		if (!IsInkObjectOfType(listItem, "InkListItem")) {
-			throw new ArgumentException("Expected a 'Godot.Object' of class 'InkListItem'");
+			throw new ArgumentException("Expected a 'GObject' of class 'InkListItem'");
 		}
 
 		return new Ink.Runtime.InkListItem(
-			listItem.Get("origin_name") as string,
-			listItem.Get("item_name") as string
+			listItem.Get("origin_name").AsString(),
+			listItem.Get("item_name").AsString()
 		);
 	}
 	#endregion

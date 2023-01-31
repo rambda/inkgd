@@ -1,5 +1,3 @@
-# warning-ignore-all:shadowed_variable
-# warning-ignore-all:unused_class_variable
 # ############################################################################ #
 # Copyright © 2015-2021 inkle Ltd.
 # Copyright © 2019-2022 Frédéric Maquin <fred@ephread.com>
@@ -16,12 +14,9 @@ class_name InkVariableAssignment
 # ############################################################################ #
 
 # String
-var variable_name = null
+var variable_name := ""
 var is_new_declaration: bool = false
 var is_global: bool = false
-
-func _init():
-	_init_with(null, false)
 
 # (String?, bool) -> InkVariableAssignment
 func _init_with(variable_name, is_new_declaration: bool):

@@ -114,7 +114,7 @@ func _ready():
 	_choice_area_container.custom_minimum_size = Vector2(200, 0) * editor_interface.scale
 	_choice_area_container.visible = false
 
-	_file_dialog.connect("file_selected",Callable(self,"_on_file_selected"))
+	_file_dialog.file_selected.connect(self._on_file_selected)
 	add_child(_file_dialog)
 
 # ############################################################################ #
@@ -279,7 +279,7 @@ func _continue_story():
 			text.erase(text.length() - 1, 1)
 
 		var text_label = Label.new()
-		text_label.autowrap = true
+		text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		text_label.text = text
 
 		_story_container.add_child(text_label)
@@ -287,7 +287,7 @@ func _continue_story():
 		var tags = _ink_player.current_tags
 		if !tags.is_empty():
 			var tag_label = Label.new()
-			tag_label.autowrap = true
+			tag_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			tag_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			tag_label.text = "# " + ", ".join(PackedStringArray(tags))
 			tag_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.4))
@@ -350,7 +350,7 @@ func _connect_signals():
 		if !is_connected:
 			configuration.story_configuration_changed.connect(self._configuration_changed)
 
-	_ink_player.loaded.connect(self._story_loaded)
+	_ink_player.connect("loaded", self._story_loaded)
 	_pick_story_button.item_selected.connect(self._pick_story_button_selected)
 	_load_story_button.pressed.connect(self._load_story_button_pressed)
 	_start_button.pressed.connect(self._start_button_pressed)
